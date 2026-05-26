@@ -138,6 +138,13 @@ fix: corrección de bug
 docs: cambios en documentación
 refactor: refactorización de código
 ```
+### Tipo de Cambio
+
+* **feat:** descripción corta - closes #N
+* **fix:** corrección - refs #N
+* **docs:** documentación - refs #N
+* **test:** prueba - refs #N
+
 
 ---
 
@@ -153,8 +160,3 @@ refactor: refactorización de código
 | Préstamos | ⬜ Pendiente |
 | Interfaz Gráfica | ⬜ Pendiente |
 
----
-
-## Contacto
-
-Cualquier duda coordinar por WhatsApp o abrir un **Issue** en este repositorio.
