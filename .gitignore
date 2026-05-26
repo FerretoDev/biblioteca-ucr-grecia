@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Generador de Roadmap
+diagramas/roadmap_generator.py
+# Diagramas
+diagramas/*
