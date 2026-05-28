@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<prestamos>
+    <prestamo>
+        <id>P001</id>
+        <carnet>C1G501</carnet>
+        <codigo_libro>L004</codigo_libro>
+        <fecha_prestamo>2026-05-20</fecha_prestamo>
+    </prestamo>
+    <prestamo>
+        <id>P002</id>
+        <carnet>C2G502</carnet>
+        <codigo_libro>L005</codigo_libro>
+        <fecha_prestamo>2026-05-25</fecha_prestamo>
+    </prestamo>
+</prestamos>

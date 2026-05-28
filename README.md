@@ -2,7 +2,7 @@
 
 Sistema de gestión de biblioteca desarrollado en Python para el curso de **Estructuras de Datos** de la Universidad de Costa Rica.
 
-> **Integrantes:** Marcos Ferreto Estrada · Paulo Anchia  
+> **Integrantes:** Marcos Ferreto Estrada · Paulo Anchia Correas 
 > **Entrega:** Viernes 26 de junio, 17:00 hrs
 
 ---
