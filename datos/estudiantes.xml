@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<estudiantes>
+    <estudiante>
+        <carnet>C1G501</carnet>
+        <nombre>Maria Lopez</nombre>
+        <carrera>Informatica Empresarial</carrera>
+    </estudiante>
+    <estudiante>
+        <carnet>C2G502</carnet>
+        <nombre>Carlos Rojas</nombre>
+        <carrera>Turismo</carrera>
+    </estudiante>
+    <estudiante>
+        <carnet>C3G503</carnet>
+        <nombre>Ana Soto</nombre>
+        <carrera>Laboratorista Quimico</carrera>
+    </estudiante>
+</estudiantes>
