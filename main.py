@@ -9,7 +9,10 @@ def main():
     # print("Cargando préstamos desde XML...")
     
     print("\n--- Pruebas de Estructuras de Datos ---")
-
+    # Caso extra comentado:
+    # pila_prestamos = Pila()
+    # lista_libros = Lista_Doble()
+    # arbol_estudiantes = Arbol()
 
 
 if __name__ == "__main__":
