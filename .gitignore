@@ -221,3 +221,6 @@ __marimo__/
 diagramas/roadmap_generator.py
 # Diagramas
 diagramas/*
+
+# Test 
+test/*
