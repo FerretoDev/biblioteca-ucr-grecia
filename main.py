@@ -14,7 +14,7 @@ def main():
     for i in libros:
         # dict_a_libro pasa los libros que estan en un diccionario y los pasa a un objeto tipo libro
         libro: Libro = xml_manager.dict_a_libro(i)
-        # TODO Hay que arreglar la linea de abajo, debería ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+        # TODO: Hay que arreglar la linea de abajo, debería ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
         # BUG pero lo curioso es que sirve
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
