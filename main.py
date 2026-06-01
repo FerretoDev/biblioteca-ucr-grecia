@@ -7,17 +7,18 @@ def main():
     # Cargando datos
     libros, estudiantes, prestamos = xml_manager.cargar_todo()
     """-------------------------------------------------------------------------------------------"""
+    # TODO: Implementación del main, por ahora en consola, después cuando todo funcione en gui
 
     mi_arbol_avl: ArbolAVL = ArbolAVL()
 
     for i in libros:
         libro = xml_manager.dict_a_libro(i)
-        # TODO Hay que arreglar la linea de abajo, deberia ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+        # TODO Hay que arreglar la linea de abajo, debería ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
         # BUG pero lo curioso es que sirve
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
-    print(mi_arbol_avl.raiz)
+    # print(mi_arbol_avl.raiz)
 
 
     # Pruebas

@@ -29,7 +29,7 @@ class ArbolAVL:
             return 0
         return self._altura(raiz_p.der) - self._altura(raiz_p.izq) # Formula: Altura (hijo.der) - Altura (hijo.izq)
 
-    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> None: # Quizas en vez de valor nuevo podria ser libro_nuevo
+    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo | None: # Quizas en vez de valor nuevo podria ser libro_nuevo
         # Pre-orden
         if self.raiz is None:
             self.raiz = Nodo(libro_nuevo)
@@ -70,6 +70,33 @@ class ArbolAVL:
         raiz_p.fe = self.calcular_fe(raiz_p)
         actual.fe = self.calcular_fe(actual)
         return actual
+
+    def rotacion_dd(self, raiz_p):
+        # TODO: Implementar rotación derecha derecha
+        ...
+
+    def rotacion_id(self, raiz_p):
+        # TODO: Implementar rotación izquierda derecha
+        ...
+
+    def rotacion_di(self,rai_p):
+        # TODO: Implementar rotación derecha izquierda
+        ...
+
+    def buscar_codigo(self, raiz_p, codigo):
+        # TODO: Implementar buscar por codigo
+        ...
+    def buscar_titulo(self, raiz_p, titulo):
+        # TODO: Implementar buscar por titulo
+        ...
+
+    def buscar_autor(self, raiz_p, autor):
+        # TODO: Implementar buscar por autor
+        ...
+
+    def eliminar_codigo(self, raiz_p, codigo):
+        # TODO: Implementar eliminar por codigo
+        ...
 
     def mostrar(self, raiz_p)-> None:
         if raiz_p is not None:
