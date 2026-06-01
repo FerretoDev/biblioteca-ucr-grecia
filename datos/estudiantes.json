@@ -1,0 +1,26 @@
+[
+  {
+    "carnet": "1001",
+    "nombre": "Ana Garcia",
+    "carrera": "Informatica",
+    "telefono": "8888-1111",
+    "correo": "ana@ucr.ac.cr",
+    "direccion": "Grecia"
+  },
+  {
+    "carnet": "1002",
+    "nombre": "Carlos Rojas",
+    "carrera": "Turismo",
+    "telefono": "8888-2222",
+    "correo": "carlos@ucr.ac.cr",
+    "direccion": "Grecia"
+  },
+  {
+    "carnet": "1003",
+    "nombre": "Maria Lopez",
+    "carrera": "Informatica Empresarial",
+    "telefono": "8888-3333",
+    "correo": "maria@ucr.ac.cr",
+    "direccion": "Grecia"
+  }
+]

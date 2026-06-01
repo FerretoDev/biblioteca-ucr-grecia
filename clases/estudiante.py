@@ -1,6 +1,12 @@
 class Estudiante:
 
-    def __init__(self, carnet, nombre, carrera, telefono, correo, direccion):
+    def __init__(self, carnet: str, nombre: str, carrera: str, telefono: str, correo: str, direccion: str) -> None:
+        """
+        Parámetros: carnet (str), nombre (str), carrera (str), telefono (str), correo (str), direccion (str)
+        Devuelve:   None
+        Descripción:
+            Inicializa un estudiante con los campos definidos en el archivo % delimitado.
+        """
         self.carnet = carnet
         self.nombre = nombre
         self.carrera = carrera
@@ -8,8 +14,20 @@ class Estudiante:
         self.correo = correo
         self.direccion = direccion
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Parámetros: ninguno
+        Devuelve:   str con una representacion legible del estudiante
+        Descripción:
+            Devuelve un texto corto con nombre y carnet.
+        """
         return f"Estudiante: {self.nombre}, Carnet: {self.carnet}"
-        # repr es casi lo mismo que str y se hace igual
-    def __repr__(self):
+
+    def __repr__(self) -> str:
+        """
+        Parámetros: ninguno
+        Devuelve:   str con la representacion de depuracion del estudiante
+        Descripción:
+            Devuelve una representacion con todos los campos del estudiante.
+        """
         return f"Estudiante('{self.carnet}', '{self.nombre}', '{self.carrera}', '{self.telefono}', '{self.correo}', '{self.direccion}')"

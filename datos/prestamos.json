@@ -1,0 +1,20 @@
+[
+  {
+    "codigo_prestamo": "0001",
+    "codigo_libro": "001",
+    "carnet_estudiante": "1001",
+    "fecha_prestamo": ""
+  },
+  {
+    "codigo_prestamo": "0002",
+    "codigo_libro": "002",
+    "carnet_estudiante": "1002",
+    "fecha_prestamo": ""
+  },
+  {
+    "codigo_prestamo": "0003",
+    "codigo_libro": "003",
+    "carnet_estudiante": "1003",
+    "fecha_prestamo": ""
+  }
+]

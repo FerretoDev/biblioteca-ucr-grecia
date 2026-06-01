@@ -1,33 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<libros>
-    <libro>
-        <codigo>L001</codigo>
-        <titulo>Estructuras de Datos</titulo>
-        <autor>Luis Joyanes</autor>
-        <disponible>true</disponible>
-    </libro>
-    <libro>
-        <codigo>L002</codigo>
-        <titulo>Introduccion a los Algoritmos</titulo>
-        <autor>Thomas H. Cormen</autor>
-        <disponible>true</disponible>
-    </libro>
-    <libro>
-        <codigo>L003</codigo>
-        <titulo>Clean Code</titulo>
-        <autor>Robert C. Martin</autor>
-        <disponible>true</disponible>
-    </libro>
-    <libro>
-        <codigo>L004</codigo>
-        <titulo>El Lenguaje de Programacion C++</titulo>
-        <autor>Brian W. Kernighan</autor>
-        <disponible>false</disponible>
-    </libro>
-    <libro>
-        <codigo>L005</codigo>
-        <titulo>Patrones de Diseno</titulo>
-        <autor>Erich Gamma</autor>
-        <disponible>false</disponible>
-    </libro>
-</libros>
+003%Silvia Guardi%Estructuras de Datos%2006%MCGrawHill%Computacion
+002%Juan Oros%PYTHON. Curso Practico de Formacion%2022%Alfaomega%Programacion
+001%Francisco Sevilla y Veronica Rojas%Principios de Modelacion Matematica%2014%ProArte%Matematicas
