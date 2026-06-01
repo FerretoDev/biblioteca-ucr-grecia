@@ -84,8 +84,18 @@ class ArbolAVL:
         ...
 
     def buscar_codigo(self, raiz_p, codigo):
-        # TODO: Implementar buscar por codigo
-        ...
+        
+        if raiz_p is None:
+            return False
+        elif raiz_p.valor == codigo:
+            return True
+        elif raiz_p is None:
+            print("No existe")
+        else:
+            if raiz_p.valor > codigo:
+                return self.buscar(raiz_p.izq, codigo)
+            else:
+                return self.buscar(raiz_p.der, codigo)
     def buscar_titulo(self, raiz_p, titulo):
         # TODO: Implementar buscar por titulo
         ...
