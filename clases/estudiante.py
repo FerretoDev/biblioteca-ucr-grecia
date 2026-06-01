@@ -13,3 +13,4 @@ class Estudiante:
         # repr es casi lo mismo que str y se hace igual
     def __repr__(self):
         return f"Estudiante('{self.carnet}', '{self.nombre}', '{self.carrera}', '{self.telefono}', '{self.correo}', '{self.direccion}')"
+

@@ -1,24 +1,17 @@
+
+from xml_manager import XMLManager
 def main():
-    print("--------------------------------------------------")
-    print("Sistema de Biblioteca UCR - Sede Grecia")
-    print("--------------------------------------------------")
+    # Pasar xml a
+    xmt_manager = XMLManager()
 
-    print("\n--- Pruebas de XML (Mock) ---")
-    # print("Cargando libros desde XML...")
-    # print("Cargando estudiantes desde XML...")
-    # print("Cargando préstamos desde XML...")
+    lista_estudiantes = xmt_manager.cargar_estudiantes()
+    print("Lista de estudiantes: ", lista_estudiantes)
 
-    print("\n--- Pruebas de Estructuras de Datos ---")
-<<<<<<< HEAD
-    # Caso extra comentado:
-    # pila_prestamos = Pila()
-    # lista_libros = Lista_Doble()
-    # arbol_estudiantes = Arbol()
-=======
+    lista_libros = xmt_manager.cargar_libros()
+    print("Lista de libros: ", lista_libros)
 
-    print("Marcos")
->>>>>>> 5dbf0a2ed14b54821bcc5c374e3dbe565fe5432c
-
+    lista_prestamos = xmt_manager.cargar_prestamos()
+    print("Lista de prestamos: ", lista_prestamos)
 
 if __name__ == "__main__":
     main()

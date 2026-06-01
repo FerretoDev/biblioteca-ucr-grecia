@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <prestamos>
     <prestamo>
-        <id>P001</id>
+        <codigo_prestamo>P001</codigo_prestamo>
         <carnet>C1G501</carnet>
         <codigo_libro>L004</codigo_libro>
         <fecha_prestamo>2026-05-20</fecha_prestamo>
