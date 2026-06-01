@@ -1,6 +1,6 @@
 [
   {
-    "codigo": "001",
+    "codigo": "003",
     "autor": "Silvia Guardi",
     "titulo": "Estructuras de Datos",
     "anio": "2006",
@@ -16,7 +16,7 @@
     "area": "Programacion"
   },
   {
-    "codigo": "003",
+    "codigo": "001",
     "autor": "Francisco Sevilla y Veronica Rojas",
     "titulo": "Principios de Modelacion Matematica",
     "anio": "2014",
