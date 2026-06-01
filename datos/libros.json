@@ -1,0 +1,26 @@
+[
+  {
+    "codigo": "003",
+    "autor": "Silvia Guardi",
+    "titulo": "Estructuras de Datos",
+    "anio": "2006",
+    "editorial": "MCGrawHill",
+    "area": "Computacion"
+  },
+  {
+    "codigo": "002",
+    "autor": "Juan Oros",
+    "titulo": "PYTHON. Curso Practico de Formacion",
+    "anio": "2022",
+    "editorial": "Alfaomega",
+    "area": "Programacion"
+  },
+  {
+    "codigo": "001",
+    "autor": "Francisco Sevilla y Veronica Rojas",
+    "titulo": "Principios de Modelacion Matematica",
+    "anio": "2014",
+    "editorial": "ProArte",
+    "area": "Matematicas"
+  }
+]
