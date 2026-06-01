@@ -18,13 +18,6 @@ def main():
         # BUG pero lo curioso es que sirve
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
-<<<<<<< HEAD
-    print("\n--- Pruebas de Estructuras de Datos ---")
-    # Caso extra comentado:
-    # pila_prestamos = Pila()
-    # lista_libros = Lista_Doble()
-    # arbol_estudiantes = Arbol()
-=======
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     # print(mi_arbol_avl.raiz)
 
@@ -41,7 +34,6 @@ def main():
     xml_manager.guardar_todo(libros, estudiantes, prestamos)
     xml_manager.guardar_json(libros, estudiantes, prestamos)
 
->>>>>>> 9fd02c6a470eb146ed416fb882493105c5376ebe
 
 
 if __name__ == "__main__":
