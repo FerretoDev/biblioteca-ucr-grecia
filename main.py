@@ -1,29 +1,38 @@
 from xml_manager import XMLManager
+from estructura_datos.arbol_avl.arbol_avl import ArbolAVL
 
+def main():
 
-def test():
-    """
-    Parámetros: ninguno
-    Devuelve:   None
-    Descripción:
-
-    """
     xml_manager = XMLManager()
-    print("Cargando datos delimitados por % desde .xml a JSON...")
+    # Cargando datos
     libros, estudiantes, prestamos = xml_manager.cargar_todo()
+    """-------------------------------------------------------------------------------------------"""
 
-    print("Trabajando con JSON en memoria...")
-    print("Libros (JSON):", libros)
-    print("Estudiantes (JSON):", estudiantes)
-    print("Prestamos (JSON):", prestamos)
+    mi_arbol_avl: ArbolAVL = ArbolAVL()
 
-    print("Guardando JSON a .xml con delimitacion %...")
+    for i in libros:
+        libro = xml_manager.dict_a_libro(i)
+        # TODO Hay que arreglar la linea de abajo, deberia ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+        # BUG pero lo curioso es que sirve
+        mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+
+    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    print(mi_arbol_avl.raiz)
+
+
+    # Pruebas
+    #print("Pruebas")
+    #print(mi_arbol_avl.raiz)
+    #print(mi_arbol_avl.raiz.izq)
+    #print(mi_arbol_avl.raiz.der)
+
+
+    """-------------------------------------------------------------------------------------"""
+    # Guardar datos al finalizar el programa
     xml_manager.guardar_todo(libros, estudiantes, prestamos)
-    print("Guardando JSON a .json para inspeccion...")
     xml_manager.guardar_json(libros, estudiantes, prestamos)
 
 
-def main():
-    ...
+
 if __name__ == "__main__":
-    test()
+    main()
