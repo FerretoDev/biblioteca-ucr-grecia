@@ -223,7 +223,7 @@ diagramas/roadmap_generator.py
 diagramas/*
 
 # Test 
-test/*
+#test/*
 
 #
 Claude.md
