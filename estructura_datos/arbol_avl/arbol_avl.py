@@ -83,19 +83,20 @@ class ArbolAVL:
         # TODO: Implementar rotación derecha izquierda
         ...
 
-    def buscar_codigo(self, raiz_p, codigo):
+    def buscar_codigo(self, raiz_p:Optional[Nodo], codigo: int):
         
         if raiz_p is None:
             return False
-        elif raiz_p.valor == codigo:
+        elif raiz_p.valor.codigo == codigo:
             return True
         elif raiz_p is None:
-            print("No existe")
+            return False
         else:
-            if raiz_p.valor > codigo:
-                return self.buscar(raiz_p.izq, codigo)
+            if raiz_p.valor.codigo > codigo:
+                return self.buscar_codigo(raiz_p.izq, codigo)
             else:
-                return self.buscar(raiz_p.der, codigo)
+                return self.buscar_codigo(raiz_p.der, codigo)
+
     def buscar_titulo(self, raiz_p, titulo):
         # TODO: Implementar buscar por titulo
         ...

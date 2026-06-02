@@ -7,6 +7,7 @@ class Libro:
         Descripción:
             Inicializa un libro con los campos definidos para la entidad.
         """
+        # TODO: Cambiar el tipo de codigo a int y anio a int
         self.codigo = codigo
         self.autor = autor
         self.titulo = titulo
