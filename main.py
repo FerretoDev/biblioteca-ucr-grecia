@@ -20,7 +20,12 @@ def main():
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     # print(mi_arbol_avl.raiz)
-
+    print("Buscar por codigo: ", end="")
+    codigo: int = 4
+    if mi_arbol_avl.buscar_codigo(mi_arbol_avl.raiz, codigo):
+        print(f"El libro con código {codigo} existe")
+    else:
+        print(f"El libro con código {codigo} no existe")
 
     # Pruebas que hice para comprobar si los hijos de las raiz_p existían
     #print("Pruebas")
