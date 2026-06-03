@@ -65,6 +65,69 @@ def test_buscar_codigo():
     # Guardar datos al finalizar el programa
     xml_manager.guardar_libros(libros)
 
-if __name__ == "__main__":
+def test_buscar_titulo():
+    xml_manager = XMLManager()
+    libros = xml_manager.cargar_libros()
+    mi_arbol_avl: ArbolAVL = ArbolAVL()
 
+    for i in libros:
+        libro: Libro = xml_manager.dict_a_libro(i)
+        mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+
+    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    print("Buscar por titulo: ", end="")
+    titulo: str = "Estructuras de Datos"
+    if mi_arbol_avl.buscar_titulo(mi_arbol_avl.raiz, titulo):
+        print(f"El libro '{titulo}' existe")
+    else:
+        print(f"El libro '{titulo}' no existe")
+
+    xml_manager.guardar_libros(libros)
+
+
+def test_buscar_autor():
+    xml_manager = XMLManager()
+    libros = xml_manager.cargar_libros()
+    mi_arbol_avl: ArbolAVL = ArbolAVL()
+
+    for i in libros:
+        libro: Libro = xml_manager.dict_a_libro(i)
+        mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+
+    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    print("Buscar por autor: ", end="")
+    autor: str = "Silvia Guardi"
+    if mi_arbol_avl.buscar_autor(mi_arbol_avl.raiz, autor):
+        print(f"El autor '{autor}' existe")
+    else:
+        print(f"El autor '{autor}' no existe")
+
+    xml_manager.guardar_libros(libros)
+
+
+def test_eliminar_codigo():
+    xml_manager = XMLManager()
+    libros = xml_manager.cargar_libros()
+    mi_arbol_avl: ArbolAVL = ArbolAVL()
+
+    for i in libros:
+        libro: Libro = xml_manager.dict_a_libro(i)
+        mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
+
+    print("Arbol antes de eliminar:")
+    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+
+    codigo: int = 2
+    mi_arbol_avl.eliminar_codigo(mi_arbol_avl.raiz, codigo)
+
+    print(f"Arbol despues de eliminar codigo {codigo}:")
+    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+
+    xml_manager.guardar_libros(libros)
+
+
+if __name__ == "__main__":
     test_buscar_codigo()
+    #test_buscar_titulo()
+    #test_buscar_autor()
+    #test_eliminar_codigo()
