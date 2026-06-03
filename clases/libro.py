@@ -1,13 +1,12 @@
 class Libro:
 
-    def __init__(self, codigo: str, autor: str, titulo: str, anio: str, editorial: str, area: str) -> None:
+    def __init__(self, codigo: int, autor: str, titulo: str, anio: int, editorial: str, area: str) -> None:
         """
-        Parámetros: codigo (str), autor (str), titulo (str), anio (str), editorial (str), area (str)
+        Parámetros: codigo (int), autor (str), titulo (str), anio (int), editorial (str), area (str)
         Devuelve:   None
         Descripción:
             Inicializa un libro con los campos definidos para la entidad.
         """
-        # TODO: Cambiar el tipo de codigo a int y anio a int
         self.codigo = codigo
         self.autor = autor
         self.titulo = titulo
@@ -31,4 +30,4 @@ class Libro:
         Descripción:
             Devuelve una representacion con todos los campos del libro.
         """
-        return f"Libro('{self.codigo}', '{self.autor}', '{self.titulo}', '{self.anio}', '{self.editorial}', '{self.area}')"
+        return f"Libro({self.codigo}, '{self.autor}', '{self.titulo}', {self.anio}, '{self.editorial}', '{self.area}')"

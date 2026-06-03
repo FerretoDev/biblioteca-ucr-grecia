@@ -1,8 +1,8 @@
 class Prestamo:
 
-    def __init__(self, codigo_prestamo: str, codigo_libro: str, carnet_estudiante: str, fecha_prestamo: str = "") -> None:
+    def __init__(self, codigo_prestamo: int, codigo_libro: int, carnet_estudiante: int, fecha_prestamo: str = "") -> None:
         """
-        Parámetros: codigo_prestamo (str), codigo_libro (str), carnet_estudiante (str), fecha_prestamo (str)
+        Parámetros: codigo_prestamo (int), codigo_libro (int), carnet_estudiante (int), fecha_prestamo (str)
         Devuelve:   None
         Descripción:
             Inicializa un prestamo con los campos definidos en el archivo % delimitado.
@@ -28,4 +28,4 @@ class Prestamo:
         Descripción:
             Devuelve una representacion con todos los campos del prestamo.
         """
-        return f"Prestamo('{self.codigo_prestamo}', '{self.codigo_libro}', '{self.carnet_estudiante}', '{self.fecha_prestamo}')"
+        return f"Prestamo({self.codigo_prestamo}, {self.codigo_libro}, {self.carnet_estudiante}, '{self.fecha_prestamo}')"

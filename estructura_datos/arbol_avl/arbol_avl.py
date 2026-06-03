@@ -24,12 +24,12 @@ class ArbolAVL:
         else:
             return altura_der + 1
 
-    def calcular_fe(self,raiz_p) -> int:
+    def calcular_fe(self, raiz_p: Optional[Nodo]) -> int:
         if raiz_p is None:
             return 0
         return self._altura(raiz_p.der) - self._altura(raiz_p.izq) # Formula: Altura (hijo.der) - Altura (hijo.izq)
 
-    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo | None: # Quizas en vez de valor nuevo podria ser libro_nuevo
+    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo: # Quizas en vez de valor nuevo podria ser libro_nuevo
         # Pre-orden
         if self.raiz is None:
             self.raiz = Nodo(libro_nuevo)
@@ -54,8 +54,8 @@ class ArbolAVL:
 
         return raiz_p
 
-    def rotacion_ii(self, raiz_p):
-        if raiz_p is None or raiz_p.izq in None:
+    def rotacion_ii(self, raiz_p: Nodo) -> Nodo:
+        if raiz_p.izq is None:
             return raiz_p
 
         actual = raiz_p.izq
@@ -71,107 +71,85 @@ class ArbolAVL:
         actual.fe = self.calcular_fe(actual)
         return actual
 
-    def rotacion_dd(self, raiz_p):
+    def rotacion_dd(self, raiz_p: Nodo) -> Nodo:
         # TODO: Implementar rotación derecha derecha
-        ...
+        return raiz_p
 
-    def rotacion_id(self, raiz_p):
+    def rotacion_id(self, raiz_p: Nodo) -> Nodo:
         # TODO: Implementar rotación izquierda derecha
-        ...
+        return raiz_p
 
-    def rotacion_di(self,rai_p):
+    def rotacion_di(self, raiz_p: Nodo) -> Nodo:
         # TODO: Implementar rotación derecha izquierda
-        ...
+        return raiz_p
 
-    def buscar_codigo(self, raiz_p:Optional[Nodo], codigo: int):
+    def buscar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> bool:
         
         if raiz_p is None:
             return False
         elif raiz_p.valor.codigo == codigo:
             return True
-        elif raiz_p is None:
-            return False
         else:
             if raiz_p.valor.codigo > codigo:
                 return self.buscar_codigo(raiz_p.izq, codigo)
             else:
                 return self.buscar_codigo(raiz_p.der, codigo)
 
-    def buscar_titulo(self, raiz_p:Optional[Nodo], titulo: int):
+    def buscar_titulo(self, raiz_p: Optional[Nodo], titulo: str) -> bool:
         if raiz_p is None:
             return False
-        elif raiz_p.valor.codigo == titulo:
+        elif raiz_p.valor.titulo == titulo:
             return True
-        elif raiz_p is None:
-            return False
         else:
-            if raiz_p.valor.codigo > titulo:
-                return self.buscar_codigo(raiz_p.izq, titulo)
-            else:
-                return self.buscar_codigo(raiz_p.der, titulo)
+            # El AVL está ordenado por código, no por título.
+            # Para buscar por título en este AVL, tendríamos que recorrerlo todo (O(n)).
+            return self.buscar_titulo(raiz_p.izq, titulo) or self.buscar_titulo(raiz_p.der, titulo)
 
-    def buscar_autor(self, raiz_p: Optional[Nodo], autor: int):
+    def buscar_autor(self, raiz_p: Optional[Nodo], autor: str) -> bool:
         if raiz_p is None:
             return False
-        elif raiz_p.valor.codigo == autor:
+        elif raiz_p.valor.autor == autor:
             return True
-        elif raiz_p is None:
-            return False
         else:
-            if raiz_p.valor.codigo > autor:
-                return self.buscar_codigo(raiz_p.izq, autor)
-            else:
-                return self.buscar_codigo(raiz_p.der, autor)
+            # Similar al título, búsqueda exhaustiva.
+            return self.buscar_autor(raiz_p.izq, autor) or self.buscar_autor(raiz_p.der, autor)
 
 
-    def es_hoja(self, nodo):
+    def es_hoja(self, nodo: Optional[Nodo]) -> bool:
         if nodo is not None and nodo.izq is None and nodo.der is None:
             return True
         return False
     
-    def eliminar_codigo(self, raiz_p, codigo):
-        # 1. pregunta si self.raiz es el nodo buscado y si es hoja
-        if self.raiz is not None and self.raiz.valor == codigo:
-            if self.es_hoja(self.raiz):
-                self.raiz = None
+    def eliminar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> Optional[Nodo]:
+        # Implementación mejorada de eliminación (parcial por ahora basándome en lo que había)
+        if raiz_p is None:
+            return None
 
-        elif codigo < raiz_p.valor:
-            # pregunta por el hijo izquierdo
-            if raiz_p.izq is not None and codigo == raiz_p.izq.valor:
-                if self.es_hoja(raiz_p.izq):
-                    raiz_p.izq = None
-                else:
-                    # si solo tiene una hijo izquierdo
-                    if raiz_p.izq.der is None:
-                        raiz_p.izq = raiz_p.izq.izq
-
-                    # si solo tiene un hijo derecho
-                    elif raiz_p.izq.izq is None:
-                        raiz_p.izq = raiz_p.izq.der
-
-                    else:
-                        print("Tiene 2 hijos")
-            else:
-                self.eliminar_codigo(raiz_p.izq, codigo)
-
-        elif codigo > raiz_p.valor:
-            # Preguntamos por el hijo derecho
-            if raiz_p.der is not None and codigo == raiz_p.der.valor:
-                if self.es_hoja(raiz_p.der):
-                    raiz_p.der = None
-                else:
-                    # aca la misma historia, solo uno izq
-                    if raiz_p.der.der is None:
-                        raiz_p.der = raiz_p.der.izq
-                    
-                    # solo un der
-                    elif raiz_p.der.izq is None:
-                        raiz_p.der = raiz_p.der.der
-                    
-                    else:
-                        print("Tiene dos hijos")
-            else:
-                self.eliminar_codigo(raiz_p.der, codigo)
+        if codigo < raiz_p.valor.codigo:
+            raiz_p.izq = self.eliminar_codigo(raiz_p.izq, codigo)
+        elif codigo > raiz_p.valor.codigo:
+            raiz_p.der = self.eliminar_codigo(raiz_p.der, codigo)
+        else:
+            # Nodo encontrado
+            if self.es_hoja(raiz_p):
+                if raiz_p == self.raiz:
+                    self.raiz = None
+                return None
+            
+            # Si solo tiene un hijo
+            if raiz_p.izq is None:
+                if raiz_p == self.raiz:
+                    self.raiz = raiz_p.der
+                return raiz_p.der
+            elif raiz_p.der is None:
+                if raiz_p == self.raiz:
+                    self.raiz = raiz_p.izq
+                return raiz_p.izq
+            
+            # Si tiene dos hijos (aquí faltaría buscar sucesor/predecesor para completar AVL)
+            print("Tiene 2 hijos - Eliminación compleja no implementada totalmente")
+            
+        return raiz_p
 
 
     def mostrar(self, raiz_p)-> None:
