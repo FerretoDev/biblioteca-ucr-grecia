@@ -2,17 +2,31 @@ from typing import Optional
 
 from clases.libro import Libro
 from estructura_datos.arbol_avl.nodo import Nodo
+
+
 class ArbolAVL:
     """
-        Descripción: Árbol binario de búsqueda balanceado (AVL) para
-                     gestionar libros. Se ordena por el código del libro.
-                     Garantiza O(log n) en inserción, eliminación y búsqueda.
-        """
+    Descripción: Árbol binario de búsqueda balanceado (AVL) para
+                 gestionar libros. Se ordena por el código del libro.
+                 Garantiza O(log n) en inserción, eliminación y búsqueda.
+    """
 
     def __init__(self) -> None:
+        """
+        Parámetros: ninguno
+        Devuelve:   None
+        Descripción:
+            Inicializa un árbol AVL vacío con la raíz establecida en None.
+        """
         self.raiz: Optional[Nodo] = None
 
     def _altura(self, raiz_p: Optional[Nodo]) -> int:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo raíz del subárbol.
+        Devuelve:   int — la altura del subárbol.
+        Descripción:
+            Calcula recursivamente la altura de un subárbol, devolviendo 0 si el nodo es None.
+        """
         if raiz_p is None:
             return 0
 
@@ -25,11 +39,25 @@ class ArbolAVL:
             return altura_der + 1
 
     def calcular_fe(self, raiz_p: Optional[Nodo]) -> int:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo al que se le calculará el factor de equilibrio.
+        Devuelve:   int — factor de equilibrio (altura subárbol derecho - altura subárbol izquierdo).
+        Descripción:
+            Calcula el factor de equilibrio de un nodo basándose en la altura de sus hijos.
+        """
         if raiz_p is None:
             return 0
         return self._altura(raiz_p.der) - self._altura(raiz_p.izq) # Formula: Altura (hijo.der) - Altura (hijo.izq)
 
     def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para insertar.
+                    libro_nuevo (Libro) — libro a insertar en el árbol.
+        Devuelve:   Nodo — la raíz (posiblemente nueva/balanceada) del subárbol.
+        Descripción:
+            Inserta un nuevo libro en el árbol AVL de manera ordenada por código y realiza
+            los rebalanceos necesarios (rotaciones) si se detecta un desbalance.
+        """
         if raiz_p is None:
             return Nodo(libro_nuevo)
 
@@ -61,6 +89,12 @@ class ArbolAVL:
         return raiz_p
 
     def rotacion_ii(self, raiz_p: Nodo) -> Nodo: # Rotación simple a la derecha
+        """
+        Parámetros: raiz_p (Nodo) — nodo que presenta el desbalance.
+        Devuelve:   Nodo — la nueva raíz del subárbol después de la rotación simple a la derecha.
+        Descripción:
+            Realiza una rotación simple a la derecha (caso Izquierda-Izquierda, II) para restaurar el balance.
+        """
         actual = raiz_p.izq
         hijo = actual.der
 
@@ -72,6 +106,12 @@ class ArbolAVL:
         return actual
 
     def rotacion_dd(self, raiz_p: Nodo) -> Nodo: # Rotación simple a la izquierda
+        """
+        Parámetros: raiz_p (Nodo) — nodo que presenta el desbalance.
+        Devuelve:   Nodo — la nueva raíz del subárbol después de la rotación simple a la izquierda.
+        Descripción:
+            Realiza una rotación simple a la izquierda (caso Derecha-Derecha, DD) para restaurar el balance.
+        """
         actual = raiz_p.der
         hijo = actual.izq
 
@@ -83,10 +123,22 @@ class ArbolAVL:
         return actual
 
     def rotacion_id(self, raiz_p: Nodo) -> Nodo:
+        """
+        Parámetros: raiz_p (Nodo) — nodo que presenta el desbalance.
+        Devuelve:   Nodo — la nueva raíz del subárbol después de la rotación doble izquierda-derecha.
+        Descripción:
+            Realiza una rotación doble izquierda-derecha (caso Izquierda-Derecha, ID) para restaurar el balance.
+        """
         raiz_p.izq = self.rotacion_dd(raiz_p.izq)
         return self.rotacion_ii(raiz_p)
 
     def rotacion_di(self, raiz_p: Nodo) -> Nodo:
+        """
+        Parámetros: raiz_p (Nodo) — nodo que presenta el desbalance.
+        Devuelve:   Nodo — la nueva raíz del subárbol después de la rotación doble derecha-izquierda.
+        Descripción:
+            Realiza una rotación doble derecha-izquierda (caso Derecha-Izquierda, DI) para restaurar el balance.
+        """
         raiz_p.der = self.rotacion_ii(raiz_p.der)
         return self.rotacion_dd(raiz_p)
 
@@ -153,18 +205,76 @@ class ArbolAVL:
 
         return libros
 
+    def inorden(self, raiz_p) -> None: # Funcion que se encarga de mostrar de manera inorden
+
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para el recorrido.
+        Devuelve:   None
+        Descripción:
+            Recorre el árbol AVL en inorden (izq -> nodo -> der) imprimiendo los códigos de los libros.
+        """
+        if raiz_p is not None:
+            self.inorden(raiz_p.izq)
+
+            libro: Libro = raiz_p.valor
+            print(f"Código {libro.codigo}")
+            # print(f"Autor {libro.autor}")
+            # print(f"Titulo {libro.titulo}")
+            # print(f"Año {libro.anio}")
+            # print(f"Editorial {libro.editorial}")
+            # print(f"Areas {libro.area}")
+
+            self.inorden(raiz_p.der)
+
+    def obtener_libros_inorden(self, raiz_p: Optional[Nodo]) -> list[Libro]:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo raíz del subárbol.
+        Devuelve:   list[Libro] — lista de objetos Libro ordenados por código.
+        Descripción:
+            Recorre el árbol AVL en inorden y retorna la lista de libros ordenados.
+            Este método es fundamental para que la interfaz gráfica (GUI) obtenga
+            los datos y los pueda mostrar en una tabla o lista.
+        """
+        if raiz_p is None:
+            return []
+
+        libros = []
+        libros.extend(self.obtener_libros_inorden(raiz_p.izq))
+        libros.append(raiz_p.valor)
+        libros.extend(self.obtener_libros_inorden(raiz_p.der))
+        return libros
 
     def es_hoja(self, nodo: Optional[Nodo]) -> bool:
+        """
+        Parámetros: nodo (Optional[Nodo]) — nodo a evaluar.
+        Devuelve:   bool — True si el nodo es hoja, False en caso contrario.
+        Descripción:
+            Verifica si un nodo dado no tiene hijos izquierdo ni derecho (es un nodo hoja).
+        """
         if nodo is not None and nodo.izq is None and nodo.der is None:
             return True
         return False
 
     def _get_min_valor_nodo(self, nodo: Nodo) -> Nodo:
+        """
+        Parámetros: nodo (Nodo) — nodo raíz desde el cual buscar.
+        Devuelve:   Nodo — el nodo con el menor código de libro en ese subárbol.
+        Descripción:
+            Busca y retorna el nodo más a la izquierda de un subárbol, el cual contiene el menor valor.
+        """
         if nodo is None or nodo.izq is None:
             return nodo
         return self._get_min_valor_nodo(nodo.izq)
 
     def eliminar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> Optional[Nodo]:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo raíz del subárbol del cual eliminar.
+                    codigo (int) — código del libro a eliminar.
+        Devuelve:   Optional[Nodo] — la raíz (posiblemente balanceada) del subárbol tras la eliminación.
+        Descripción:
+            Elimina un libro del árbol AVL por su código, rebalanceando el árbol si es necesario.
+            Nota: la validación de si el libro está prestado se debe realizar externamente.
+        """
         if raiz_p is None:
             return None
 
@@ -209,32 +319,17 @@ class ArbolAVL:
 
         return raiz_p
 
-
-    def mostrar(self, raiz_p)-> None:
+    def mostrar(self, raiz_p) -> None: # Este muestra el arbol en posorden y es para debug
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para mostrar.
+        Devuelve:   None
+        Descripción:
+            Muestra el contenido del árbol imprimiendo los códigos en recorrido preorden.
+        """
         if raiz_p is not None:
             libro: Libro = raiz_p.valor
 
             print(f"Código {libro.codigo}")
-            # print(f"Autor {libro.autor}")
-            #print(f"Titulo {libro.titulo}")
-            #print(f"Año {libro.anio}")
-            #print(f"Editorial {libro.editorial}")
-            #print(f"Areas {libro.area}")
 
             self.mostrar(raiz_p.izq)
             self.mostrar(raiz_p.der)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
