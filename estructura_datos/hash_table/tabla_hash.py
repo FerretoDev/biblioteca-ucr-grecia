@@ -1,12 +1,12 @@
 from lista import Lista
+from typing import Optional, List
+class TablaHash:
+    def __init__(self, tamanio: int) -> None:
+        self.tabla_hash: List[Optional[Lista]] = [None] * tamanio
+        for i in range(tamanio):
+            self.tabla_hash[i] = Lista()
 
-class Tabla:
-    def __init__(self, tam):
-        self.tablaHash = [None] * tam
-        for i in range(tam):
-            self.tablaHash[i] = Lista()
-
-    def calculo_hash(self, clave, tam):
+    def calculo_hash(self, clave: int , tam) -> int:
         suma = 0
         for char in clave:
             suma += ord(char)

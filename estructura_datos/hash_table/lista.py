@@ -1,15 +1,15 @@
 from nodo import Nodo
-
+from typing import Optional, List
 class Lista:
     
     def __init__(self):
-        self.primero = None
+        self.primero: Optional[Nodo] = None
         
     def esta_vacia(self):
         return self.primero is None
     
     def insertar(self, valor_nuevo):
-        nodo_nuevo = Nodo(valor_nuevo)
+        nodo_nuevo: Optional[Nodo] = Nodo(valor_nuevo)
         if self.esta_vacia():
             self.primero = nodo_nuevo
         else:
