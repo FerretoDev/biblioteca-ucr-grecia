@@ -13,7 +13,7 @@ esta parte de arriba la hice la ia porque no me funcionaba
 
 def main():
     # tabla con un tamaño muy pequeño para forzar colisiones
-    tabla = TablaHash(tam=2)
+    tabla = TablaHash(2)
 
     # Crear estudiantes
     estudiante1 = Estudiante(1001, "Ana Garcia", "Informatica", "1111", "a@a.com", "Grecia")
