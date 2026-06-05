@@ -1,11 +1,14 @@
-from nodo import Nodo
+from .nodo import Nodo
 from typing import Optional, List
+
 class Lista:
     
     def __init__(self):
+        # Inicia la lista vacia para los estudiantes
         self.primero = None
         
     def esta_vacia(self):
+        # Revisa si la lista no tiene estudiantes
         return self.primero is None
     
     def insertar(self, estudiante):
