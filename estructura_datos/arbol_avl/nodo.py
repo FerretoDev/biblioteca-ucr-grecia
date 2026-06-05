@@ -7,6 +7,12 @@ class Nodo:
                      a hijos izquierdo y derecho, y su altura actual.
         """
     def __init__(self, libro: Libro) -> None:
+        """
+        Parámetros: libro (Libro) — el libro a almacenar en el nodo.
+        Devuelve:   None
+        Descripción:
+            Inicializa un nodo del árbol AVL para almacenar un objeto de tipo Libro.
+        """
         self.valor: Libro = libro # Es como decir self.libro = Libro
         self.izq: Optional[Nodo] = None
         self.der: Optional[Nodo] = None
