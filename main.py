@@ -18,16 +18,12 @@ def main():
         # BUG pero lo curioso es que sirve
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    #mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     # print(mi_arbol_avl.raiz)
-    print("Buscar por codigo: ", end="")
-    codigo_a_buscar: int = 4
-    if mi_arbol_avl.buscar_codigo(mi_arbol_avl.raiz, codigo_a_buscar):
-        print(f"El libro con código {codigo_a_buscar} existe")
-    else:
-        print(f"El libro con código {codigo_a_buscar} no existe")
 
-    # Pruebas que hice para comprobar si los hijos de las raiz_p existían
+
+
+
     #print("Pruebas")
     #print(mi_arbol_avl.raiz)
     #print(mi_arbol_avl.raiz.izq)
