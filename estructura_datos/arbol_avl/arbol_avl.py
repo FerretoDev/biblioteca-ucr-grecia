@@ -90,35 +90,68 @@ class ArbolAVL:
         raiz_p.der = self.rotacion_ii(raiz_p.der)
         return self.rotacion_dd(raiz_p)
 
-    def buscar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> bool:
+    def buscar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> Optional[Libro]:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial de búsqueda.
+                    codigo (int) — código del libro a buscar.
+        Devuelve:   Optional[Libro] — el libro encontrado o None si no existe.
+        Descripción:
+            Busca un libro por su código utilizando búsqueda binaria en el árbol AVL.
+        """
         if raiz_p is None:
-            return False
+            return None
         elif raiz_p.valor.codigo == codigo:
-            return True
+            return raiz_p.valor
+        elif raiz_p.valor.codigo > codigo:
+            return self.buscar_codigo(raiz_p.izq, codigo)
         else:
-            if raiz_p.valor.codigo > codigo:
-                return self.buscar_codigo(raiz_p.izq, codigo)
-            else:
-                return self.buscar_codigo(raiz_p.der, codigo)
+            return self.buscar_codigo(raiz_p.der, codigo)
 
-    def buscar_titulo(self, raiz_p: Optional[Nodo], titulo: str) -> bool:
+    def buscar_titulo(self, raiz_p: Optional[Nodo], titulo: str) -> Optional[Libro]:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial de búsqueda.
+                    titulo (str) — título del libro a buscar.
+        Devuelve:   Optional[Libro] — el libro encontrado o None si no existe.
+        Descripción:
+            Recorre el árbol en inorden para buscar un libro por su título.
+        """
         if raiz_p is None:
-            return False
-        elif raiz_p.valor.titulo == titulo:
-            return True
-        else:
-            # El AVL está ordenado por código, no por título.
-            # Para buscar por título en este AVL, tendríamos que recorrerlo todo (O(n)).
-            return self.buscar_titulo(raiz_p.izq, titulo) or self.buscar_titulo(raiz_p.der, titulo)
+            return None
 
-    def buscar_autor(self, raiz_p: Optional[Nodo], autor: str) -> bool:
+        # 1. Buscar en el subárbol izquierdo (Inorden)
+        libro_izq = self.buscar_titulo(raiz_p.izq, titulo)
+        if libro_izq is not None:
+            return libro_izq
+
+        # 2. Evaluar el nodo actual
+        if raiz_p.valor.titulo == titulo:
+            return raiz_p.valor
+
+        # 3. Buscar en el subárbol derecho
+        return self.buscar_titulo(raiz_p.der, titulo)
+
+    def buscar_autor(self, raiz_p: Optional[Nodo], autor: str) -> list[Libro]:
+        """
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial de búsqueda.
+                    autor (str) — autor del libro a buscar.
+        Devuelve:   list[Libro] — lista de libros del autor.
+        Descripción:
+            Recorre el árbol en inorden para buscar y listar todos los libros de un autor.
+        """
         if raiz_p is None:
-            return False
-        elif raiz_p.valor.autor == autor:
-            return True
-        else:
-            # Similar al título, búsqueda exhaustiva.
-            return self.buscar_autor(raiz_p.izq, autor) or self.buscar_autor(raiz_p.der, autor)
+            return []
+
+        # 1. Buscar en el subárbol izquierdo (Inorden)
+        libros = self.buscar_autor(raiz_p.izq, autor)
+
+        # 2. Evaluar el nodo actual
+        if raiz_p.valor.autor == autor:
+            libros.append(raiz_p.valor)
+
+        # 3. Buscar en el subárbol derecho y extender la lista
+        libros.extend(self.buscar_autor(raiz_p.der, autor))
+
+        return libros
 
 
     def es_hoja(self, nodo: Optional[Nodo]) -> bool:
