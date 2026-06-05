@@ -1,6 +1,6 @@
 from lista import Lista
 from typing import Optional, List
-class TablaHashS:
+class TablaHash:
     def __init__(self, tamanio: int) -> None:
         self.tabla_hash: List[Optional[Lista]] = [None] * tamanio
         for i in range(tamanio):
@@ -14,11 +14,11 @@ class TablaHashS:
     
     def agregar(self, nombre, tam):
         index = self.calculo_hash(nombre, tam)
-        self.tablaHash[index].insertar(nombre)
+        self.tabla_hash[index].insertar(nombre)
 
     def buscar(self, clave, tam):
         index = self.calculo_hash(clave, tam)
-        return self.tablaHash[index].buscar(clave)
+        return self.tabla_hash[index].buscar(clave)
 
     def indexado(self, clave, tam):
         return self.calculo_hash(clave, tam)
