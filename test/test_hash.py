@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from clases.estudiante import Estudiante
-from estructura_datos.hash_table.tablas import TablaHash
+from estructura_datos.tabla_hash.tabla_hash import TablaHash
 """
 esta parte de arriba la hice la ia porque no me funcionaba
 """
