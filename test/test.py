@@ -125,16 +125,29 @@ def test_eliminar_codigo():
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
 
     codigo: int = 2
-    mi_arbol_avl.eliminar_codigo(mi_arbol_avl.raiz, codigo)
+    mi_arbol_avl.raiz = mi_arbol_avl.eliminar_codigo(mi_arbol_avl.raiz, codigo)
 
     print(f"Arbol despues de eliminar codigo {codigo}:")
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
 
     xml_manager.guardar_libros(libros)
 
-
+def test_rotacion():
+    print("--- Test de Rotaciones (RL Case) ---")
+    lista: list = [12, 4949, 31]
+    avl: ArbolAVL = ArbolAVL()
+    for i in lista:
+        avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
+    print("Arbol final (deberia estar balanceado con 31 como raiz):")
+    avl.mostrar(avl.raiz)
+    if avl.raiz and avl.raiz.valor.codigo == 31:
+        print("EXITO: Rotacion RL funcionó")
+    else:
+        print("FALLO: Rotacion RL falló")
 if __name__ == "__main__":
     #test_buscar_codigo()
-    test_buscar_titulo()
+    #test_buscar_titulo()
     #test_buscar_autor()
     #test_eliminar_codigo()
+    """Test de rotaciones"""
+    test_rotacion()
