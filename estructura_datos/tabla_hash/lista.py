@@ -1,26 +1,16 @@
-<<<<<<< HEAD:estructura_datos/hash_table/lista.py
-from estructura_datos.hash_table.nodo import Nodo
+from .nodo import Nodo
 
-=======
-from nodo import Nodo
-from typing import Optional, List
->>>>>>> 3f1c26a3ec69f005537b725d54e7c6be88ffec09:estructura_datos/tabla_hash/lista.py
 class Lista:
     
     def __init__(self):
-        self.primero: Optional[Nodo] = None
+        self.primero = None
         
     def esta_vacia(self):
         return self.primero is None
     
-<<<<<<< HEAD:estructura_datos/hash_table/lista.py
     def insertar(self, estudiante):
         # Agrega un nuevo estudiante al final
         nodo_nuevo = Nodo(estudiante)
-=======
-    def insertar(self, valor_nuevo):
-        nodo_nuevo: Optional[Nodo] = Nodo(valor_nuevo)
->>>>>>> 3f1c26a3ec69f005537b725d54e7c6be88ffec09:estructura_datos/tabla_hash/lista.py
         if self.esta_vacia():
             self.primero = nodo_nuevo
         else:
@@ -77,3 +67,4 @@ class Lista:
                 return True
             temp = temp.sig
         return False
+
