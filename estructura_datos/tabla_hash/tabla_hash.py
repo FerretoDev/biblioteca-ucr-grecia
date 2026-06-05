@@ -1,6 +1,6 @@
 from lista import Lista
 from typing import Optional, List
-class TablaHash:
+class TablaHashS:
     def __init__(self, tamanio: int) -> None:
         self.tabla_hash: List[Optional[Lista]] = [None] * tamanio
         for i in range(tamanio):
