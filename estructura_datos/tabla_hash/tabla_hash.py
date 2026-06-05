@@ -6,11 +6,9 @@ class TablaHash:
         for i in range(tamanio):
             self.tabla_hash[i] = Lista()
 
-    def calculo_hash(self, clave: int , tam) -> int:
-        suma = 0
-        for char in clave:
-            suma += ord(char)
-        return suma % tam
+    def calculo_hash(self, carnet):
+        # Usa el numero de carnet (4 digitos) para definir la posicion
+        return int(carnet) % self.tam
     
     def agregar(self, nombre, tam):
         index = self.calculo_hash(nombre, tam)

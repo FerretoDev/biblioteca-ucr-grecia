@@ -7,10 +7,6 @@ class Lista:
         
     def esta_vacia(self):
         return self.primero is None
-
-    def calculo_hash(self, carnet):
-        # Usa el numero de carnet (4 digitos) para definir la posicion
-        return int(carnet) % self.tam
     
     def insertar(self, estudiante):
         # Agrega un nuevo estudiante al final
