@@ -132,22 +132,101 @@ def test_eliminar_codigo():
 
     xml_manager.guardar_libros(libros)
 
-def test_rotacion():
-    print("--- Test de Rotaciones (RL Case) ---")
-    lista: list = [12, 4949, 31]
-    avl: ArbolAVL = ArbolAVL()
+def test_rotacion_ii():
+    """
+    Parámetros: ninguno
+    Devuelve:   None
+    Descripción:
+        Prueba el caso Izquierda-Izquierda (II) insertando [30, 20, 10]
+        y verificando que se aplique la rotación simple a la derecha.
+    """
+    print("\n--- Test de Rotación II (Simple Derecha) ---")
+    lista = [30, 20, 10]
+    avl = ArbolAVL()
     for i in lista:
         avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
-    print("Arbol final (deberia estar balanceado con 31 como raiz):")
+    print("Árbol final (debería tener 20 como raíz):")
     avl.mostrar(avl.raiz)
-    if avl.raiz and avl.raiz.valor.codigo == 31:
-        print("EXITO: Rotacion RL funcionó")
-    else:
-        print("FALLO: Rotacion RL falló")
+    assert avl.raiz is not None
+    assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
+    assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
+    assert avl.raiz.der is not None and avl.raiz.der.valor.codigo == 30, "Fallo: El hijo derecho debería ser 30"
+    print("ÉXITO: Rotación II funcionó correctamente")
+
+
+def test_rotacion_dd():
+    """
+    Parámetros: ninguno
+    Devuelve:   None
+    Descripción:
+        Prueba el caso Derecha-Derecha (DD) insertando [10, 20, 30]
+        y verificando que se aplique la rotación simple a la izquierda.
+    """
+    print("\n--- Test de Rotación DD (Simple Izquierda) ---")
+    lista = [10, 20, 30]
+    avl = ArbolAVL()
+    for i in lista:
+        avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
+    print("Árbol final (debería tener 20 como raíz):")
+    avl.mostrar(avl.raiz)
+    assert avl.raiz is not None
+    assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
+    assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
+    assert avl.raiz.der is not None and avl.raiz.der.valor.codigo == 30, "Fallo: El hijo derecho debería ser 30"
+    print("ÉXITO: Rotación DD funcionó correctamente")
+
+
+def test_rotacion_id():
+    """
+    Parámetros: ninguno
+    Devuelve:   None
+    Descripción:
+        Prueba el caso Izquierda-Derecha (ID) insertando [30, 10, 20]
+        y verificando que se aplique la rotación doble izquierda-derecha.
+    """
+    print("\n--- Test de Rotación ID (Doble Izquierda-Derecha) ---")
+    lista = [30, 10, 20]
+    avl = ArbolAVL()
+    for i in lista:
+        avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
+    print("Árbol final (debería tener 20 como raíz):")
+    avl.mostrar(avl.raiz)
+    assert avl.raiz is not None
+    assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
+    assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
+    assert avl.raiz.der is not None and avl.raiz.der.valor.codigo == 30, "Fallo: El hijo derecho debería ser 30"
+    print("ÉXITO: Rotación ID funcionó correctamente")
+
+
+def test_rotacion_di():
+    """
+    Parámetros: ninguno
+    Devuelve:   None
+    Descripción:
+        Prueba el caso Derecha-Izquierda (DI) insertando [10, 30, 20]
+        y verificando que se aplique la rotación doble derecha-izquierda.
+    """
+    print("\n--- Test de Rotación DI (Doble Derecha-Izquierda) ---")
+    lista = [10, 30, 20]
+    avl = ArbolAVL()
+    for i in lista:
+        avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
+    print("Árbol final (debería tener 20 como raíz):")
+    avl.mostrar(avl.raiz)
+    assert avl.raiz is not None
+    assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
+    assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
+    assert avl.raiz.der is not None and avl.raiz.der.valor.codigo == 30, "Fallo: El hijo derecho debería ser 30"
+    print("ÉXITO: Rotación DI funcionó correctamente")
+
+
 if __name__ == "__main__":
-    #test_buscar_codigo()
-    #test_buscar_titulo()
-    #test_buscar_autor()
-    #test_eliminar_codigo()
+    # test_buscar_codigo()
+    # test_buscar_titulo()
+    # test_buscar_autor()
+    # test_eliminar_codigo()
     """Test de rotaciones"""
-    test_rotacion()
+    test_rotacion_ii()
+    test_rotacion_dd()
+    test_rotacion_id()
+    test_rotacion_di()
