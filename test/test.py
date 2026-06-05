@@ -220,11 +220,36 @@ def test_rotacion_di():
     print("ÉXITO: Rotación DI funcionó correctamente")
 
 
+def test_inorden():
+    """
+    Parámetros: ninguno
+    Devuelve:   None
+    Descripción:
+        Prueba el recorrido inorden (impresión y retorno de lista) en el árbol AVL.
+    """
+    print("\n--- Test de Recorrido Inorden ---")
+    lista = [50, 30, 70, 20, 40, 60, 80]
+    avl = ArbolAVL()
+    for i in lista:
+        avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
+
+    print("Imprimiendo árbol en inorden (debería salir de 20 a 80 en orden):")
+    avl.inorden(avl.raiz)
+    
+    # Probar retorno de la lista para la GUI
+    recorrido_lista = avl.obtener_libros_inorden(avl.raiz)
+    codigos_resultado = [l.codigo for l in recorrido_lista]
+    print(f"Lista para GUI obtenida: {codigos_resultado}")
+    assert codigos_resultado == sorted(lista), f"Fallo: La lista debería ser {sorted(lista)}"
+    print("ÉXITO: Recorrido inorden ejecutado y lista para GUI validada")
+
+
 if __name__ == "__main__":
     test_buscar_codigo()
     test_buscar_titulo()
     test_buscar_autor()
     test_eliminar_codigo()
+    test_inorden()
     """Test de rotaciones"""
     test_rotacion_ii()
     test_rotacion_dd()
