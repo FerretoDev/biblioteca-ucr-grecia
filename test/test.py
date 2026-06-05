@@ -59,14 +59,12 @@ def test_buscar_codigo():
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     print("Buscar por codigo: ", end="")
-    codigo: int = 1 # TODO: Cambiar la logica de xml_manager para que trabaje con enteros
-    if mi_arbol_avl.buscar_codigo(mi_arbol_avl.raiz, codigo):
-        print(f"El libro con código {codigo} existe")
+    codigo: int = 1
+    libro = mi_arbol_avl.buscar_codigo(mi_arbol_avl.raiz, codigo)
+    if libro is not None:
+        print(f"El libro con código {codigo} existe: {libro}")
     else:
         print(f"El libro con código {codigo} no existe")
-
-
-
 
     """-------------------------------------------------------------------------------------"""
     # Guardar datos al finalizar el programa
@@ -84,8 +82,9 @@ def test_buscar_titulo():
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     print("Buscar por titulo: ", end="")
     titulo: str = "Estructuras de Datos"
-    if mi_arbol_avl.buscar_titulo(mi_arbol_avl.raiz, titulo):
-        print(f"El libro '{titulo}' existe")
+    libro = mi_arbol_avl.buscar_titulo(mi_arbol_avl.raiz, titulo)
+    if libro is not None:
+        print(f"El libro '{titulo}' existe: {libro}")
     else:
         print(f"El libro '{titulo}' no existe")
 
@@ -104,10 +103,11 @@ def test_buscar_autor():
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
     print("Buscar por autor: ", end="")
     autor: str = "Silvia Guardi"
-    if mi_arbol_avl.buscar_autor(mi_arbol_avl.raiz, autor):
-        print(f"El autor '{autor}' existe")
+    libros_autor = mi_arbol_avl.buscar_autor(mi_arbol_avl.raiz, autor)
+    if libros_autor:
+        print(f"El autor '{autor}' tiene los siguientes libros: {[str(l) for l in libros_autor]}")
     else:
-        print(f"El autor '{autor}' no existe")
+        print(f"El autor '{autor}' no existe o no tiene libros")
 
     xml_manager.guardar_libros(libros)
 
@@ -221,10 +221,10 @@ def test_rotacion_di():
 
 
 if __name__ == "__main__":
-    # test_buscar_codigo()
-    # test_buscar_titulo()
-    # test_buscar_autor()
-    # test_eliminar_codigo()
+    test_buscar_codigo()
+    test_buscar_titulo()
+    test_buscar_autor()
+    test_eliminar_codigo()
     """Test de rotaciones"""
     test_rotacion_ii()
     test_rotacion_dd()
