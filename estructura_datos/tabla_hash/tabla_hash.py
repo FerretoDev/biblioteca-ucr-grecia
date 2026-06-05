@@ -1,3 +1,4 @@
+<<<<<<< HEAD:estructura_datos/hash_table/tablas.py
 from estructura_datos.hash_table.lista import Lista
 
 class TablaHash:
@@ -21,6 +22,29 @@ class TablaHash:
         # Vamo directo al indice y busca el carnet
         index = self.calculo_hash(carnet)
         return self.tabla[index].buscar_por_carnet(carnet)
+=======
+from lista import Lista
+from typing import Optional, List
+class TablaHash:
+    def __init__(self, tamanio: int) -> None:
+        self.tabla_hash: List[Optional[Lista]] = [None] * tamanio
+        for i in range(tamanio):
+            self.tabla_hash[i] = Lista()
+
+    def calculo_hash(self, clave: int , tam) -> int:
+        suma = 0
+        for char in clave:
+            suma += ord(char)
+        return suma % tam
+    
+    def agregar(self, nombre, tam):
+        index = self.calculo_hash(nombre, tam)
+        self.tabla_hash[index].insertar(nombre)
+
+    def buscar(self, clave, tam):
+        index = self.calculo_hash(clave, tam)
+        return self.tabla_hash[index].buscar(clave)
+>>>>>>> 3f1c26a3ec69f005537b725d54e7c6be88ffec09:estructura_datos/tabla_hash/tabla_hash.py
 
     def buscar_por_nombre(self, nombre):
         for lista in self.tabla:
