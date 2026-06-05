@@ -14,9 +14,17 @@ uv sync
 
 # Run the project
 uv run main.py
+
+# Run the test suite
+python test/test.py
+
+# Run the AVL tree acceptance criteria tests
+python test/criterio_aceptacion_arbol_avl.py
 ```
 
-There are no tests yet (`test/` directory is empty).
+We have implemented tests in the `test/` directory:
+- `test/test.py`: Full unit/functional test suite for search, deletion, and all 4 rotation cases (II, DD, ID, DI) of the AVL tree.
+- `test/criterio_aceptacion_arbol_avl.py`: Acceptance criteria script inserting 10+ books, performing searches, deleting a node, and verifying the subsequent rebalancing.
 
 ## Architecture
 
@@ -29,10 +37,10 @@ The system has three layers:
    - `dict → domain object`
    Saving reverses that. `cargar_todo()` / `guardar_todo()` load or save all three files at once.
 
-3. **Data structures** (`estructuras_datos/`) — To be implemented:
-   - AVL tree (balanced binary search tree) → books, sorted by `codigo` (3-digit string, unique)
-   - Hash table with chaining (lists) → students, keyed by `carnet` (4-digit string, unique)
-   - Red-Black tree → loans, keyed by `codigo_prestamo` (4-digit string, unique)
+3. **Data structures** (`estructuras_datos/`) — Status:
+   - AVL tree (`estructura_datos/arbol_avl/arbol_avl.py` and `nodo.py`) $\rightarrow$ **Fully implemented** (handles books, sorted by `codigo` as `int`, includes LL, RR, LR, RL rotations, O(log n) code search, in-order title/author searches, deletion with rebalancing, in-order printing, and GUI list retrieval).
+   - Hash table with chaining (lists) $\rightarrow$ To be implemented (students, keyed by `carnet` 4-digit string, unique).
+   - Red-Black tree $\rightarrow$ To be implemented (loans, keyed by `codigo_prestamo` 4-digit string, unique).
 
 4. **GUI** (`gui/app.py`) — tkinter interface (pending), must support: queries, deletion, loans, and data visualization.
 
