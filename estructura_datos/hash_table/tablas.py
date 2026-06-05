@@ -1,30 +1,46 @@
-from lista import Lista
+from estructura_datos.hash_table.lista import Lista
 
-class Tabla:
-    def __init__(self, tam):
-        self.tablaHash = [None] * tam
+class TablaHash:
+    def __init__(self, tam=97):
+        # Guarda el tamano y crea listas vacias
+        self.tam = tam
+        self.tabla = [None] * tam
         for i in range(tam):
-            self.tablaHash[i] = Lista()
+            self.tabla[i] = Lista()
 
-    def calculo_hash(self, clave, tam):
-        suma = 0
-        for char in clave:
-            suma += ord(char)
-        return suma % tam
+    def calculo_hash(self, carnet):
+        # Usa el numero de carnet (4 digitos) para definir la posicion
+        return int(carnet) % self.tam
     
-    def agregar(self, nombre, tam):
-        index = self.calculo_hash(nombre, tam)
-        self.tablaHash[index].insertar(nombre)
+    def insertar(self, estudiante):
+        # Mete el estudiante en la lista de acuerdo a su hash
+        index = self.calculo_hash(estudiante.carnet)
+        self.tabla[index].insertar(estudiante)
 
-    def buscar(self, clave, tam):
-        index = self.calculo_hash(clave, tam)
-        return self.tablaHash[index].buscar(clave)
+    def buscar_por_carnet(self, carnet):
+        # Vamo directo al indice y busca el carnet
+        index = self.calculo_hash(carnet)
+        return self.tabla[index].buscar_por_carnet(carnet)
 
-    def indexado(self, clave, tam):
-        return self.calculo_hash(clave, tam)
+    def buscar_por_nombre(self, nombre):
+        for lista in self.tabla:
+            encontrado = lista.buscar_por_nombre(nombre)
+            if encontrado is not None:
+                return encontrado
+        return None
+    
+    def buscar_por_carrera(self, carrera):
+        # Recorre todo y junta los nombres de esa carrera
+        resultado_nombres = []
+        for lista in self.tabla:
+            nombres = lista.buscar_por_carrera(carrera)
+            if nombres:
+                resultado_nombres.extend(nombres)
+        return resultado_nombres
 
-#que cada campo de la tabla tenga una lista
-#clase nodo clase lista clase tabla y clase main
+    def eliminar_estudiante(self, carnet):
+        index = self.calculo_hash(carnet)
+        return self.tabla[index].eliminar_por_carnet(carnet)
 
 
 
