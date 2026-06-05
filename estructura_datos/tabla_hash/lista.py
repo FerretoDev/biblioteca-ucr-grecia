@@ -1,5 +1,5 @@
-from .nodo import Nodo
-
+from nodo import Nodo
+from typing import Optional, List
 class Lista:
     
     def __init__(self):
