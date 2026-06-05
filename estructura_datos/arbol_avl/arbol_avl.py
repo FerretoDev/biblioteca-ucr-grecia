@@ -29,62 +29,68 @@ class ArbolAVL:
             return 0
         return self._altura(raiz_p.der) - self._altura(raiz_p.izq) # Formula: Altura (hijo.der) - Altura (hijo.izq)
 
-    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo: # Quizas en vez de valor nuevo podria ser libro_nuevo
-        # Pre-orden
-        if self.raiz is None:
-            self.raiz = Nodo(libro_nuevo)
-            return self.raiz
-
+    def insertar(self, raiz_p: Optional[Nodo], libro_nuevo: Libro) -> Nodo:
         if raiz_p is None:
             return Nodo(libro_nuevo)
 
-
-        #-------
-        if libro_nuevo.codigo < raiz_p.valor.codigo: # raiz_p es lo mismo que raiz_p.libro
-            # Conecta el hijo izquierdo
+        if libro_nuevo.codigo < raiz_p.valor.codigo:
             raiz_p.izq = self.insertar(raiz_p.izq, libro_nuevo)
-
         elif libro_nuevo.codigo > raiz_p.valor.codigo:
             raiz_p.der = self.insertar(raiz_p.der, libro_nuevo)
-
         else:
-            return raiz_p # .codigo duplicado
+            return raiz_p # Código duplicado
 
+        # Actualizar factor de equilibrio
         raiz_p.fe = self.calcular_fe(raiz_p)
+
+        # Balancear el árbol
+        # Caso Izquierda-Izquierda (II) o Izquierda-Derecha (ID)
+        if raiz_p.fe == -2:
+            if self.calcular_fe(raiz_p.izq) <= 0:
+                return self.rotacion_ii(raiz_p)
+            else:
+                return self.rotacion_id(raiz_p)
+
+        # Caso Derecha-Derecha (DD) o Derecha-Izquierda (DI)
+        if raiz_p.fe == 2:
+            if self.calcular_fe(raiz_p.der) >= 0:
+                return self.rotacion_dd(raiz_p)
+            else:
+                return self.rotacion_di(raiz_p)
 
         return raiz_p
 
-    def rotacion_ii(self, raiz_p: Nodo) -> Nodo:
-        if raiz_p.izq is None:
-            return raiz_p
-
+    def rotacion_ii(self, raiz_p: Nodo) -> Nodo: # Rotación simple a la derecha
         actual = raiz_p.izq
         hijo = actual.der
 
-        # Conecta raiz_p como hijo derecho de actual
         actual.der = raiz_p
-        # Conecta el hijo derecho de actual como hijo izquierdo raiz_p
         raiz_p.izq = hijo
 
-        # Se aplica el cálculo del factor de equibrio
         raiz_p.fe = self.calcular_fe(raiz_p)
         actual.fe = self.calcular_fe(actual)
         return actual
 
-    def rotacion_dd(self, raiz_p: Nodo) -> Nodo:
-        # TODO: Implementar rotación derecha derecha
-        return raiz_p
+    def rotacion_dd(self, raiz_p: Nodo) -> Nodo: # Rotación simple a la izquierda
+        actual = raiz_p.der
+        hijo = actual.izq
+
+        actual.izq = raiz_p
+        raiz_p.der = hijo
+
+        raiz_p.fe = self.calcular_fe(raiz_p)
+        actual.fe = self.calcular_fe(actual)
+        return actual
 
     def rotacion_id(self, raiz_p: Nodo) -> Nodo:
-        # TODO: Implementar rotación izquierda derecha
-        return raiz_p
+        raiz_p.izq = self.rotacion_dd(raiz_p.izq)
+        return self.rotacion_ii(raiz_p)
 
     def rotacion_di(self, raiz_p: Nodo) -> Nodo:
-        # TODO: Implementar rotación derecha izquierda
-        return raiz_p
+        raiz_p.der = self.rotacion_ii(raiz_p.der)
+        return self.rotacion_dd(raiz_p)
 
     def buscar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> bool:
-        
         if raiz_p is None:
             return False
         elif raiz_p.valor.codigo == codigo:
@@ -119,9 +125,13 @@ class ArbolAVL:
         if nodo is not None and nodo.izq is None and nodo.der is None:
             return True
         return False
-    
+
+    def _get_min_valor_nodo(self, nodo: Nodo) -> Nodo:
+        if nodo is None or nodo.izq is None:
+            return nodo
+        return self._get_min_valor_nodo(nodo.izq)
+
     def eliminar_codigo(self, raiz_p: Optional[Nodo], codigo: int) -> Optional[Nodo]:
-        # Implementación mejorada de eliminación (parcial por ahora basándome en lo que había)
         if raiz_p is None:
             return None
 
@@ -131,24 +141,39 @@ class ArbolAVL:
             raiz_p.der = self.eliminar_codigo(raiz_p.der, codigo)
         else:
             # Nodo encontrado
-            if self.es_hoja(raiz_p):
-                if raiz_p == self.raiz:
-                    self.raiz = None
-                return None
-            
-            # Si solo tiene un hijo
             if raiz_p.izq is None:
-                if raiz_p == self.raiz:
-                    self.raiz = raiz_p.der
-                return raiz_p.der
+                temp = raiz_p.der
+                raiz_p = None
+                return temp
             elif raiz_p.der is None:
-                if raiz_p == self.raiz:
-                    self.raiz = raiz_p.izq
-                return raiz_p.izq
-            
-            # Si tiene dos hijos (aquí faltaría buscar sucesor/predecesor para completar AVL)
-            print("Tiene 2 hijos - Eliminación compleja no implementada totalmente")
-            
+                temp = raiz_p.izq
+                raiz_p = None
+                return temp
+
+            # Nodo con dos hijos: obtener el sucesor (mínimo en el subárbol derecho)
+            temp = self._get_min_valor_nodo(raiz_p.der)
+            raiz_p.valor = temp.valor
+            raiz_p.der = self.eliminar_codigo(raiz_p.der, temp.valor.codigo)
+
+        if raiz_p is None:
+            return raiz_p
+
+        # Actualizar factor de equilibrio
+        raiz_p.fe = self.calcular_fe(raiz_p)
+
+        # Balancear el árbol
+        if raiz_p.fe == -2:
+            if self.calcular_fe(raiz_p.izq) <= 0:
+                return self.rotacion_ii(raiz_p)
+            else:
+                return self.rotacion_id(raiz_p)
+
+        if raiz_p.fe == 2:
+            if self.calcular_fe(raiz_p.der) >= 0:
+                return self.rotacion_dd(raiz_p)
+            else:
+                return self.rotacion_di(raiz_p)
+
         return raiz_p
 
 
