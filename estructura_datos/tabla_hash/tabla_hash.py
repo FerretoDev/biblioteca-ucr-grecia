@@ -2,79 +2,82 @@ from typing import List, Optional
 from estructura_datos.tabla_hash.lista import Lista
 from clases.estudiante import Estudiante
 
-class TablaHash:
-    def __init__(self, tam: int) -> None:
-        """
-        Parámetros: tam (int)
-        Devuelve:   None
-        Descripción: Inicializa la tabla hash con el tamaño indicado, creando una lista enlazada vacía en cada posición.
-        """
-        self.tam = tam
-        self.tabla: List[Optional[Lista]] = [None] * tam
-        for i in range(tam):
-            self.tabla[i] = Lista()
 
-    def calculo_hash(self, clave) -> int:
+class TablaHash:
+    def __init__(self, tamanio: int) -> None:
         """
-        Parámetros: clave (int o str)
-        Devuelve:   int (índice calculado)
-        Descripción: Calcula el índice en la tabla usando el número de carnet y aplicando la función módulo.
-        """
-        # Usa el numero de carnet (4 digitos) para definir la posicion
-        return int(clave) % self.tam
-    
-    def insertar(self, estudiante: Estudiante):
-        """
-        Parámetros: estudiante (Estudiante)
+        Parametros: tamanio (int) — numero de buckets de la tabla.
         Devuelve:   None
-        Descripción: Inserta un nuevo objeto estudiante en la tabla hash en la posición correspondiente.
+        Descripcion:
+            Inicializa la tabla con listas vacias en cada posicion.
+        """
+        self.tabla_hash: List[Lista] = [Lista() for _ in range(tamanio)]
+        self.tamanio = tamanio
+
+    def calculo_hash(self, clave: int) -> int:
+        """
+        Parametros: clave (int) — carnet del estudiante.
+        Devuelve:   int — indice en la tabla.
+        Descripcion:
+            Calcula el indice usando modulo del carnet entre el tamanio.
+        """
+        return clave % self.tamanio
+
+    def insertar(self, estudiante: Estudiante) -> None:
+        """
+        Parametros: estudiante (Estudiante) — estudiante a insertar.
+        Devuelve:   None
+        Descripcion:
+            Calcula el indice con calculo_hash e inserta en la lista
+            correspondiente.
         """
         index = self.calculo_hash(estudiante.carnet)
-        self.tabla[index].insertar(estudiante)
+        self.tabla_hash[index].insertar(estudiante)
 
-    def buscar_por_carnet(self, carnet):
+    def buscar_por_carnet(self, carnet: int) -> Optional[Estudiante]:
         """
-        Parámetros: carnet (int o str)
-        Devuelve:   Estudiante o None
-        Descripción: Busca a un estudiante por su número de carnet aplicando la función hash para ir a la lista exacta.
+        Parametros: carnet (int) — carnet a buscar.
+        Devuelve:   Estudiante si existe, None si no.
+        Descripcion:
+            Busqueda O(1) promedio. Calcula indice y busca en esa lista.
         """
         index = self.calculo_hash(carnet)
-        return self.tabla[index].buscar_por_carnet(carnet)
+        return self.tabla_hash[index].buscar_por_carnet(carnet)
 
-    def buscar_por_nombre(self, nombre: str):
+    def buscar_por_nombre(self, nombre: str) -> Optional[Estudiante]:
         """
-        Parámetros: nombre (str)
-        Devuelve:   Estudiante o None
-        Descripción: Recorre todas las listas de la tabla hash buscando a un estudiante por su nombre.
+        Parametros: nombre (str) — nombre del estudiante.
+        Devuelve:   Estudiante si existe, None si no.
+        Descripcion:
+            Recorre toda la tabla buscando por nombre. O(n).
         """
-        # busca en todas las listas de la tabla
-        for lista in self.tabla:
+        for lista in self.tabla_hash:
             encontrado = lista.buscar_por_nombre(nombre)
             if encontrado is not None:
                 return encontrado
         return None
-    
-    def buscar_por_carrera(self, carrera: str):
+
+    def buscar_por_carrera(self, carrera: str) -> List[Estudiante]:
         """
-        Parámetros: carrera (str)
-        Devuelve:   lista de nombres (List[str])
-        Descripción: Recorre todas las listas de la tabla y devuelve los nombres de todos los estudiantes de una misma carrera.
+        Parametros: carrera (str) — carrera a buscar.
+        Devuelve:   List[Estudiante] con todos los de esa carrera.
+        Descripcion:
+            Recorre toda la tabla acumulando estudiantes. O(n).
         """
-        # Recorre todo y junta los nombres de esa carrera
-        resultado_nombres = []
-        for lista in self.tabla:
+        resultados: List[Estudiante] = []
+        for lista in self.tabla_hash:
             nombres = lista.buscar_por_carrera(carrera)
             if nombres:
-                resultado_nombres.extend(nombres)
-        return resultado_nombres
+                resultados.extend(nombres)
+        return resultados
 
-    def eliminar_estudiante(self, carnet):
+    def eliminar_estudiante(self, carnet: int) -> bool:
         """
-        Parámetros: carnet (int o str)
-        Devuelve:   bool (True si se eliminó, False si no)
-        Descripción: Elimina al estudiante por su carnet de la lista correspondiente (se debe validar externamente si tiene préstamos).
+        Parametros: carnet (int) — carnet del estudiante a eliminar.
+        Devuelve:   bool — True si se elimino, False si no existe.
+        Descripcion:
+            Calcula el indice y elimina de la lista correspondiente.
+            Verificar externamente que no tenga prestamos activos.
         """
-        # Lo elimina de la lista correspondiente por carnet
         index = self.calculo_hash(carnet)
-        return self.tabla[index].eliminar_por_carnet(carnet)
-
+        return self.tabla_hash[index].eliminar_por_carnet(carnet)
