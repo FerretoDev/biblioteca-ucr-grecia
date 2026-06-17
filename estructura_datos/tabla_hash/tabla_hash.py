@@ -42,7 +42,7 @@ class TablaHash:
             Busqueda O(1) promedio. Calcula indice y busca en esa lista.
         """
         index = self.calculo_hash(carnet)
-        return self.tabla_hash[index].buscar(carnet)
+        return self.tabla_hash[index].buscar_por_carnet(carnet)
 
     def buscar_por_nombre(self, nombre: str) -> Optional[Estudiante]:
         """
