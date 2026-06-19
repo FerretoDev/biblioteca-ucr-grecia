@@ -44,7 +44,7 @@ def main() -> None:
     
     # Inserta cada préstamo y verificar propiedades RB
     for prestamo in prestamos_prueba:
-        arbol_rb.insertar_arbol(prestamo)
+        arbol_rb.insertar(prestamo)
         print(f"Insertado préstamo código {prestamo.codigo_prestamo}: "
               f"Libro {prestamo.codigo_libro}, Estudiante {prestamo.carnet_estudiante}")
     
