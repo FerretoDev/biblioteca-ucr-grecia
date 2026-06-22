@@ -60,17 +60,17 @@ def main() -> None:
     print("\n" + "-" * 80)
     print("RECORRIDO INORDEN (Verificar orden ascendente)")
     print("-" * 80)
-    arbol_rb.inOrden(arbol_rb.raiz)
+    arbol_rb.inorden(arbol_rb.raiz)
 
     print("\n" + "-" * 80)
     print("RECORRIDO PREORDEN (Estructura del árbol)")
     print("-" * 80)
-    arbol_rb.preOrden(arbol_rb.raiz)
+    arbol_rb.preorden(arbol_rb.raiz)
 
     print("\n" + "-" * 80)
     print("RECORRIDO POSTORDEN")
     print("-" * 80)
-    arbol_rb.postOrden(arbol_rb.raiz)
+    arbol_rb.postorden(arbol_rb.raiz)
 
     # Verificar propiedades después de inserciones
     print("\n" + "=" * 80)
@@ -135,7 +135,7 @@ def main() -> None:
     print("\n" + "-" * 80)
     print("INORDEN DESPUÉS DE ELIMINACIONES")
     print("-" * 80)
-    arbol_rb.inOrden(arbol_rb.raiz)
+    arbol_rb.inorden(arbol_rb.raiz)
 
     # lista de préstamos (para GUI)
     print("\n" + "=" * 80)
