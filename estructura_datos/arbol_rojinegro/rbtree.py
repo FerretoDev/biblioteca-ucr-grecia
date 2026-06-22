@@ -365,11 +365,11 @@ class RBTree:
 
 
     # test
-    def mostrar(self, raiz_p: Optional[Nodo]) -> None:
-        if raiz_p is not None:
-            prestamo = raiz_p.valor
-            print(f"[{prestamo.codigo_prestamo}({raiz_p.color[0]})]", end=" ")
-            self.mostrar(raiz_p.izq)
-            self.mostrar(raiz_p.der)
-    def esta_vacia(self) -> bool:
-        return self.raiz is None
+    def mostrar(self, raiz_p) -> None:
+        if raiz_p is None:
+            return
+
+        print(f"{raiz_p.valor}({raiz_p.color})", end=" ")
+
+        self.mostrar(raiz_p.izq)
+        self.mostrar(raiz_p.der)
