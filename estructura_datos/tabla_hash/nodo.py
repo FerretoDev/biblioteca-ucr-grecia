@@ -5,7 +5,7 @@ Integrantes: Marcos Ferreto - Paulo Anchía Correás
 Archivo: nodo.py
 """
 
-from typing import List, Optional
+from typing import Optional
 from clases.estudiante import Estudiante
 class Nodo:
 
