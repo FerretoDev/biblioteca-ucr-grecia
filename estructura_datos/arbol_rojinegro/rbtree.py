@@ -257,20 +257,6 @@ class RBTree:
             print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
                   f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
             self.inorden(raiz_p.der)
-    def preorden(self, raiz_p: Optional[Nodo]) -> None: # este se va
-        if raiz_p is not None:
-            prestamo = raiz_p.valor
-            print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
-                  f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
-            self.preorden(raiz_p.izq)
-            self.preorden(raiz_p.der)
-    def postorden(self, raiz_p: Optional[Nodo]) -> None: # este no va porque no lo vamos a usar, se de de usar 
-        if raiz_p is not None:
-            self.postorden(raiz_p.izq)
-            self.postorden(raiz_p.der)
-            prestamo = raiz_p.valor
-            print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
-                  f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
     def obtener_prestamos_inorden(self, raiz_p: Optional[Nodo]) -> List[Prestamo]:
         if raiz_p is None:
             return []
