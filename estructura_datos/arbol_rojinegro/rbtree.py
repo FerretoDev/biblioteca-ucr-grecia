@@ -109,22 +109,27 @@ class RBTree:
             if padre is None:
                 break
 
+            # 1. Identificamos quién es el hermano (tío)
             if padre.izq == actual:
-                hermano = padre.der  # hermano de actual (el tío)
+                hermano = padre.der
+            else:
+                hermano = padre.izq
 
-                # Tu código original para el Caso 1 (hermano rojo)
-                if hermano is not None and hermano.color == "Rojo":
-                    actual.color = "Negro"
-                    hermano.color = "Negro"
-                    
-                    if padre == self.raiz:
-                        padre.color = "Negro"
-                    else:
-                        padre.color = "Rojo"
-                        
-                    hijo = padre # Iteramos hacia arriba
+            # 2. Tu código original para el Caso 1 (hermano rojo) - No depende del lado
+            if hermano is not None and hermano.color == "Rojo":
+                actual.color = "Negro"
+                hermano.color = "Negro"
+                
+                if padre == self.raiz:
+                    padre.color = "Negro"
                 else:
-                    # Caso 2 y 3: Hermano negro (requiere rotaciones)
+                    padre.color = "Rojo"
+                    
+                hijo = padre # Iteramos hacia arriba
+            else:
+                # 3. Caso 2 y 3: Hermano negro (requiere rotaciones que SÍ dependen del lado)
+                if padre.izq == actual:
+                    # --- Lado Izquierdo ---
                     if hijo == actual.der:
                         hijo = actual
                         self.rotacion_dd(hijo)
@@ -134,22 +139,8 @@ class RBTree:
                     actual.color = "Negro"
                     padre.color = "Rojo"
                     self.rotacion_ii(padre)
-            else:
-                hermano = padre.izq
-                
-                # Tu código original para el Caso 1 (hermano rojo)
-                if hermano is not None and hermano.color == "Rojo":
-                    actual.color = "Negro"
-                    hermano.color = "Negro"
-                    
-                    if padre == self.raiz:
-                        padre.color = "Negro"
-                    else:
-                        padre.color = "Rojo"
-                        
-                    hijo = padre # Iteramos hacia arriba
                 else:
-                    # Caso 2 y 3: Hermano negro (requiere rotaciones)
+                    # --- Lado Derecho ---
                     if hijo == actual.izq:
                         hijo = actual
                         self.rotacion_ii(hijo)
