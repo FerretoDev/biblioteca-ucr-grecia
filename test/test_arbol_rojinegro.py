@@ -62,15 +62,6 @@ def main() -> None:
     print("-" * 80)
     arbol_rb.inorden(arbol_rb.raiz)
 
-    print("\n" + "-" * 80)
-    print("RECORRIDO PREORDEN (Estructura del árbol)")
-    print("-" * 80)
-    arbol_rb.preorden(arbol_rb.raiz)
-
-    print("\n" + "-" * 80)
-    print("RECORRIDO POSTORDEN")
-    print("-" * 80)
-    arbol_rb.postorden(arbol_rb.raiz)
 
     # Verificar propiedades después de inserciones
     print("\n" + "=" * 80)
