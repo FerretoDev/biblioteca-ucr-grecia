@@ -122,6 +122,8 @@ class RBTree:
                     self.rotacion_dd(padre)
         self.raiz.color = "Negro"
     def eliminar_codigo(self, codigo_prestamo: int) -> bool:
+        if self.esta_vacia():
+            return False
         nodo_a_eliminar = self._buscar_nodo(self.raiz, codigo_prestamo)
         if nodo_a_eliminar is None:
             return False
