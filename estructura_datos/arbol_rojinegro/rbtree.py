@@ -161,6 +161,7 @@ class RBTree:
             self.eliminar_codigo(raiz_p.izq, codigo_prestamo)
         elif codigo_prestamo > raiz_p.valor.codigo_prestamo:
             self.eliminar_codigo(raiz_p.der, codigo_prestamo)
+            
         else:
             # Encontrado!
             if raiz_p.izq is not None and raiz_p.der is not None:
@@ -213,15 +214,6 @@ class RBTree:
                         
         return self.raiz
 
-    def _reemplazar_nodo(self, raiz_p: Nodo, nodo_reemplazo: Optional[Nodo]) -> None:
-        if raiz_p.padre is None:
-            self.raiz = nodo_reemplazo
-        elif raiz_p == raiz_p.padre.izq:
-            raiz_p.padre.izq = nodo_reemplazo
-        else:
-            raiz_p.padre.der = nodo_reemplazo
-        if nodo_reemplazo is not None:
-            nodo_reemplazo.padre = raiz_p.padre
     def _get_min_valor_nodo(self, raiz_p: Nodo) -> Nodo:
         actual = raiz_p
         while actual.izq is not None:
@@ -292,7 +284,6 @@ class RBTree:
         if actual is not None:
             actual.color = "Negro"
     def inorden(self, raiz_p: Optional[Nodo], lista: Optional[List[Prestamo]] = None) -> List[Prestamo]:
-        # listo
         if lista is None:
             lista = []
             
