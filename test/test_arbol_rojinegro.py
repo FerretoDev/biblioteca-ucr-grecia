@@ -105,7 +105,7 @@ def main() -> None:
 
     for codigo in codigos_eliminar:
         print(f"\nEliminando préstamo {codigo}...")
-        resultado = arbol_rb.eliminar_codigo(codigo)
+        resultado = arbol_rb.eliminar_codigo(arbol_rb.raiz, codigo)
 
         if resultado:
             print(f"Préstamo {codigo} eliminado exitosamente")

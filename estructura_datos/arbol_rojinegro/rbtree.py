@@ -161,49 +161,67 @@ class RBTree:
                     self.rotacion_dd(padre)
                     
         self.raiz.color = "Negro"
-    def eliminar_codigo(self, codigo_prestamo: int) -> bool:
-        if self.esta_vacia():
-            return False
-        nodo_a_eliminar = self._buscar_nodo(self.raiz, codigo_prestamo)
-        if nodo_a_eliminar is None:
-            return False
-        self._eliminar_nodo_interno(nodo_a_eliminar)
-        return True
-    def _eliminar_nodo_interno(self, raiz_p: Nodo) -> None:
-        if raiz_p.izq is not None and raiz_p.der is not None:
-            temp = self._get_min_valor_nodo(raiz_p.der)
-            raiz_p.valor = temp.valor
-            raiz_p = temp
 
-        color_original = raiz_p.color
-        actual = raiz_p.izq if raiz_p.izq is not None else raiz_p.der
-        padre = raiz_p.padre
-        es_izq_de_padre = (padre is not None and raiz_p == padre.izq)
+    def eliminar_codigo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Nodo]:
+        if raiz_p is None:
+            return None
 
-        if actual is None:
-            actual = Nodo(Prestamo(-1, -1, -1, ""))
-            actual.color = "Negro"
-            actual.padre = padre
-            if padre is None:
-                self.raiz = actual
-            elif es_izq_de_padre:
-                padre.izq = actual
-            else:
-                padre.der = actual
-            
-            if color_original == "Negro":
-                self._reparar_eliminacion(actual)
-            
-            if actual.padre is None:
-                self.raiz = None
-            elif actual == actual.padre.izq:
-                actual.padre.izq = None
-            else:
-                actual.padre.der = None
+        if codigo_prestamo < raiz_p.valor.codigo_prestamo:
+            self.eliminar_codigo(raiz_p.izq, codigo_prestamo)
+        elif codigo_prestamo > raiz_p.valor.codigo_prestamo:
+            self.eliminar_codigo(raiz_p.der, codigo_prestamo)
         else:
-            self._reemplazar_nodo(raiz_p, actual)
-            if color_original == "Negro":
-                self._reparar_eliminacion(actual)
+            # Encontrado!
+            if raiz_p.izq is not None and raiz_p.der is not None:
+                # Caso 2 hijos: buscamos el sucesor
+                temp = self._get_min_valor_nodo(raiz_p.der)
+                raiz_p.valor = temp.valor
+                # Borramos el sucesor recursivamente
+                self.eliminar_codigo(raiz_p.der, temp.valor.codigo_prestamo)
+            else:
+                # Caso 0 o 1 hijo
+                color_original = raiz_p.color
+                actual = raiz_p.izq if raiz_p.izq is not None else raiz_p.der
+                padre = raiz_p.padre
+                es_izq_de_padre = (padre is not None and raiz_p == padre.izq)
+
+                if actual is None:
+                    # 0 hijos (es hoja). Usamos un nodo NIL temporal para reparar
+                    actual = Nodo(Prestamo(-1, -1, -1, "")) 
+                    actual.color = "Negro"
+                    actual.padre = padre
+                    if padre is None:
+                        self.raiz = actual
+                    elif es_izq_de_padre:
+                        padre.izq = actual
+                    else:
+                        padre.der = actual
+                    
+                    if color_original == "Negro":
+                        self._reparar_eliminacion(actual)
+                    
+                    # Removemos el nodo NIL temporal
+                    if actual.padre is None:
+                        self.raiz = None
+                    elif actual.padre.izq == actual:
+                        actual.padre.izq = None
+                    else:
+                        actual.padre.der = None
+                else:
+                    # 1 hijo
+                    actual.padre = padre
+                    if padre is None:
+                        self.raiz = actual
+                    elif es_izq_de_padre:
+                        padre.izq = actual
+                    else:
+                        padre.der = actual
+
+                    if color_original == "Negro":
+                        self._reparar_eliminacion(actual)
+                        
+        return self.raiz
+
     def _reemplazar_nodo(self, raiz_p: Nodo, nodo_reemplazo: Optional[Nodo]) -> None:
         if raiz_p.padre is None:
             self.raiz = nodo_reemplazo
