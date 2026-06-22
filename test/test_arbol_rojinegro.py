@@ -5,7 +5,61 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from clases.prestamo import Prestamo
 from estructura_datos.arbol_rojinegro.rbtree import RBTree
+from estructura_datos.arbol_rojinegro.nodo import Nodo
+from typing import Optional
 
+
+
+
+def _verificar_colores(nodo: Optional[Nodo]) -> bool:
+    if nodo is None:
+        return True
+    if nodo.color not in ["Rojo", "Negro"]:
+        return False
+    return (_verificar_colores(nodo.izq) and _verificar_colores(nodo.der))
+
+def _verificar_raiz_negra(arbol: RBTree) -> bool:
+    if arbol.raiz is None:
+        return True
+    return arbol.raiz.color == "Negro"
+
+def _verificar_rojo_padre_negro(nodo: Optional[Nodo]) -> bool:
+    if nodo is None:
+        return True
+    if nodo.color == "Rojo":
+        if nodo.izq is not None and nodo.izq.color == "Rojo":
+            return False
+        if nodo.der is not None and nodo.der.color == "Rojo":
+            return False
+    return (_verificar_rojo_padre_negro(nodo.izq) and 
+            _verificar_rojo_padre_negro(nodo.der))
+
+def _verificar_altura_negra(nodo: Optional[Nodo]) -> int:
+    if nodo is None:
+        return 1  # Las hojas NIL son negras
+    altura_izq = _verificar_altura_negra(nodo.izq)
+    altura_der = _verificar_altura_negra(nodo.der)
+    if altura_izq == -1 or altura_der == -1 or altura_izq != altura_der:
+        return -1
+    if nodo.color == "Negro":
+        return altura_izq + 1
+    else:
+        return altura_izq
+
+def verificar_propiedades_rb(arbol: RBTree) -> dict:
+    resultado = {
+        "propiedad_1_colores": _verificar_colores(arbol.raiz),
+        "propiedad_2_raiz_negra": _verificar_raiz_negra(arbol),
+        "propiedad_4_rojo_hijos_negros": _verificar_rojo_padre_negro(arbol.raiz),
+        "propiedad_5_altura_negra": _verificar_altura_negra(arbol.raiz) >= 0,
+        "arbol_valido": True
+    }
+    if not all([resultado["propiedad_1_colores"], 
+               resultado["propiedad_2_raiz_negra"],
+               resultado["propiedad_4_rojo_hijos_negros"],
+               resultado["propiedad_5_altura_negra"]]):
+        resultado["arbol_valido"] = False
+    return resultado
 
 def main() -> None:
     """
@@ -67,7 +121,7 @@ def main() -> None:
     print("\n" + "=" * 80)
     print("2. VERIFICACIÓN DE PROPIEDADES ROJINEGRAS DESPUÉS DE INSERCIONES")
     print("=" * 80)
-    propiedades = arbol_rb.verificar_propiedades_rb()
+    propiedades = verificar_propiedades_rb(arbol_rb)
 
     print(
         f"\nPropiedad 1 (Todos los nodos son rojo o negro): {propiedades['propiedad_1_colores']}"
@@ -111,7 +165,7 @@ def main() -> None:
             print(f"Préstamo {codigo} eliminado exitosamente")
 
             # Verificar propiedades después de cada eliminación
-            propiedades = arbol_rb.verificar_propiedades_rb()
+            propiedades = verificar_propiedades_rb(arbol_rb)
             print(f"Árbol válido: {'SÍ' if propiedades['arbol_valido'] else 'NO'}")
 
             if not propiedades["arbol_valido"]:
@@ -147,7 +201,7 @@ def main() -> None:
     arbol_vacio = RBTree()
     print(f"Árbol vacío está vacío?: {arbol_vacio.esta_vacia()}")
     print(
-        f"Propiedades de árbol vacío válidas: {arbol_vacio.verificar_propiedades_rb()['arbol_valido']}"
+        f"Propiedades de árbol vacío válidas: {verificar_propiedades_rb(arbol_vacio)['arbol_valido']}"
     )
 
     # Prueba de duplicados
@@ -165,7 +219,7 @@ def main() -> None:
     print("8. VERIFICACIÓN FINAL")
     print("=" * 80)
 
-    propiedades_final = arbol_rb.verificar_propiedades_rb()
+    propiedades_final = verificar_propiedades_rb(arbol_rb)
     lista_final = arbol_rb.obtener_prestamos_inorden(arbol_rb.raiz)
 
     print(f"\n Préstamos en el árbol: {len(lista_final)}")
