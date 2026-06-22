@@ -154,7 +154,7 @@ def main() -> None:
     print("=" * 80)
 
     arbol_vacio = RBTree()
-    print(f"Árbol vacío está vacío?: {arbol_vacio.esta_vacio()}")
+    print(f"Árbol vacío está vacío?: {arbol_vacio.esta_vacia()}")
     print(
         f"Propiedades de árbol vacío válidas: {arbol_vacio.verificar_propiedades_rb()['arbol_valido']}"
     )
