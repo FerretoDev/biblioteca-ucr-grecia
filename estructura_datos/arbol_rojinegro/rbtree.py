@@ -1,12 +1,18 @@
 from typing import List, Optional
 from clases.prestamo import Prestamo
 from estructura_datos.arbol_rojinegro.nodo import Nodo
+
 class RBTree:
     def __init__(self) -> None:
         self.raiz: Optional[Nodo] = None
+
+    def esta_vacia(self) -> bool:
+        return self.raiz is None
+
     def buscar_codigo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Prestamo]:
         nodo = self._buscar_nodo(raiz_p, codigo_prestamo)
         return nodo.valor if nodo is not None else None
+
     def _buscar_nodo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Nodo]:
         if raiz_p is None:
             return None
@@ -16,46 +22,43 @@ class RBTree:
             return self._buscar_nodo(raiz_p.izq, codigo_prestamo)
         else:
             return self._buscar_nodo(raiz_p.der, codigo_prestamo)
-    def rotacion_dd(self, raiz_p: Nodo) -> Nodo:
-        nuevo_raiz = raiz_p.der
-        if nuevo_raiz is None:
-            return raiz_p
-        raiz_p.der = nuevo_raiz.izq
-        if nuevo_raiz.izq is not None:
-            nuevo_raiz.izq.padre = raiz_p
-        
-        padre = raiz_p.padre
-        nuevo_raiz.padre = padre
-        if padre is None:
-            self.raiz = nuevo_raiz
-        elif raiz_p == padre.izq:
-            padre.izq = nuevo_raiz
-        else:
-            padre.der = nuevo_raiz
-            
-        nuevo_raiz.izq = raiz_p
-        raiz_p.padre = nuevo_raiz
-        return nuevo_raiz
+
     def rotacion_ii(self, raiz_p: Nodo) -> Nodo:
         nuevo_raiz = raiz_p.izq
-        if nuevo_raiz is None:
-            return raiz_p
         raiz_p.izq = nuevo_raiz.der
         if nuevo_raiz.der is not None:
             nuevo_raiz.der.padre = raiz_p
-            
-        padre = raiz_p.padre
-        nuevo_raiz.padre = padre
-        if padre is None:
+        
+        nuevo_raiz.padre = raiz_p.padre
+        if raiz_p.padre is None:
             self.raiz = nuevo_raiz
-        elif raiz_p == padre.izq:
-            padre.izq = nuevo_raiz
+        elif raiz_p == raiz_p.padre.izq:
+            raiz_p.padre.izq = nuevo_raiz
         else:
-            padre.der = nuevo_raiz
+            raiz_p.padre.der = nuevo_raiz
             
         nuevo_raiz.der = raiz_p
         raiz_p.padre = nuevo_raiz
         return nuevo_raiz
+
+    def rotacion_dd(self, raiz_p: Nodo) -> Nodo:
+        nuevo_raiz = raiz_p.der
+        raiz_p.der = nuevo_raiz.izq
+        if nuevo_raiz.izq is not None:
+            nuevo_raiz.izq.padre = raiz_p
+            
+        nuevo_raiz.padre = raiz_p.padre
+        if raiz_p.padre is None:
+            self.raiz = nuevo_raiz
+        elif raiz_p == raiz_p.padre.izq:
+            raiz_p.padre.izq = nuevo_raiz
+        else:
+            raiz_p.padre.der = nuevo_raiz
+            
+        nuevo_raiz.izq = raiz_p
+        raiz_p.padre = nuevo_raiz
+        return nuevo_raiz
+
     def insertar(self, raiz_p: Optional[Nodo], prestamo_nuevo: Prestamo) -> Optional[Nodo]:
         nuevo_nodo = Nodo(prestamo_nuevo)
         if self.raiz is None:
@@ -68,61 +71,95 @@ class RBTree:
 
         if prestamo_nuevo.codigo_prestamo < raiz_p.valor.codigo_prestamo:
             if raiz_p.izq is None:
+                
                 nuevo_nodo.padre = raiz_p
                 # conecta el nuevo nodo como hijo izquierdo
                 raiz_p.izq = nuevo_nodo
-                self._reparar_insercion(nuevo_nodo)
+
+                # Chequeo para auto-balancear color al insertar
+                if raiz_p.color == "Rojo":
+                    self.cambio_color(nuevo_nodo)
+
                 return nuevo_nodo
 
             return self.insertar(raiz_p.izq, prestamo_nuevo)
 
         if prestamo_nuevo.codigo_prestamo > raiz_p.valor.codigo_prestamo:
             if raiz_p.der is None:
+            
                 nuevo_nodo.padre = raiz_p
                 # conecta el nuevo nodo como hijo derecho
                 raiz_p.der = nuevo_nodo
-                self._reparar_insercion(nuevo_nodo)
+
+                # Chequeo para auto-balancear color al insertar
+                if raiz_p.color == "Rojo":
+                    self.cambio_color(nuevo_nodo)
+
                 return nuevo_nodo
 
             return self.insertar(raiz_p.der, prestamo_nuevo)
 
         return raiz_p
-    def _reparar_insercion(self, raiz_p: Nodo) -> None:
-        while raiz_p != self.raiz and raiz_p.padre is not None and raiz_p.padre.color == "Rojo":
-            actual = raiz_p.padre
-            padre = actual.padre
-            if actual == padre.izq:
-                hermano = padre.der
+
+    def cambio_color(self, hijo: Nodo) -> None:
+        while hijo != self.raiz and hijo.padre is not None and hijo.padre.color == "Rojo":
+            actual = hijo.padre   # actual es el padre rojo
+            padre = actual.padre  # padre es el abuelo
+
+            if padre is None:
+                break
+
+            if padre.izq == actual:
+                hermano = padre.der  # hermano de actual (el tío)
+
+                # Tu código original para el Caso 1 (hermano rojo)
                 if hermano is not None and hermano.color == "Rojo":
                     actual.color = "Negro"
                     hermano.color = "Negro"
-                    padre.color = "Rojo"
-                    raiz_p = padre
+                    
+                    if padre == self.raiz:
+                        padre.color = "Negro"
+                    else:
+                        padre.color = "Rojo"
+                        
+                    hijo = padre # Iteramos hacia arriba
                 else:
-                    if raiz_p == actual.der:
-                        raiz_p = actual
-                        self.rotacion_dd(raiz_p)
-                        actual = raiz_p.padre
+                    # Caso 2 y 3: Hermano negro (requiere rotaciones)
+                    if hijo == actual.der:
+                        hijo = actual
+                        self.rotacion_dd(hijo)
+                        actual = hijo.padre
                         padre = actual.padre
+                    
                     actual.color = "Negro"
                     padre.color = "Rojo"
                     self.rotacion_ii(padre)
             else:
                 hermano = padre.izq
+                
+                # Tu código original para el Caso 1 (hermano rojo)
                 if hermano is not None and hermano.color == "Rojo":
                     actual.color = "Negro"
                     hermano.color = "Negro"
-                    padre.color = "Rojo"
-                    raiz_p = padre
+                    
+                    if padre == self.raiz:
+                        padre.color = "Negro"
+                    else:
+                        padre.color = "Rojo"
+                        
+                    hijo = padre # Iteramos hacia arriba
                 else:
-                    if raiz_p == actual.izq:
-                        raiz_p = actual
-                        self.rotacion_ii(raiz_p)
-                        actual = raiz_p.padre
+                    # Caso 2 y 3: Hermano negro (requiere rotaciones)
+                    if hijo == actual.izq:
+                        hijo = actual
+                        self.rotacion_ii(hijo)
+                        actual = hijo.padre
                         padre = actual.padre
+                        
                     actual.color = "Negro"
                     padre.color = "Rojo"
                     self.rotacion_dd(padre)
+                    
         self.raiz.color = "Negro"
     def eliminar_codigo(self, codigo_prestamo: int) -> bool:
         if self.esta_vacia():
