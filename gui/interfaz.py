@@ -90,24 +90,22 @@ class App(tk.Tk):
             prestamos. Instancia SistemaPrestamos y GestorEliminacion.
         """
         self.xml_manager = XMLManager()
-        libros_dict, estudiantes_dict, prestamos_dict = self.xml_manager.cargar_todo()
+        libros, estudiantes, prestamos = self.xml_manager.cargar_todo()
 
         # AVL de libros
         self.avl: ArbolAVL = ArbolAVL()
-        for d in libros_dict:
-            libro = self.xml_manager.dict_a_libro(d)
+        for libro in libros:
             self.avl.raiz = self.avl.insertar(self.avl.raiz, libro)
 
         # Tabla Hash de estudiantes
         self.tabla_hash: TablaHash = TablaHash(100)
-        for d in estudiantes_dict:
-            self.tabla_hash.insertar(self.xml_manager.dict_a_estudiante(d))
+        for estudiante in estudiantes:
+            self.tabla_hash.insertar(estudiante)
 
         # Arbol Rojinegro de prestamos
         self.arbol_prestamos: ArbolRojinegro = ArbolRojinegro()
-        for d in prestamos_dict:
-            p = self.xml_manager.dict_a_prestamo(d)
-            self.arbol_prestamos.insertar(self.arbol_prestamos.raiz, p)
+        for prestamo in prestamos:
+            self.arbol_prestamos.insertar(self.arbol_prestamos.raiz, prestamo)
 
         # Capas de negocio
         self.sistema_prestamos = SistemaPrestamos(

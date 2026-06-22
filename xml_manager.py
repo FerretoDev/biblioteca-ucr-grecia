@@ -3,7 +3,7 @@ Proyecto: Biblioteca UCR - Recinto de Grecia
 Curso: Estructuras de Datos
 Integrantes: Marcos Ferreto - [Nombre 2]
 Archivo: xml_manager.py
-Descripcion: Carga y guardado en formato % delimitado. Trabaja con diccionarios de Python en memoria.
+Descripcion: Carga y guardado en formato % delimitado. Trabaja directamente con objetos.
 """
 
 from __future__ import annotations
@@ -53,235 +53,174 @@ class XMLManager:
         return lineas
 
     @staticmethod
-    def _linea_a_dict(
+    def _linea_a_partes(
         linea: str,
-        campos: List[str],
+        num_esperado: int,
         permitir_faltantes: int = 0,
-    ) -> dict | None:
+    ) -> List[str] | None:
         """
-        Parametros: linea (str), campos (List[str]), permitir_faltantes (int)
-        Devuelve:   dict con los campos, o None si la linea es invalida.
+        Parametros: linea (str), num_esperado (int), permitir_faltantes (int)
+        Devuelve:   List[str] con las partes separadas, o None si la linea es invalida.
         Descripcion:
-           Convierte una linea separada por % en un diccionario de Python.
+           Divide una linea separada por % en sus partes correspondientes.
         """
         partes = linea.split("%")
-        min_campos = len(campos) - permitir_faltantes
-        if len(partes) < min_campos or len(partes) > len(campos):
+        min_campos = num_esperado - permitir_faltantes
+        if len(partes) < min_campos or len(partes) > num_esperado:
             return None
-        if len(partes) < len(campos):
-            partes += [""] * (len(campos) - len(partes))
-        return dict(zip(campos, partes))
-
-    @staticmethod
-    def _dict_a_linea(
-        d: dict,
-        campos: List[str],
-        omitir_vacios_finales: bool = False,
-    ) -> str:
-        """
-        Parametros: d (dict), campos (List[str]), omitir_vacios_finales (bool)
-        Devuelve:   str con los campos separados por %.
-        Descripcion:
-           Serializa un diccionario de Python a una linea en formato % delimitado.
-        """
-        valores = [str(d.get(campo, "")) for campo in campos]
-        if omitir_vacios_finales:
-            while valores and valores[-1] == "":
-                valores.pop()
-        return "%".join(valores) + "\n"
-
-    # ----------------------------------------------------------
-    # CONVERSORES dict → objeto
-    # ----------------------------------------------------------
-
-    @staticmethod
-    def dict_a_libro(d: dict) -> Libro:
-        """
-        Parametros: d (dict) — diccionario con claves codigo, autor, titulo,
-                    anio, editorial, area.
-        Devuelve:   Libro con los datos del diccionario.
-        Descripcion:
-           Convierte un diccionario de Python en un objeto Libro.
-           Usado para poblar el AVL desde los datos cargados del XML.
-        """
-        return Libro(
-            codigo=int(d["codigo"]),
-            autor=d["autor"],
-            titulo=d["titulo"],
-            anio=int(d["anio"]),
-            editorial=d["editorial"],
-            area=d["area"],
-        )
-
-    @staticmethod
-    def dict_a_estudiante(d: dict) -> Estudiante:
-        """
-        Parametros: d (dict) — diccionario con claves carnet, nombre, carrera,
-                    telefono, correo, direccion.
-        Devuelve:   Estudiante con los datos del diccionario.
-        Descripcion:
-           Convierte un diccionario de Python en un objeto Estudiante.
-           Usado para poblar la Tabla Hash desde los datos cargados del XML.
-        """
-        return Estudiante(
-            carnet=int(d["carnet"]),
-            nombre=d["nombre"],
-            carrera=d["carrera"],
-            telefono=d["telefono"],
-            correo=d["correo"],
-            direccion=d["direccion"],
-        )
-
-    @staticmethod
-    def dict_a_prestamo(d: dict) -> Prestamo:
-        """
-        Parametros: d (dict) — diccionario con claves codigo_prestamo,
-                    codigo_libro, carnet_estudiante, fecha_prestamo.
-        Devuelve:   Prestamo con los datos del diccionario.
-        Descripcion:
-           Convierte un diccionario de Python en un objeto Prestamo.
-           Usado para poblar el Arbol Rojinegro desde los datos del XML.
-        """
-        return Prestamo(
-            codigo_prestamo=int(d["codigo_prestamo"]),
-            codigo_libro=int(d["codigo_libro"]),
-            carnet_estudiante=int(d["carnet_estudiante"]),
-            fecha_prestamo=d.get("fecha_prestamo", ""),
-        )
+        if len(partes) < num_esperado:
+            partes += [""] * (num_esperado - len(partes))
+        return partes
 
     # ----------------------------------------------------------
     # LIBROS
     # ----------------------------------------------------------
 
-    def cargar_libros(self) -> List[dict]:
+    def cargar_libros(self) -> List[Libro]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con los datos de cada libro.
+        Devuelve:   List[Libro] con los datos de cada libro.
         Descripcion:
-           Lee libros.xml en formato % y devuelve una lista de diccionarios.
+           Lee libros.xml en formato % y devuelve una lista de objetos Libro.
         """
-        campos = ["codigo", "autor", "titulo", "anio", "editorial", "area"]
         lineas = self._leer_lineas(self.ruta_libros)
-        libros: List[dict] = []
+        libros: List[Libro] = []
         for num, linea in enumerate(lineas, start=1):
-            d = self._linea_a_dict(linea, campos)
-            if d is None:
+            partes = self._linea_a_partes(linea, 6)
+            if partes is None:
                 print(f"[XMLManager] Linea {num} ignorada (libros): {linea}")
                 continue
-            libros.append(d)
+            try:
+                libros.append(Libro(
+                    codigo=int(partes[0]),
+                    autor=partes[1],
+                    titulo=partes[2],
+                    anio=int(partes[3]),
+                    editorial=partes[4],
+                    area=partes[5],
+                ))
+            except ValueError:
+                print(f"[XMLManager] Error de conversion en linea {num} (libros): {linea}")
         return libros
 
-    def guardar_libros(self, libros: List[dict]) -> None:
+    def guardar_libros(self, libros: List[Libro]) -> None:
         """
-        Parametros: libros (List[dict])
+        Parametros: libros (List[Libro])
         Devuelve:   None
         Descripcion:
-           Guarda los libros en formato % delimitado.
+           Guarda los objetos Libro en formato % delimitado.
         """
         Path(self.ruta_libros).parent.mkdir(parents=True, exist_ok=True)
-        campos = ["codigo", "autor", "titulo", "anio", "editorial", "area"]
         with open(self.ruta_libros, "w", encoding="utf-8") as f:
-            for d in libros:
-                f.write(self._dict_a_linea(d, campos))
+            for l in libros:
+                partes = [str(l.codigo), l.autor, l.titulo, str(l.anio), l.editorial, l.area]
+                f.write("%".join(partes) + "\n")
 
     # ----------------------------------------------------------
     # ESTUDIANTES
     # ----------------------------------------------------------
 
-    def cargar_estudiantes(self) -> List[dict]:
+    def cargar_estudiantes(self) -> List[Estudiante]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con los datos de cada estudiante.
+        Devuelve:   List[Estudiante] con los datos de cada estudiante.
         Descripcion:
-           Lee estudiantes.xml en formato % y devuelve una lista de diccionarios.
+           Lee estudiantes.xml en formato % y devuelve una lista de objetos Estudiante.
         """
-        campos = ["carnet", "nombre", "carrera", "telefono", "correo", "direccion"]
         lineas = self._leer_lineas(self.ruta_estudiantes)
-        estudiantes: List[dict] = []
+        estudiantes: List[Estudiante] = []
         for num, linea in enumerate(lineas, start=1):
-            d = self._linea_a_dict(linea, campos)
-            if d is None:
+            partes = self._linea_a_partes(linea, 6)
+            if partes is None:
                 print(f"[XMLManager] Linea {num} ignorada (estudiantes): {linea}")
                 continue
-            estudiantes.append(d)
+            try:
+                estudiantes.append(Estudiante(
+                    carnet=int(partes[0]),
+                    nombre=partes[1],
+                    carrera=partes[2],
+                    telefono=partes[3],
+                    correo=partes[4],
+                    direccion=partes[5],
+                ))
+            except ValueError:
+                print(f"[XMLManager] Error de conversion en linea {num} (estudiantes): {linea}")
         return estudiantes
 
-    def guardar_estudiantes(self, estudiantes: List[dict]) -> None:
+    def guardar_estudiantes(self, estudiantes: List[Estudiante]) -> None:
         """
-        Parametros: estudiantes (List[dict])
+        Parametros: estudiantes (List[Estudiante])
         Devuelve:   None
         Descripcion:
-           Guarda los estudiantes en formato % delimitado.
+           Guarda los objetos Estudiante en formato % delimitado.
         """
         Path(self.ruta_estudiantes).parent.mkdir(parents=True, exist_ok=True)
-        campos = ["carnet", "nombre", "carrera", "telefono", "correo", "direccion"]
         with open(self.ruta_estudiantes, "w", encoding="utf-8") as f:
-            for d in estudiantes:
-                f.write(self._dict_a_linea(d, campos))
+            for e in estudiantes:
+                partes = [str(e.carnet), e.nombre, e.carrera, e.telefono, e.correo, e.direccion]
+                f.write("%".join(partes) + "\n")
 
     # ----------------------------------------------------------
     # PRESTAMOS
     # ----------------------------------------------------------
 
-    def cargar_prestamos(self) -> List[dict]:
+    def cargar_prestamos(self) -> List[Prestamo]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con los datos de cada prestamo.
+        Devuelve:   List[Prestamo] con los datos de cada prestamo.
         Descripcion:
-           Lee prestamos.xml en formato % y devuelve una lista de diccionarios.
+           Lee prestamos.xml en formato % y devuelve una lista de objetos Prestamo.
         """
-        campos = [
-            "codigo_prestamo",
-            "codigo_libro",
-            "carnet_estudiante",
-            "fecha_prestamo",
-        ]
         lineas = self._leer_lineas(self.ruta_prestamos)
-        prestamos: List[dict] = []
+        prestamos: List[Prestamo] = []
         for num, linea in enumerate(lineas, start=1):
-            d = self._linea_a_dict(linea, campos, permitir_faltantes=1)
-            if d is None:
+            partes = self._linea_a_partes(linea, 4, permitir_faltantes=1)
+            if partes is None:
                 print(f"[XMLManager] Linea {num} ignorada (prestamos): {linea}")
                 continue
-            prestamos.append(d)
+            try:
+                prestamos.append(Prestamo(
+                    codigo_prestamo=int(partes[0]),
+                    codigo_libro=int(partes[1]),
+                    carnet_estudiante=int(partes[2]),
+                    fecha_prestamo=partes[3],
+                ))
+            except ValueError:
+                print(f"[XMLManager] Error de conversion en linea {num} (prestamos): {linea}")
         return prestamos
 
-    def guardar_prestamos(self, prestamos: List[dict]) -> None:
+    def guardar_prestamos(self, prestamos: List[Prestamo]) -> None:
         """
-        Parametros: prestamos (List[dict])
+        Parametros: prestamos (List[Prestamo])
         Devuelve:   None
         Descripcion:
-           Guarda los prestamos en formato % delimitado.
+           Guarda los objetos Prestamo en formato % delimitado.
         """
         Path(self.ruta_prestamos).parent.mkdir(parents=True, exist_ok=True)
-        campos = [
-            "codigo_prestamo",
-            "codigo_libro",
-            "carnet_estudiante",
-            "fecha_prestamo",
-        ]
         with open(self.ruta_prestamos, "w", encoding="utf-8") as f:
-            for d in prestamos:
-                if d.get("codigo_prestamo") == d.get("carnet_estudiante"):
+            for p in prestamos:
+                if p.codigo_prestamo == p.carnet_estudiante:
                     print(
                         "[XMLManager] Aviso: codigo_prestamo y carnet_estudiante son iguales."
                     )
-                f.write(self._dict_a_linea(d, campos, omitir_vacios_finales=True))
+                partes = [str(p.codigo_prestamo), str(p.codigo_libro), str(p.carnet_estudiante), p.fecha_prestamo]
+                while partes and partes[-1] == "":
+                    partes.pop()
+                f.write("%".join(partes) + "\n")
 
     # ----------------------------------------------------------
     # OPERACIONES CONJUNTAS
     # ----------------------------------------------------------
 
-    def cargar_todo(self) -> tuple[List[dict], List[dict], List[dict]]:
+    def cargar_todo(self) -> tuple[List[Libro], List[Estudiante], List[Prestamo]]:
         """
         Parametros: ninguno
-        Devuelve:   tuple (libros, estudiantes, prestamos) como listas de diccionarios.
+        Devuelve:   tuple (libros, estudiantes, prestamos) como listas de objetos.
         Descripcion:
-           Carga los tres archivos en formato % y devuelve listas de diccionarios.
+           Carga los tres archivos en formato % y devuelve listas de objetos.
         """
         return (
             self.cargar_libros(),
             self.cargar_estudiantes(),
             self.cargar_prestamos(),
         )
-
