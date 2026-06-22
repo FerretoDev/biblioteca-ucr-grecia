@@ -116,22 +116,10 @@ class GestorEliminacion:
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
-            Recorre el AVL en inorden, serializa cada libro a dict
-            y llama a xml_manager.guardar_libros().
+            Recorre el AVL en inorden y llama a xml_manager.guardar_libros().
         """
         libros = self.avl.obtener_libros_inorden(self.avl.raiz)
-        libros_dict = [
-            {
-                "codigo": str(libro.codigo),
-                "autor": libro.autor,
-                "titulo": libro.titulo,
-                "anio": str(libro.anio),
-                "editorial": libro.editorial,
-                "area": libro.area,
-            }
-            for libro in libros
-        ]
-        self.xml_manager.guardar_libros(libros_dict)
+        self.xml_manager.guardar_libros(libros)
 
     def _guardar_estudiantes_xml(self) -> None:
         """
@@ -145,16 +133,6 @@ class GestorEliminacion:
         for lista in self.tabla_hash.tabla_hash:
             actual = lista.primero  # nodo de la lista enlazada
             while actual is not None:
-                e = actual.valor
-                estudiantes.append(
-                    {
-                        "carnet": str(e.carnet),
-                        "nombre": e.nombre,
-                        "carrera": e.carrera,
-                        "telefono": e.telefono,
-                        "correo": e.correo,
-                        "direccion": e.direccion,
-                    }
-                )
+                estudiantes.append(actual.valor)
                 actual = actual.sig
         self.xml_manager.guardar_estudiantes(estudiantes)

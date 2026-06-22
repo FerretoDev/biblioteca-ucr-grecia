@@ -185,17 +185,7 @@ class SistemaPrestamos:
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
-            Convierte todos los prestamos del arbol a dicts y los guarda
-            en el archivo XML usando el XMLManager.
+            Guarda los prestamos en el archivo XML usando el XMLManager.
         """
         prestamos = self.arbol_prestamos.inorden(self.arbol_prestamos.raiz)
-        prestamos_dict = [
-            {
-                "codigo_prestamo": str(p.codigo_prestamo),
-                "codigo_libro": str(p.codigo_libro),
-                "carnet_estudiante": str(p.carnet_estudiante),
-                "fecha_prestamo": p.fecha_prestamo,
-            }
-            for p in prestamos
-        ]
-        self.xml_manager.guardar_prestamos(prestamos_dict)
+        self.xml_manager.guardar_prestamos(prestamos)

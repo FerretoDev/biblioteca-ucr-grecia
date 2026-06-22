@@ -50,11 +50,7 @@ def test_buscar_codigo():
     mi_arbol_avl: ArbolAVL = ArbolAVL()
 
     # Recorre y va insertando los objetos tipo libros en el arbol avl que están almacenados en /datos/libros.json
-    for i in libros:
-        # dict_a_libro pasa los libros que estan en un diccionario y los pasa a un objeto tipo libro
-        libro: Libro = xml_manager.dict_a_libro(i)
-        # TODO: Hay que arreglar la linea de abajo, debería ser mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
-        # BUG pero lo curioso es que sirve
+    for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
@@ -75,8 +71,7 @@ def test_buscar_titulo():
     libros = xml_manager.cargar_libros()
     mi_arbol_avl: ArbolAVL = ArbolAVL()
 
-    for i in libros:
-        libro: Libro = xml_manager.dict_a_libro(i)
+    for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
@@ -96,8 +91,7 @@ def test_buscar_autor():
     libros = xml_manager.cargar_libros()
     mi_arbol_avl: ArbolAVL = ArbolAVL()
 
-    for i in libros:
-        libro: Libro = xml_manager.dict_a_libro(i)
+    for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
@@ -117,8 +111,7 @@ def test_eliminar_codigo():
     libros = xml_manager.cargar_libros()
     mi_arbol_avl: ArbolAVL = ArbolAVL()
 
-    for i in libros:
-        libro: Libro = xml_manager.dict_a_libro(i)
+    for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     print("Arbol antes de eliminar:")

@@ -2,7 +2,7 @@
 
 Sistema de gestión de biblioteca desarrollado en Python para el curso de **Estructuras de Datos** de la Universidad de Costa Rica.
 
-> **Integrantes:** Marcos Ferreto Estrada · Paulo Anchia Correas 
+> **Integrantes:** Marcos Ferreto Estrada · [Nombre 2]
 > **Entrega:** Viernes 26 de junio, 17:00 hrs
 
 ---
@@ -46,6 +46,8 @@ uv run python --version
 
 ```bash
 uv run main.py
+# O alternativamente sin uv:
+python main.py
 ```
 
 ---
@@ -54,34 +56,34 @@ uv run main.py
 
 ```
 biblioteca-ucr-grecia/
-├── main.py                  ← Punto de entrada
-├── pyproject.toml           ← Configuración uv
+├── main.py                          ← Punto de entrada
+├── pyproject.toml                   ← Configuración uv
 ├── datos/
-│   ├── libros.xml           ← Base de datos de libros
-│   ├── estudiantes.xml      ← Base de datos de estudiantes
-│   └── prestamos.xml        ← Base de datos de préstamos
-├── estructuras_datos/
-│   ├── avl.py               ← Árbol AVL (libros)
-│   ├── rbtree.py            ← Árbol Rojinegro (préstamos)
-│   └── hashtable.py         ← Tabla Hash (estudiantes)
+│   ├── libros.xml                   ← Base de datos de libros
+│   ├── estudiantes.xml              ← Base de datos de estudiantes
+│   └── prestamos.xml                ← Base de datos de préstamos
+├── estructura_datos/
+│   ├── arbol_avl/arbol_avl.py       ← Árbol AVL (libros)
+│   ├── arbol_rojinegro/arbol_rojinegro.py ← Árbol Rojinegro (préstamos)
+│   └── tabla_hash/tabla_hash.py     ← Tabla Hash (estudiantes)
 ├── clases/
-│   ├── libro.py             ← Clase Libro
-│   ├── estudiante.py        ← Clase Estudiante
-│   └── prestamo.py          ← Clase Prestamo
+│   ├── libro.py                     ← Clase Libro
+│   ├── estudiante.py                ← Clase Estudiante
+│   └── prestamo.py                  ← Clase Prestamo
 ├── gui/
-│   └── app.py               ← Interfaz gráfica (tkinter)
-|
+│   └── interfaz.py                  ← Interfaz gráfica principal (tkinter)
 ├── docs/
-|   └── informe.pdf 
-└── xml_manager.py       ← Carga y guardado de archivos XML
-    
+│   └── informe.pdf                  ← Documentación del proyecto
+├── xml_manager.py                   ← Carga y guardado de archivos de datos (%)
+├── sistema_prestamos.py             ← Lógica de negocio para préstamos
+└── gestor_eliminacion.py            ← Lógica de negocio para eliminaciones seguras
 ```
 
 ---
 
-## Formato de los archivos XML
+## Formato de los archivos de datos
 
-Los datos se separan con `%` en cada línea.
+Los datos se separan con `%` en cada línea (los archivos conservan la extensión `.xml` pero usan formato de texto plano delimitado).
 
 **libros.xml**
 ```
@@ -97,19 +99,19 @@ carnet%nombre%carrera%telefono%correo%direccion
 
 **prestamos.xml**
 ```
-codigo_prestamo%codigo_libro%carnet_estudiante
-0001%001%1001
+codigo_prestamo%codigo_libro%carnet_estudiante%fecha_prestamo
+0001%001%1001%2026-06-21
 ```
 
 ---
 
 ## Estructuras de datos utilizadas
 
-| Estructura | Archivo                    | Datos que maneja | Clave |
-|---|----------------------------|---|---|
-| Árbol AVL | `estructuras_datos/avl.py` | Libros | Código del libro |
-| Tabla Hash | `estructuras_datos/hashtable.py`  | Estudiantes | Carnet |
-| Árbol Rojinegro | `estructuras_datos/rbtree.py`     | Préstamos | Código de préstamo |
+| Estructura | Archivo | Datos que maneja | Clave de ordenamiento/búsqueda |
+|---|---|---|---|
+| **Árbol AVL** | `estructura_datos/arbol_avl/arbol_avl.py` | Libros | Código del libro |
+| **Tabla Hash** | `estructura_datos/tabla_hash/tabla_hash.py` | Estudiantes | Carnet (resolución de colisiones por listas) |
+| **Árbol Rojinegro** | `estructura_datos/arbol_rojinegro/arbol_rojinegro.py` | Préstamos | Código de préstamo |
 
 ---
 
@@ -138,25 +140,17 @@ fix: corrección de bug
 docs: cambios en documentación
 refactor: refactorización de código
 ```
-### Tipo de Cambio
-
-* **feat:** descripción corta - closes #N
-* **fix:** corrección - refs #N
-* **docs:** documentación - refs #N
-* **test:** prueba - refs #N
-
 
 ---
 
 ## Estado del proyecto
 
-| Componente | Estado |
-|---|---|
-| Archivos XML | 🟡 En progreso |
-| Árbol AVL | 🟡 En progreso |
-| Tabla Hash | ⬜ Pendiente |
-| Árbol Rojinegro | ⬜ Pendiente |
-| Búsquedas | ⬜ Pendiente |
-| Préstamos | ⬜ Pendiente |
-| Interfaz Gráfica | ⬜ Pendiente |
-
+| Componente | Estado | Detalles |
+|---|---|---|
+| Archivos de texto (`%`) | ✅ Completado | Carga y guardado directo de objetos vía `XMLManager` |
+| Árbol AVL | ✅ Completado | Inserción, búsqueda, eliminación y rotaciones |
+| Tabla Hash | ✅ Completado | Inserción, búsqueda y eliminación (por encadenamiento) |
+| Árbol Rojinegro | ✅ Completado | Inserción y balanceo por color y rotaciones |
+| Préstamos | ✅ Completado | Control de asignación y devolución (`SistemaPrestamos`) |
+| Eliminación Segura | ✅ Completado | Validación de dependencias antes de borrar (`GestorEliminacion`) |
+| Interfaz Gráfica | ✅ Completado | Pestañas, búsquedas y visualización vía `tkinter` (`gui/interfaz.py`) |
