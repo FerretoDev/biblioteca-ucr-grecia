@@ -29,7 +29,16 @@ class RBTree:
         raiz_p.der = nuevo_raiz.izq
         if nuevo_raiz.izq is not None:
             nuevo_raiz.izq.padre = raiz_p
-        nuevo_raiz.padre = raiz_p.padre
+        
+        padre = raiz_p.padre
+        nuevo_raiz.padre = padre
+        if padre is None:
+            self.raiz = nuevo_raiz
+        elif raiz_p == padre.izq:
+            padre.izq = nuevo_raiz
+        else:
+            padre.der = nuevo_raiz
+            
         nuevo_raiz.izq = raiz_p
         raiz_p.padre = nuevo_raiz
         return nuevo_raiz
@@ -40,7 +49,16 @@ class RBTree:
         raiz_p.izq = nuevo_raiz.der
         if nuevo_raiz.der is not None:
             nuevo_raiz.der.padre = raiz_p
-        nuevo_raiz.padre = raiz_p.padre
+            
+        padre = raiz_p.padre
+        nuevo_raiz.padre = padre
+        if padre is None:
+            self.raiz = nuevo_raiz
+        elif raiz_p == padre.izq:
+            padre.izq = nuevo_raiz
+        else:
+            padre.der = nuevo_raiz
+            
         nuevo_raiz.der = raiz_p
         raiz_p.padre = nuevo_raiz
         return nuevo_raiz
@@ -80,12 +98,12 @@ class RBTree:
                 else:
                     if raiz_p == actual.der:
                         raiz_p = actual
-                        self.raiz = self._rotacion_dd_interna(self.raiz, raiz_p)
+                        self.rotacion_dd(raiz_p)
                         actual = raiz_p.padre
                         padre = actual.padre
                     actual.color = "Negro"
                     padre.color = "Rojo"
-                    self.raiz = self._rotacion_ii_interna(self.raiz, padre)
+                    self.rotacion_ii(padre)
             else:
                 hermano = padre.izq
                 if hermano is not None and hermano.color == "Rojo":
@@ -96,35 +114,13 @@ class RBTree:
                 else:
                     if raiz_p == actual.izq:
                         raiz_p = actual
-                        self.raiz = self._rotacion_ii_interna(self.raiz, raiz_p)
+                        self.rotacion_ii(raiz_p)
                         actual = raiz_p.padre
                         padre = actual.padre
                     actual.color = "Negro"
                     padre.color = "Rojo"
-                    self.raiz = self._rotacion_dd_interna(self.raiz, padre)
+                    self.rotacion_dd(padre)
         self.raiz.color = "Negro"
-    def _rotacion_dd_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
-        padre = raiz_p.padre
-        nueva_raiz = self.rotacion_dd(raiz_p)
-        if padre is None:
-            raiz = nueva_raiz
-        else:
-            if raiz_p == padre.izq:
-                padre.izq = nueva_raiz
-            else:
-                padre.der = nueva_raiz
-        return raiz
-    def _rotacion_ii_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
-        padre = raiz_p.padre
-        nueva_raiz = self.rotacion_ii(raiz_p)
-        if padre is None:
-            raiz = nueva_raiz
-        else:
-            if raiz_p == padre.izq:
-                padre.izq = nueva_raiz
-            else:
-                padre.der = nueva_raiz
-        return raiz
     def eliminar_codigo(self, codigo_prestamo: int) -> bool:
         nodo_a_eliminar = self._buscar_nodo(self.raiz, codigo_prestamo)
         if nodo_a_eliminar is None:
@@ -199,7 +195,7 @@ class RBTree:
                 if hermano is not None and hermano.color == "Rojo":
                     hermano.color = "Negro"
                     padre.color = "Rojo"
-                    self.raiz = self._rotacion_dd_interna(self.raiz, padre)
+                    self.rotacion_dd(padre)
                     hermano = padre.der
                 if (hermano is not None and 
                     self._obtener_color(hermano.izq) == "Negro" and 
@@ -213,20 +209,20 @@ class RBTree:
                             if hermano.izq is not None:
                                 hermano.izq.color = "Negro"
                             hermano.color = "Rojo"
-                            self.raiz = self._rotacion_ii_interna(self.raiz, hermano)
+                            self.rotacion_ii(hermano)
                             hermano = padre.der
                         hermano.color = padre.color
                         padre.color = "Negro"
                         if hermano.der is not None:
                             hermano.der.color = "Negro"
-                        self.raiz = self._rotacion_dd_interna(self.raiz, padre)
+                        self.rotacion_dd(padre)
                         actual = self.raiz
             else:
                 hermano = padre.izq
                 if hermano is not None and hermano.color == "Rojo":
                     hermano.color = "Negro"
                     padre.color = "Rojo"
-                    self.raiz = self._rotacion_ii_interna(self.raiz, padre)
+                    self.rotacion_ii(padre)
                     hermano = padre.izq
                 if (hermano is not None and 
                     self._obtener_color(hermano.izq) == "Negro" and 
@@ -240,13 +236,13 @@ class RBTree:
                             if hermano.der is not None:
                                 hermano.der.color = "Negro"
                             hermano.color = "Rojo"
-                            self.raiz = self._rotacion_dd_interna(self.raiz, hermano)
+                            self.rotacion_dd(hermano)
                             hermano = padre.izq
                         hermano.color = padre.color
                         padre.color = "Negro"
                         if hermano.izq is not None:
                             hermano.izq.color = "Negro"
-                        self.raiz = self._rotacion_ii_interna(self.raiz, padre)
+                        self.rotacion_ii(padre)
                         actual = self.raiz
         if actual is not None:
             actual.color = "Negro"
