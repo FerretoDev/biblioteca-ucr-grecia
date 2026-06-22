@@ -22,7 +22,7 @@ class RBTree:
             return self._buscar_nodo(raiz_p.izq, codigo_prestamo)
         else:
             return self._buscar_nodo(raiz_p.der, codigo_prestamo)
-    def rotar_izq(self, raiz_p: Nodo) -> Nodo:
+    def rotacion_dd(self, raiz_p: Nodo) -> Nodo:
         nuevo_raiz = raiz_p.der
         if nuevo_raiz is None:
             return raiz_p
@@ -33,7 +33,7 @@ class RBTree:
         nuevo_raiz.izq = raiz_p
         raiz_p.padre = nuevo_raiz
         return nuevo_raiz
-    def rotar_der(self, raiz_p: Nodo) -> Nodo:
+    def rotacion_ii(self, raiz_p: Nodo) -> Nodo:
         nuevo_raiz = raiz_p.izq
         if nuevo_raiz is None:
             return raiz_p
@@ -78,10 +78,10 @@ class RBTree:
                 else:
                     if raiz_p == raiz_p.padre.der:
                         raiz_p = raiz_p.padre
-                        self.raiz = self._rotar_izq_interna(self.raiz, raiz_p)
+                        self.raiz = self._rotacion_dd_interna(self.raiz, raiz_p)
                     raiz_p.padre.color = "Negro"
                     raiz_p.padre.padre.color = "Rojo"
-                    self.raiz = self._rotar_der_interna(self.raiz, raiz_p.padre.padre)
+                    self.raiz = self._rotacion_ii_interna(self.raiz, raiz_p.padre.padre)
             else:
                 tio = raiz_p.padre.padre.izq
                 if tio is not None and tio.color == "Rojo":
@@ -92,14 +92,14 @@ class RBTree:
                 else:
                     if raiz_p == raiz_p.padre.izq:
                         raiz_p = raiz_p.padre
-                        self.raiz = self._rotar_der_interna(self.raiz, raiz_p)
+                        self.raiz = self._rotacion_ii_interna(self.raiz, raiz_p)
                     raiz_p.padre.color = "Negro"
                     raiz_p.padre.padre.color = "Rojo"
-                    self.raiz = self._rotar_izq_interna(self.raiz, raiz_p.padre.padre)
+                    self.raiz = self._rotacion_dd_interna(self.raiz, raiz_p.padre.padre)
         self.raiz.color = "Negro"
-    def _rotar_izq_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
+    def _rotacion_dd_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
         padre = raiz_p.padre
-        nueva_raiz = self.rotar_izq(raiz_p)
+        nueva_raiz = self.rotacion_dd(raiz_p)
         if padre is None:
             raiz = nueva_raiz
         else:
@@ -108,9 +108,9 @@ class RBTree:
             else:
                 padre.der = nueva_raiz
         return raiz
-    def _rotar_der_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
+    def _rotacion_ii_interna(self, raiz: Optional[Nodo], raiz_p: Nodo) -> Optional[Nodo]:
         padre = raiz_p.padre
-        nueva_raiz = self.rotar_der(raiz_p)
+        nueva_raiz = self.rotacion_ii(raiz_p)
         if padre is None:
             raiz = nueva_raiz
         else:
@@ -137,7 +137,7 @@ class RBTree:
             nodo_reemplazo = raiz_p.izq
             self._trasplantar(raiz_p, raiz_p.izq)
         else:
-            sucesor = self._obtener_minimo(raiz_p.der)
+            sucesor = self._get_min_valor_nodo(raiz_p.der)
             raiz_padre = sucesor.padre
             if sucesor.padre == raiz_p:
                 nodo_reemplazo = sucesor.der
@@ -180,7 +180,7 @@ class RBTree:
             raiz_p.padre.der = nodo_reemplazo
         if nodo_reemplazo is not None:
             nodo_reemplazo.padre = raiz_p.padre
-    def _obtener_minimo(self, raiz_p: Nodo) -> Nodo:
+    def _get_min_valor_nodo(self, raiz_p: Nodo) -> Nodo:
         actual = raiz_p
         while actual.izq is not None:
             actual = actual.izq
@@ -193,7 +193,7 @@ class RBTree:
                 if hermano is not None and hermano.color == "Rojo":
                     hermano.color = "Negro"
                     actual.padre.color = "Rojo"
-                    self.raiz = self._rotar_izq_interna(self.raiz, actual.padre)
+                    self.raiz = self._rotacion_dd_interna(self.raiz, actual.padre)
                     hermano = actual.padre.der
                 if (hermano is not None and 
                     self._obtener_color(hermano.izq) == "Negro" and 
@@ -207,20 +207,20 @@ class RBTree:
                             if hermano.izq is not None:
                                 hermano.izq.color = "Negro"
                             hermano.color = "Rojo"
-                            self.raiz = self._rotar_der_interna(self.raiz, hermano)
+                            self.raiz = self._rotacion_ii_interna(self.raiz, hermano)
                             hermano = actual.padre.der
                         hermano.color = actual.padre.color
                         actual.padre.color = "Negro"
                         if hermano.der is not None:
                             hermano.der.color = "Negro"
-                        self.raiz = self._rotar_izq_interna(self.raiz, actual.padre)
+                        self.raiz = self._rotacion_dd_interna(self.raiz, actual.padre)
                         actual = self.raiz
             else:
                 hermano = actual.padre.izq
                 if hermano is not None and hermano.color == "Rojo":
                     hermano.color = "Negro"
                     actual.padre.color = "Rojo"
-                    self.raiz = self._rotar_der_interna(self.raiz, actual.padre)
+                    self.raiz = self._rotacion_ii_interna(self.raiz, actual.padre)
                     hermano = actual.padre.izq
                 if (hermano is not None and 
                     self._obtener_color(hermano.izq) == "Negro" and 
@@ -234,37 +234,37 @@ class RBTree:
                             if hermano.der is not None:
                                 hermano.der.color = "Negro"
                             hermano.color = "Rojo"
-                            self.raiz = self._rotar_izq_interna(self.raiz, hermano)
+                            self.raiz = self._rotacion_dd_interna(self.raiz, hermano)
                             hermano = actual.padre.izq
                         hermano.color = actual.padre.color
                         actual.padre.color = "Negro"
                         if hermano.izq is not None:
                             hermano.izq.color = "Negro"
-                        self.raiz = self._rotar_der_interna(self.raiz, actual.padre)
+                        self.raiz = self._rotacion_ii_interna(self.raiz, actual.padre)
                         actual = self.raiz
         actual.color = "Negro"
     def _obtener_color(self, nodo: Optional[Nodo]) -> str:
         if nodo is None:
             return "Negro"
         return nodo.color
-    def inOrden(self, raiz_p: Optional[Nodo]) -> None:
+    def inorden(self, raiz_p: Optional[Nodo]) -> None:
         if raiz_p is not None:
-            self.inOrden(raiz_p.izq)
+            self.inorden(raiz_p.izq)
             prestamo = raiz_p.valor
             print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
                   f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
-            self.inOrden(raiz_p.der)
-    def preOrden(self, raiz_p: Optional[Nodo]) -> None:
+            self.inorden(raiz_p.der)
+    def preorden(self, raiz_p: Optional[Nodo]) -> None:
         if raiz_p is not None:
             prestamo = raiz_p.valor
             print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
                   f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
-            self.preOrden(raiz_p.izq)
-            self.preOrden(raiz_p.der)
-    def postOrden(self, raiz_p: Optional[Nodo]) -> None:
+            self.preorden(raiz_p.izq)
+            self.preorden(raiz_p.der)
+    def postorden(self, raiz_p: Optional[Nodo]) -> None:
         if raiz_p is not None:
-            self.postOrden(raiz_p.izq)
-            self.postOrden(raiz_p.der)
+            self.postorden(raiz_p.izq)
+            self.postorden(raiz_p.der)
             prestamo = raiz_p.valor
             print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
                   f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
