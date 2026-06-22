@@ -19,7 +19,7 @@ class Nodo:
             en color rojo por defecto. El padre se asigna externamente.
         """
         self.valor: Prestamo = prestamo
-        self.izq: Optional[NodoRB] = None
-        self.der: Optional[NodoRB] = None
-        self.padre: Optional[NodoRB] = None
+        self.izq: Optional[Nodo] = None
+        self.der: Optional[Nodo] = None
+        self.padre: Optional[Nodo] = None
         self.color: str = "Rojo"  # Nuevo nodo siempre es rojo
