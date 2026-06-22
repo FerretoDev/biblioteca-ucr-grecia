@@ -3,7 +3,7 @@ from typing import Optional
 from clases.prestamo import Prestamo
 
 
-class NodoRB:
+class Nodo:
     """
     Descripción: Nodo del árbol Rojinegro. Almacena un Prestamo, referencias
                  a hijos izquierdo y derecho, referencia al padre, y su color
