@@ -1,21 +1,9 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
-Archivo:  gui/interfaz.py
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: interfaz.py
 Descripcion:
-    Interfaz grafica principal del sistema de biblioteca.
-    Usa ttk.Notebook con tres pestanas (Libros, Estudiantes, Prestamos).
-    La GUI nunca implementa logica de negocio: solo llama a las capas ya
-    existentes (ArbolAVL, TablaHash, SistemaPrestamos, GestorEliminacion).
-
-Tkinter utilizado:
-    tk.Tk()           — ventana principal
-    ttk.Notebook      — contenedor de pestanas
-    ttk.Treeview      — tabla con scroll para resultados
-    ttk.Scrollbar     — scroll vertical para Treeview
-    tk.LabelFrame     — agrupacion de campos de formulario
-    tk.Entry          — cajas de texto
-    tk.Button         — botones de accion
-    messagebox        — dialogos de confirmacion y error
 """
 
 import tkinter as tk

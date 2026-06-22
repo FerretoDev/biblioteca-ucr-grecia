@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: nodo.py
+"""
+
 from typing import List, Optional
 from clases.estudiante import Estudiante
 class Nodo:

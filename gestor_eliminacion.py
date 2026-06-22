@@ -1,10 +1,9 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
 Archivo: gestor_eliminacion.py
 Descripcion: Capa de reglas de negocio para eliminar libros y estudiantes.
-             Valida integridad referencial con los prestamos antes de borrar
-             cualquier registro. La GUI llama solo a estos metodos y muestra
-             el mensaje que devuelvan; nunca toca el AVL ni el Hash directo.
 """
 
 from typing import Tuple

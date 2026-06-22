@@ -1,7 +1,7 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
 Curso: Estructuras de Datos
-Integrantes: Marcos Ferreto - [Nombre 2]
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
 Archivo: xml_manager.py
 Descripcion: Carga y guardado en formato % delimitado. Trabaja directamente con objetos.
 """

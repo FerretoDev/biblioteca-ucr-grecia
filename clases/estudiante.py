@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: estudiante.py
+"""
+
 class Estudiante:
 
     def __init__(self, carnet: int, nombre: str, carrera: str, telefono: str, correo: str, direccion: str) -> None:
