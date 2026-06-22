@@ -3,12 +3,11 @@ Proyecto: Biblioteca UCR - Recinto de Grecia
 Curso: Estructuras de Datos
 Integrantes: Marcos Ferreto - [Nombre 2]
 Archivo: xml_manager.py
-Descripcion: Carga y guardado en formato % delimitado, con JSON en memoria.
+Descripcion: Carga y guardado en formato % delimitado. Trabaja con diccionarios de Python en memoria.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import List
 
@@ -28,26 +27,17 @@ class XMLManager:
         self.ruta_libros = "datos/libros.xml"
         self.ruta_estudiantes = "datos/estudiantes.xml"
         self.ruta_prestamos = "datos/prestamos.xml"
-        self.ruta_libros_json = "datos/libros.json"
-        self.ruta_estudiantes_json = "datos/estudiantes.json"
-        self.ruta_prestamos_json = "datos/prestamos.json"
-        self._formato_valido = {
-            "libros": True,
-            "estudiantes": True,
-            "prestamos": True,
-        }
 
     # ----------------------------------------------------------
     # HELPERS GENERICOS
     # ----------------------------------------------------------
 
-    def _leer_lineas(self, ruta: str, etiqueta: str) -> List[str]:
+    def _leer_lineas(self, ruta: str) -> List[str]:
         """
-        Parametros: ruta (str), etiqueta (str)
+        Parametros: ruta (str)
         Devuelve:   List[str] con lineas validas del archivo.
         Descripcion:
-           Lee el archivo y devuelve lineas no vacias. Si detecta XML
-           real, marca el formato como invalido para evitar sobrescritura.
+           Lee el archivo y devuelve lineas no vacias.
         """
         archivo = Path(ruta)
         if not archivo.exists():
@@ -55,24 +45,11 @@ class XMLManager:
             return []
 
         lineas: List[str] = []
-        vio_xml = False
         with archivo.open("r", encoding="utf-8") as f:
             for linea in f:
                 cruda = linea.strip()
-                if not cruda:
-                    continue
-                if cruda.startswith("<") and cruda.endswith(">"):
-                    vio_xml = True
-                    continue
-                lineas.append(cruda)
-
-        if vio_xml and not lineas:
-            self._formato_valido[etiqueta] = False
-            print(
-                f"[XMLManager] Formato XML real detectado en '{ruta}'. "
-                "Se espera formato % delimitado."
-            )
-
+                if cruda:
+                    lineas.append(cruda)
         return lineas
 
     @staticmethod
@@ -85,7 +62,7 @@ class XMLManager:
         Parametros: linea (str), campos (List[str]), permitir_faltantes (int)
         Devuelve:   dict con los campos, o None si la linea es invalida.
         Descripcion:
-           Convierte una linea separada por % en un dict JSON.
+           Convierte una linea separada por % en un diccionario de Python.
         """
         partes = linea.split("%")
         min_campos = len(campos) - permitir_faltantes
@@ -105,7 +82,7 @@ class XMLManager:
         Parametros: d (dict), campos (List[str]), omitir_vacios_finales (bool)
         Devuelve:   str con los campos separados por %.
         Descripcion:
-           Serializa un dict JSON a una linea en formato % delimitado.
+           Serializa un diccionario de Python a una linea en formato % delimitado.
         """
         valores = [str(d.get(campo, "")) for campo in campos]
         if omitir_vacios_finales:
@@ -124,7 +101,7 @@ class XMLManager:
                     anio, editorial, area.
         Devuelve:   Libro con los datos del diccionario.
         Descripcion:
-           Convierte un dict JSON intermedio en un objeto Libro.
+           Convierte un diccionario de Python en un objeto Libro.
            Usado para poblar el AVL desde los datos cargados del XML.
         """
         return Libro(
@@ -143,7 +120,7 @@ class XMLManager:
                     telefono, correo, direccion.
         Devuelve:   Estudiante con los datos del diccionario.
         Descripcion:
-           Convierte un dict JSON intermedio en un objeto Estudiante.
+           Convierte un diccionario de Python en un objeto Estudiante.
            Usado para poblar la Tabla Hash desde los datos cargados del XML.
         """
         return Estudiante(
@@ -162,7 +139,7 @@ class XMLManager:
                     codigo_libro, carnet_estudiante, fecha_prestamo.
         Devuelve:   Prestamo con los datos del diccionario.
         Descripcion:
-           Convierte un dict JSON intermedio en un objeto Prestamo.
+           Convierte un diccionario de Python en un objeto Prestamo.
            Usado para poblar el Arbol Rojinegro desde los datos del XML.
         """
         return Prestamo(
@@ -179,12 +156,12 @@ class XMLManager:
     def cargar_libros(self) -> List[dict]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con libros en JSON.
+        Devuelve:   List[dict] con los datos de cada libro.
         Descripcion:
-           Lee libros.xml en formato % y devuelve los libros como JSON.
+           Lee libros.xml en formato % y devuelve una lista de diccionarios.
         """
         campos = ["codigo", "autor", "titulo", "anio", "editorial", "area"]
-        lineas = self._leer_lineas(self.ruta_libros, "libros")
+        lineas = self._leer_lineas(self.ruta_libros)
         libros: List[dict] = []
         for num, linea in enumerate(lineas, start=1):
             d = self._linea_a_dict(linea, campos)
@@ -201,9 +178,6 @@ class XMLManager:
         Descripcion:
            Guarda los libros en formato % delimitado.
         """
-        if not self._formato_valido["libros"]:
-            print("[XMLManager] Guardado de libros omitido por formato invalido.")
-            return
         Path(self.ruta_libros).parent.mkdir(parents=True, exist_ok=True)
         campos = ["codigo", "autor", "titulo", "anio", "editorial", "area"]
         with open(self.ruta_libros, "w", encoding="utf-8") as f:
@@ -217,12 +191,12 @@ class XMLManager:
     def cargar_estudiantes(self) -> List[dict]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con estudiantes en JSON.
+        Devuelve:   List[dict] con los datos de cada estudiante.
         Descripcion:
-           Lee estudiantes.xml en formato % y devuelve JSON.
+           Lee estudiantes.xml en formato % y devuelve una lista de diccionarios.
         """
         campos = ["carnet", "nombre", "carrera", "telefono", "correo", "direccion"]
-        lineas = self._leer_lineas(self.ruta_estudiantes, "estudiantes")
+        lineas = self._leer_lineas(self.ruta_estudiantes)
         estudiantes: List[dict] = []
         for num, linea in enumerate(lineas, start=1):
             d = self._linea_a_dict(linea, campos)
@@ -239,9 +213,6 @@ class XMLManager:
         Descripcion:
            Guarda los estudiantes en formato % delimitado.
         """
-        if not self._formato_valido["estudiantes"]:
-            print("[XMLManager] Guardado de estudiantes omitido por formato invalido.")
-            return
         Path(self.ruta_estudiantes).parent.mkdir(parents=True, exist_ok=True)
         campos = ["carnet", "nombre", "carrera", "telefono", "correo", "direccion"]
         with open(self.ruta_estudiantes, "w", encoding="utf-8") as f:
@@ -255,9 +226,9 @@ class XMLManager:
     def cargar_prestamos(self) -> List[dict]:
         """
         Parametros: ninguno
-        Devuelve:   List[dict] con prestamos en JSON.
+        Devuelve:   List[dict] con los datos de cada prestamo.
         Descripcion:
-           Lee prestamos.xml en formato % y devuelve JSON.
+           Lee prestamos.xml en formato % y devuelve una lista de diccionarios.
         """
         campos = [
             "codigo_prestamo",
@@ -265,7 +236,7 @@ class XMLManager:
             "carnet_estudiante",
             "fecha_prestamo",
         ]
-        lineas = self._leer_lineas(self.ruta_prestamos, "prestamos")
+        lineas = self._leer_lineas(self.ruta_prestamos)
         prestamos: List[dict] = []
         for num, linea in enumerate(lineas, start=1):
             d = self._linea_a_dict(linea, campos, permitir_faltantes=1)
@@ -282,9 +253,6 @@ class XMLManager:
         Descripcion:
            Guarda los prestamos en formato % delimitado.
         """
-        if not self._formato_valido["prestamos"]:
-            print("[XMLManager] Guardado de prestamos omitido por formato invalido.")
-            return
         Path(self.ruta_prestamos).parent.mkdir(parents=True, exist_ok=True)
         campos = [
             "codigo_prestamo",
@@ -307,9 +275,9 @@ class XMLManager:
     def cargar_todo(self) -> tuple[List[dict], List[dict], List[dict]]:
         """
         Parametros: ninguno
-        Devuelve:   tuple (libros, estudiantes, prestamos) en JSON.
+        Devuelve:   tuple (libros, estudiantes, prestamos) como listas de diccionarios.
         Descripcion:
-           Carga los tres archivos en formato % y devuelve JSON.
+           Carga los tres archivos en formato % y devuelve listas de diccionarios.
         """
         return (
             self.cargar_libros(),
@@ -317,38 +285,3 @@ class XMLManager:
             self.cargar_prestamos(),
         )
 
-    def guardar_todo(
-        self,
-        libros: List[dict],
-        estudiantes: List[dict],
-        prestamos: List[dict],
-    ) -> None:
-        """
-        Parametros: libros (List[dict]), estudiantes (List[dict]), prestamos (List[dict])
-        Devuelve:   None
-        Descripcion:
-           Guarda los tres archivos en formato % delimitado.
-        """
-        self.guardar_libros(libros)
-        self.guardar_estudiantes(estudiantes)
-        self.guardar_prestamos(prestamos)
-
-    def guardar_json(
-        self,
-        libros: List[dict],
-        estudiantes: List[dict],
-        prestamos: List[dict],
-    ) -> None:
-        """
-        Parametros: libros (List[dict]), estudiantes (List[dict]), prestamos (List[dict])
-        Devuelve:   None
-        Descripcion:
-           Guarda snapshots JSON en datos/*.json para inspeccion.
-        """
-        Path(self.ruta_libros_json).parent.mkdir(parents=True, exist_ok=True)
-        with open(self.ruta_libros_json, "w", encoding="utf-8") as f:
-            json.dump(libros, f, ensure_ascii=True, indent=2)
-        with open(self.ruta_estudiantes_json, "w", encoding="utf-8") as f:
-            json.dump(estudiantes, f, ensure_ascii=True, indent=2)
-        with open(self.ruta_prestamos_json, "w", encoding="utf-8") as f:
-            json.dump(prestamos, f, ensure_ascii=True, indent=2)
