@@ -244,16 +244,6 @@ class ArbolAVL:
         libros.extend(self.obtener_libros_inorden(raiz_p.der))
         return libros
 
-    def es_hoja(self, nodo: Optional[Nodo]) -> bool:
-        """
-        Parámetros: nodo (Optional[Nodo]) — nodo a evaluar.
-        Devuelve:   bool — True si el nodo es hoja, False en caso contrario.
-        Descripción:
-            Verifica si un nodo dado no tiene hijos izquierdo ni derecho (es un nodo hoja).
-        """
-        if nodo is not None and nodo.izq is None and nodo.der is None:
-            return True
-        return False
 
     def _get_min_valor_nodo(self, nodo: Nodo) -> Nodo:
         """
