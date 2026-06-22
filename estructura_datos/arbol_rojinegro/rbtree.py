@@ -241,7 +241,6 @@ class RBTree:
             Método auxiliar interno que realiza una rotación a la izquierda
             manteniendo la referencia correcta a la raíz del árbol.
         """
-<<<<<<< HEAD
         if raiz_p.padre is None:
             raiz = self.rotar_izq(raiz_p)
         else:
@@ -249,18 +248,6 @@ class RBTree:
                 raiz_p.padre.izq = self.rotar_izq(raiz_p)
             else:
                 raiz_p.padre.der = self.rotar_izq(raiz_p)
-=======
-        padre = nodo_p.padre
-        if padre is None:
-            raiz = self.rotar_izq(nodo_p)
-        else:
-            es_izq = (nodo_p == padre.izq)
-            nueva_raiz = self.rotar_izq(nodo_p)
-            if es_izq:
-                padre.izq = nueva_raiz
-            else:
-                padre.der = nueva_raiz
->>>>>>> 230622886e8b0c5b748279ca366f761a0ae1c7d2
         return raiz
 
     def _rotar_der_interna(self, raiz: Optional[NodoRB], raiz_p: NodoRB) -> Optional[NodoRB]:
@@ -272,7 +259,6 @@ class RBTree:
             Método auxiliar interno que realiza una rotación a la derecha
             manteniendo la referencia correcta a la raíz del árbol.
         """
-<<<<<<< HEAD
         if raiz_p.padre is None:
             raiz = self.rotar_der(raiz_p)
         else:
@@ -280,18 +266,6 @@ class RBTree:
                 raiz_p.padre.izq = self.rotar_der(raiz_p)
             else:
                 raiz_p.padre.der = self.rotar_der(raiz_p)
-=======
-        padre = nodo_p.padre
-        if padre is None:
-            raiz = self.rotar_der(nodo_p)
-        else:
-            es_izq = (nodo_p == padre.izq)
-            nueva_raiz = self.rotar_der(nodo_p)
-            if es_izq:
-                padre.izq = nueva_raiz
-            else:
-                padre.der = nueva_raiz
->>>>>>> 230622886e8b0c5b748279ca366f761a0ae1c7d2
         return raiz
 
     # ========== ELIMINACIÓN ==========
@@ -321,7 +295,6 @@ class RBTree:
             Método auxiliar que realiza la eliminación del nodo y repara
             el árbol Rojinegro después de la operación.
         """
-<<<<<<< HEAD
         nodo_reemplazo: Optional[NodoRB] = None
         raiz_padre: Optional[NodoRB] = None
         
@@ -341,35 +314,6 @@ class RBTree:
             
             if sucesor.padre == raiz_p:
                 nodo_reemplazo = sucesor.der
-=======
-        color_original = nodo_p.color
-        x: Optional[NodoRB] = None
-        x_padre: Optional[NodoRB] = None
-        es_izq_de_padre = False
-        
-        # Caso 1: Nodo sin hijo izquierdo
-        if nodo_p.izq is None:
-            x = nodo_p.der
-            x_padre = nodo_p.padre
-            es_izq_de_padre = (nodo_p.padre is not None and nodo_p == nodo_p.padre.izq)
-            self._trasplantar(nodo_p, nodo_p.der)
-        # Caso 2: Nodo sin hijo derecho
-        elif nodo_p.der is None:
-            x = nodo_p.izq
-            x_padre = nodo_p.padre
-            es_izq_de_padre = (nodo_p.padre is not None and nodo_p == nodo_p.padre.izq)
-            self._trasplantar(nodo_p, nodo_p.izq)
-        # Caso 3: Nodo con dos hijos
-        else:
-            # Encontrar el sucesor (mínimo en el subárbol derecho)
-            sucesor = self._obtener_minimo(nodo_p.der)
-            color_original = sucesor.color
-            x = sucesor.der
-            
-            if sucesor.padre == nodo_p:
-                x_padre = sucesor
-                es_izq_de_padre = False
->>>>>>> 230622886e8b0c5b748279ca366f761a0ae1c7d2
             else:
                 x_padre = sucesor.padre
                 es_izq_de_padre = True
@@ -383,38 +327,11 @@ class RBTree:
             sucesor.color = raiz_p.color
         
         # Reparar el árbol si se eliminó un nodo negro
-<<<<<<< HEAD
         if raiz_p.color == "Negro":
             if nodo_reemplazo is not None:
                 self._reparar_eliminacion(nodo_reemplazo)
             elif raiz_padre is not None:
                 self._reparar_eliminacion(raiz_padre)
-=======
-        if color_original == "Negro":
-            if x is None:
-                # Nodo temporal para jugar el rol de NIL
-                temp = NodoRB(Prestamo(-1, -1, -1, ""))
-                temp.color = "Negro"
-                temp.padre = x_padre
-                if x_padre is None:
-                    self.raiz = temp
-                elif es_izq_de_padre:
-                    x_padre.izq = temp
-                else:
-                    x_padre.der = temp
-                
-                self._reparar_eliminacion(temp)
-                
-                # Quitar el nodo temporal
-                if temp.padre is None:
-                    self.raiz = None
-                elif temp == temp.padre.izq:
-                    temp.padre.izq = None
-                else:
-                    temp.padre.der = None
-            else:
-                self._reparar_eliminacion(x)
->>>>>>> 230622886e8b0c5b748279ca366f761a0ae1c7d2
 
     def _trasplantar(self, raiz_p: NodoRB, nodo_reemplazo: Optional[NodoRB]) -> None:
         """
