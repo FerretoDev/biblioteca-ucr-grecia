@@ -128,51 +128,40 @@ class RBTree:
         self._eliminar_nodo_interno(nodo_a_eliminar)
         return True
     def _eliminar_nodo_interno(self, raiz_p: Nodo) -> None:
+        if raiz_p.izq is not None and raiz_p.der is not None:
+            temp = self._get_min_valor_nodo(raiz_p.der)
+            raiz_p.valor = temp.valor
+            raiz_p = temp
+
         color_original = raiz_p.color
-        x: Optional[Nodo] = None
-        x_padre: Optional[Nodo] = None
-        es_izq_de_padre = False
-        if raiz_p.izq is None:
-            nodo_reemplazo = raiz_p.der
-            self._reemplazar_nodo(raiz_p, raiz_p.der)
-        elif raiz_p.der is None:
-            nodo_reemplazo = raiz_p.izq
-            self._reemplazar_nodo(raiz_p, raiz_p.izq)
+        actual = raiz_p.izq if raiz_p.izq is not None else raiz_p.der
+        padre = raiz_p.padre
+        es_izq_de_padre = (padre is not None and raiz_p == padre.izq)
+
+        if actual is None:
+            actual = Nodo(Prestamo(-1, -1, -1, ""))
+            actual.color = "Negro"
+            actual.padre = padre
+            if padre is None:
+                self.raiz = actual
+            elif es_izq_de_padre:
+                padre.izq = actual
+            else:
+                padre.der = actual
+            
+            if color_original == "Negro":
+                self._reparar_eliminacion(actual)
+            
+            if actual.padre is None:
+                self.raiz = None
+            elif actual == actual.padre.izq:
+                actual.padre.izq = None
+            else:
+                actual.padre.der = None
         else:
-            sucesor = self._get_min_valor_nodo(raiz_p.der)
-            raiz_padre = sucesor.padre
-            if sucesor.padre == raiz_p:
-                nodo_reemplazo = sucesor.der
-            else:
-                x_padre = sucesor.padre
-                es_izq_de_padre = True
-                self._reemplazar_nodo(sucesor, sucesor.der)
-                sucesor.der = raiz_p.der
-                sucesor.der.padre = sucesor
-            self._reemplazar_nodo(raiz_p, sucesor)
-            sucesor.izq = raiz_p.izq
-            sucesor.izq.padre = sucesor
-            sucesor.color = raiz_p.color
-        if color_original == "Negro":
-            if x is None:
-                temp = Nodo(Prestamo(-1, -1, -1, ""))
-                temp.color = "Negro"
-                temp.padre = x_padre
-                if x_padre is None:
-                    self.raiz = temp
-                elif es_izq_de_padre:
-                    x_padre.izq = temp
-                else:
-                    x_padre.der = temp
-                self._reparar_eliminacion(temp)
-                if temp.padre is None:
-                    self.raiz = None
-                elif temp == temp.padre.izq:
-                    temp.padre.izq = None
-                else:
-                    temp.padre.der = None
-            else:
-                self._reparar_eliminacion(x)
+            self._reemplazar_nodo(raiz_p, actual)
+            if color_original == "Negro":
+                self._reparar_eliminacion(actual)
     def _reemplazar_nodo(self, raiz_p: Nodo, nodo_reemplazo: Optional[Nodo]) -> None:
         if raiz_p.padre is None:
             self.raiz = nodo_reemplazo
