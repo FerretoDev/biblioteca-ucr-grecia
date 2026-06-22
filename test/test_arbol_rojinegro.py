@@ -49,7 +49,7 @@ def main() -> None:
 
     # Inserta cada préstamo y verificar propiedades RB
     for prestamo in prestamos_prueba:
-        arbol_rb.insertar(prestamo)
+        arbol_rb.insertar(arbol_rb.raiz, prestamo)
         print(
             f"Insertado préstamo código {prestamo.codigo_prestamo}: "
             f"Libro {prestamo.codigo_libro}, Estudiante {prestamo.carnet_estudiante}"
@@ -157,7 +157,7 @@ def main() -> None:
 
     print("\nIntentando insertar préstamo duplicado (código 0001)...")
     prestamo_duplicado = Prestamo(1, 999, 9999, "2024-07-01")
-    arbol_rb.insertar(prestamo_duplicado)
+    arbol_rb.insertar(arbol_rb.raiz, prestamo_duplicado)
     print("Duplicado rechazado (código 0001 ya existe)")
 
     # Verificación ultima

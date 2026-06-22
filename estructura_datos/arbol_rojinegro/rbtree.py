@@ -56,28 +56,37 @@ class RBTree:
         nuevo_raiz.der = raiz_p
         raiz_p.padre = nuevo_raiz
         return nuevo_raiz
-    def insertar(self, prestamo_nuevo: Prestamo) -> None:
+    def insertar(self, raiz_p: Optional[Nodo], prestamo_nuevo: Prestamo) -> Optional[Nodo]:
         nuevo_nodo = Nodo(prestamo_nuevo)
         if self.raiz is None:
             self.raiz = nuevo_nodo
             self.raiz.color = "Negro"
-            return
-        actual = self.raiz
-        padre = None
-        while actual is not None:
-            padre = actual
-            if prestamo_nuevo.codigo_prestamo < actual.valor.codigo_prestamo:
-                actual = actual.izq
-            elif prestamo_nuevo.codigo_prestamo > actual.valor.codigo_prestamo:
-                actual = actual.der
-            else:
-                return
-        nuevo_nodo.padre = padre
-        if prestamo_nuevo.codigo_prestamo < padre.valor.codigo_prestamo:
-            padre.izq = nuevo_nodo
-        else:
-            padre.der = nuevo_nodo
-        self._reparar_insercion(nuevo_nodo)
+            return self.raiz
+
+        if raiz_p is None:
+            return None
+
+        if prestamo_nuevo.codigo_prestamo < raiz_p.valor.codigo_prestamo:
+            if raiz_p.izq is None:
+                nuevo_nodo.padre = raiz_p
+                # conecta el nuevo nodo como hijo izquierdo
+                raiz_p.izq = nuevo_nodo
+                self._reparar_insercion(nuevo_nodo)
+                return nuevo_nodo
+
+            return self.insertar(raiz_p.izq, prestamo_nuevo)
+
+        if prestamo_nuevo.codigo_prestamo > raiz_p.valor.codigo_prestamo:
+            if raiz_p.der is None:
+                nuevo_nodo.padre = raiz_p
+                # conecta el nuevo nodo como hijo derecho
+                raiz_p.der = nuevo_nodo
+                self._reparar_insercion(nuevo_nodo)
+                return nuevo_nodo
+
+            return self.insertar(raiz_p.der, prestamo_nuevo)
+
+        return raiz_p
     def _reparar_insercion(self, raiz_p: Nodo) -> None:
         while raiz_p != self.raiz and raiz_p.padre is not None and raiz_p.padre.color == "Rojo":
             actual = raiz_p.padre
