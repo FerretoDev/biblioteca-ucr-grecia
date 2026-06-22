@@ -1,0 +1,203 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+
+% Core packages
+\usepackage{amsmath,amssymb}
+% \usepackage{tikz-cd}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{graphicx} % To include figures (Gantt, Pie chart, etc.)
+\usepackage[hidelinks]{hyperref}
+
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\refname}{Bibliografía}
+\renewcommand{\figurename}{Figura}
+
+% Paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1\baselineskip}
+
+\title{Informe del Proyecto Programado\\Biblioteca UCR Recinto de Grecia}
+\author{Marcos Ferreto Estrada \and Paulo Anchía Correás}
+\date{\today}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Large Universidad de Costa Rica\par}
+    {\large Sede de Occidente - Recinto de Grecia\par}
+    {\large Curso: Estructuras de Datos\par}
+
+    \vspace{2.5cm}
+    {\LARGE\bfseries Informe del Proyecto Programado\par}
+    {\Large Sistema de administración de libros de biblioteca\par}
+
+    \vspace{2.5cm}
+    \begin{tabular}{rl}
+        Integrantes: & Marcos Ferreto Estrada --- C5F092 \\
+                     & Paulo Anchía Correás --- [Escribir Carné] \\
+        Profesora:   & [Nombre de la profesora] \\
+        Grupo:       & [Número de grupo] \\
+        Fecha:       & \today \\
+    \end{tabular}
+
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+[Escribir aquí una introducción. Describir brevemente el propósito del documento y del proyecto de biblioteca.]
+
+\section{Descripción del problema}
+
+[Explicar aquí con sus propias palabras qué hace el sistema: administrar libros, estudiantes y préstamos usando estructuras de datos. Mencionar que permite buscar, insertar, eliminar y registrar préstamos, con persistencia y GUI.]
+
+\section{Análisis del problema}
+
+\subsection{Estructuras de datos utilizadas}
+
+\subsubsection{Árbol AVL para libros}
+
+[Explicar aquí por qué se usó un Árbol AVL para los libros. Ej: porque permite búsquedas rápidas y mantiene el balance automáticamente.]
+
+\textbf{Datos almacenados por libro:}
+\begin{itemize}[noitemsep]
+    \item [Escribir dato 1]
+    \item [Escribir dato 2]
+\end{itemize}
+
+\subsubsection{Tabla hash para estudiantes}
+
+[Explicar aquí por qué se usó una Tabla Hash para los estudiantes. Ej: facilita búsquedas por carnet y reduce el tiempo de acceso.]
+
+\textbf{Datos almacenados por estudiante:}
+\begin{itemize}[noitemsep]
+    \item [Escribir dato 1]
+    \item [Escribir dato 2]
+\end{itemize}
+
+\subsubsection{Árbol rojinegro para préstamos}
+
+[Explicar aquí por qué se usó un Árbol Rojinegro para los préstamos. Ej: maneja bien inserciones y consultas sin degradarse.]
+
+\textbf{Datos almacenados por préstamo:}
+\begin{itemize}[noitemsep]
+    \item [Escribir dato 1]
+    \item [Escribir dato 2]
+\end{itemize}
+
+\subsection{Carga y persistencia de archivos}
+
+[Describir aquí cómo el programa lee y guarda los datos en los archivos de texto/XML. Mencionar que se actualizan al modificar registros.]
+
+\subsection{Resolución de subproblemas}
+
+[Completar la tabla explicando cómo resolvieron cada parte del proyecto.]
+
+\begin{longtable}{p{0.35\textwidth} p{0.55\textwidth}}
+\toprule
+\textbf{Subproblema} & \textbf{Solución implementada} \\
+\midrule
+Buscar libros por autor & [Explicar solución] \\
+Buscar libro por título & [Explicar solución] \\
+Buscar libro por código & [Explicar solución] \\
+Eliminar libro por código & [Explicar solución] \\
+Buscar estudiante por carné & [Explicar solución] \\
+Buscar estudiante por nombre & [Explicar solución] \\
+Buscar estudiantes por carrera & [Explicar solución] \\
+Eliminar estudiante por carné & [Explicar solución] \\
+Realizar préstamo & [Explicar solución] \\
+Mostrar árboles en inorden & [Explicar solución] \\
+Interfaz gráfica & [Explicar solución] \\
+\bottomrule
+\end{longtable}
+
+\subsection{Funciones o métodos principales}
+
+[Incluir explicación breve de las funciones más relevantes del código.]
+
+\begin{longtable}{p{0.25\textwidth} p{0.24\textwidth} p{0.18\textwidth} p{0.23\textwidth}}
+\toprule
+\textbf{Función o método} & \textbf{Parámetros} & \textbf{Retorna} & \textbf{Descripción} \\
+\midrule
+\texttt{cargar\_todo()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{guardar\_todo()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{insertar\_libro()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{buscar\_por\_carnet()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{crear\_prestamo()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{eliminar\_libro()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\texttt{eliminar\_estudiante()} & [Parámetros] & [Retorno] & [Descripción breve] \\
+\bottomrule
+\end{longtable}
+
+\section{Análisis de resultados}
+
+[Completar la tabla con el avance del proyecto y observaciones.]
+
+\begin{longtable}{p{0.38\textwidth} p{0.24\textwidth} p{0.28\textwidth}}
+\toprule
+\textbf{Parte del proyecto} & \textbf{Estado} & \textbf{Observaciones} \\
+\midrule
+Árbol AVL & Completado & [Observación] \\
+Tabla hash & Completado & [Observación] \\
+Árbol rojinegro & Completado & [Observación] \\
+Préstamos & Completado & [Observación] \\
+Eliminación segura & Completado & [Observación] \\
+Interfaz gráfica de usuario & Completado & [Observación] \\
+Informe escrito & En progreso & [Observación] \\
+\bottomrule
+\end{longtable}
+
+\section{Conclusiones y recomendaciones}
+
+[Escribir al menos 6 conclusiones y sus respectivas recomendaciones. A continuación, un formato base para llenarlas.]
+
+\begin{enumerate}
+    \item \textbf{Conclusión:} [Escriba la primera conclusión. Ej: Las estructuras de datos mejoran la eficiencia del sistema.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+
+    \item \textbf{Conclusión:} [Escriba la segunda conclusión. Ej: El AVL fue útil para mantener orden y rapidez en libros.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+
+    \item \textbf{Conclusión:} [Escriba la tercera conclusión. Ej: La tabla hash facilitó el acceso a estudiantes por carnet.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+
+    \item \textbf{Conclusión:} [Escriba la cuarta conclusión. Ej: El árbol rojinegro permitió manejar préstamos de forma estable.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+
+    \item \textbf{Conclusión:} [Escriba la quinta conclusión. Ej: La validación antes de eliminar evitó inconsistencias.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+
+    \item \textbf{Conclusión:} [Escriba la sexta conclusión. Ej: La GUI hizo el sistema más usable para el usuario final.]\\
+    \textbf{Recomendación:} [Escriba la recomendación asociada.]
+\end{enumerate}
+
+\section{Bibliografía}
+
+[Incluyan las fuentes de estructuras de datos y documentación usada en formato APA.]
+
+\begin{itemize}
+    \item [Escribir fuente 1. Ej: Python Software Foundation. (2026). tkinter...]
+    \item [Escribir fuente 2. Ej: Cormen, T. H. ...]
+    \item [Escribir fuente 3]
+\end{itemize}
+
+\section{Anexos (Diagramas)}
+
+[Insertar aquí el código o imágenes para los diagramas requeridos:]
+\begin{itemize}
+    \item Diagrama de Gantt (planificación del trabajo).
+    \item Pie chart (distribución del esfuerzo por tareas).
+    \item Workload (carga por integrante).
+    \item Burndown (avance del proyecto por fechas).
+\end{itemize}
+
+\end{document}
