@@ -5,14 +5,8 @@ class RBTree:
     def __init__(self) -> None:
         self.raiz: Optional[Nodo] = None
     def buscar_codigo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Prestamo]:
-        if raiz_p is None:
-            return None
-        if codigo_prestamo == raiz_p.valor.codigo_prestamo:
-            return raiz_p.valor
-        elif codigo_prestamo < raiz_p.valor.codigo_prestamo:
-            return self.buscar_codigo(raiz_p.izq, codigo_prestamo)
-        else:
-            return self.buscar_codigo(raiz_p.der, codigo_prestamo)
+        nodo = self._buscar_nodo(raiz_p, codigo_prestamo)
+        return nodo.valor if nodo is not None else None
     def _buscar_nodo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Nodo]:
         if raiz_p is None:
             return None
