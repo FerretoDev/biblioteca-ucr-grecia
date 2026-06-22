@@ -1,7 +1,7 @@
 """
 Breve descripción de las funciones de tkinter (interfaz gráfica) usadas aquí:
 - tk.Tk(): Crea la ventana principal de la app
-- geometry(): Define el tamaño de la ventana, por ejemplo "600x700" 
+- geometry(): Define el tamaño de la ventana, por ejemplo "600x700"
 - title(): Pone el título arriba en la ventana
 - config(): Permite cambiar configuraciones, como el color de fondo (bg)
 - tk.Frame(): Hace un cuadrito o contenedor donde podemos agrupar otros elementos
@@ -16,12 +16,15 @@ Breve descripción de las funciones de tkinter (interfaz gráfica) usadas aquí:
 import tkinter as tk
 from tkinter import messagebox
 
-from mascota import Mascota
-from tabla import Tabla
+# from mascota import Mascota
+from clases.estudiante import Estudiante
 
-BG_COLOR: str = "#2C3E50"   # negro azulado
-FRAME_BG: str = "#ECF0F1"   # blanco
-BTN_BG: str = "#3498DB"     # azul
+# from tabla import Tabla
+from estructura_datos.tabla_hash.tabla_hash import TablaHash
+
+BG_COLOR: str = "#2C3E50"  # negro azulado
+FRAME_BG: str = "#ECF0F1"  # blanco
+BTN_BG: str = "#3498DB"  # azul
 BTN_FG: str = "white"
 
 
@@ -37,7 +40,7 @@ class App(tk.Tk):
         self.title("Hospital Veterinario Grecia")
         self.config(bg=BG_COLOR)
         # Inicializamos la tabla hash con máximo de 20 casillas
-        self.tabla_hash = Tabla(20)
+        self.tabla_hash = TablaHash(20)
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -138,7 +141,7 @@ class App(tk.Tk):
         Avisa si faltan datos importantes y si sale bien limpia todos los campos
         """
         try:
-            mascota = Mascota(
+            mascota = Estudiante(
                 self.entries["Nombre Mascota:"].get().strip(),
                 self.entries["Nombre Dueño:"].get().strip(),
                 self.entries["Cédula Dueño:"].get().strip(),
@@ -215,7 +218,7 @@ class App(tk.Tk):
 
     def _on_buscar_indice_posicion(self) -> None:
         """
-        Devuelve información técnica: muestra cuál es el índice principal de la tabla 
+        Devuelve información técnica: muestra cuál es el índice principal de la tabla
         y la posición de lista en donde se quedó asignado el nodo de esta mascota
         """
         clave = self._obtener_clave_actual()

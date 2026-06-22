@@ -1,6 +1,11 @@
 class Prestamo:
-
-    def __init__(self, codigo_prestamo: int, codigo_libro: int, carnet_estudiante: int, fecha_prestamo: str = "") -> None:
+    def __init__(
+        self,
+        codigo_prestamo: int,
+        codigo_libro: int,
+        carnet_estudiante: int,
+        fecha_prestamo: str = "",
+    ) -> None:
         """
         Parámetros: codigo_prestamo (int), codigo_libro (int), carnet_estudiante (int), fecha_prestamo (str)
         Devuelve:   None

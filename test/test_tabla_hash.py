@@ -1,11 +1,13 @@
-import sys
 import os
+import sys
+
 import pytest
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from clases.estudiante import Estudiante
 from estructura_datos.tabla_hash.tabla_hash import TablaHash
+
 
 @pytest.fixture
 def tabla():
@@ -19,15 +21,18 @@ def tabla():
 
     estudiantes = [
         Estudiante(1001, "Ana Garcia", "Informatica", "1111", "a@a.com", "Grecia"),
-        Estudiante(1003, "Carlos Perez", "Administracion", "2222", "c@a.com", "San Jose"),
+        Estudiante(
+            1003, "Carlos Perez", "Administracion", "2222", "c@a.com", "San Jose"
+        ),
         Estudiante(1005, "Beto Gomez", "Informatica", "3333", "b@a.com", "Alajuela"),
-        Estudiante(1002, "Diana Rojas", "Diseno", "4444", "d@a.com", "Heredia")
+        Estudiante(1002, "Diana Rojas", "Diseno", "4444", "d@a.com", "Heredia"),
     ]
 
     for est in estudiantes:
         t.insertar(est)
-        
+
     return t
+
 
 def test_insertar_y_buscar_por_carnet(tabla):
     """
@@ -41,6 +46,7 @@ def test_insertar_y_buscar_por_carnet(tabla):
     assert estudiante.nombre == "Carlos Perez"
     assert estudiante.carnet == 1003
 
+
 def test_buscar_inexistente(tabla):
     """
     Criterio de Aceptación: Búsqueda de Carnet Inexistente.
@@ -48,6 +54,7 @@ def test_buscar_inexistente(tabla):
     entonces debe retornar None de manera controlada.
     """
     assert tabla.buscar_por_carnet(9999) is None
+
 
 def test_buscar_por_nombre(tabla):
     """
@@ -64,6 +71,7 @@ def test_buscar_por_nombre(tabla):
     assert estudiante2 is not None
     assert estudiante2.carnet == 1005
 
+
 def test_buscar_por_carrera(tabla):
     """
     Criterio de Aceptación: Búsqueda Transversal por Carrera.
@@ -78,6 +86,7 @@ def test_buscar_por_carrera(tabla):
 
     assert tabla.buscar_por_carrera("Arquitectura") == []
 
+
 def test_eliminar_estudiante(tabla):
     """
     Criterio de Aceptación: Eliminación por Carnet.
@@ -87,10 +96,11 @@ def test_eliminar_estudiante(tabla):
     y las búsquedas posteriores deben retornar None.
     """
     assert tabla.buscar_por_carnet(1003) is not None
-    
+
     eliminado = tabla.eliminar_estudiante(1003)
     assert eliminado is True
-    
+
     assert tabla.buscar_por_carnet(1003) is None
-    
+
     assert tabla.eliminar_estudiante(1003) is False
+
