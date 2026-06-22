@@ -3,7 +3,7 @@ from typing import Optional
 from clases.prestamo import Prestamo
 
 
-class NodoRB:
+class Nodo:
     """
     Descripción: Nodo del árbol Rojinegro. Almacena un Prestamo, referencias
                  a hijos izquierdo y derecho, referencia al padre, y su color
@@ -19,7 +19,7 @@ class NodoRB:
             en color rojo por defecto. El padre se asigna externamente.
         """
         self.valor: Prestamo = prestamo
-        self.izq: Optional[NodoRB] = None
-        self.der: Optional[NodoRB] = None
-        self.padre: Optional[NodoRB] = None
+        self.izq: Optional[Nodo] = None
+        self.der: Optional[Nodo] = None
+        self.padre: Optional[Nodo] = None
         self.color: str = "Rojo"  # Nuevo nodo siempre es rojo
