@@ -1,6 +1,6 @@
 from typing import List, Optional
 from clases.prestamo import Prestamo
-from estructura_datos.arbol_rojinegro.nodo import NodoRB
+from estructura_datos.arbol_rojinegro.nodo import Nodo
 
 
 class RBTree:
@@ -12,7 +12,7 @@ class RBTree:
         2. La raíz es siempre negra.
         3. Las hojas NIL son negras.
         4. Si un nodo es rojo, sus hijos son negros.
-        5. Todos los caminos desde un nodo a sus hojas NIL tienen
+        5. Todos los caminos desde un nsodo a sus hojas NIL tienen
            el mismo número de nodos negros (altura negra).
     """
 
@@ -23,13 +23,13 @@ class RBTree:
         Descripción:
             Inicializa un árbol Rojinegro vacío con la raíz establecida en None.
         """
-        self.raiz: Optional[NodoRB] = None
+        self.raiz: Optional[Nodo] = None
 
     # ========== BÚSQUEDA ==========
 
-    def buscar_codigo(self, raiz_p: Optional[NodoRB], codigo_prestamo: int) -> Optional[Prestamo]:
+    def buscar_codigo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Prestamo]:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial de búsqueda.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial de búsqueda.
                     codigo_prestamo (int) — código del préstamo a buscar.
         Devuelve:   Optional[Prestamo] — el préstamo encontrado o None si no existe.
         Descripción:
@@ -46,11 +46,11 @@ class RBTree:
         else:
             return self.buscar_codigo(raiz_p.der, codigo_prestamo)
 
-    def _buscar_nodo(self, raiz_p: Optional[NodoRB], codigo_prestamo: int) -> Optional[NodoRB]:
+    def _buscar_nodo(self, raiz_p: Optional[Nodo], codigo_prestamo: int) -> Optional[Nodo]:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial de búsqueda.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial de búsqueda.
                     codigo_prestamo (int) — código del préstamo a buscar.
-        Devuelve:   Optional[NodoRB] — el nodo que contiene el préstamo o None.
+        Devuelve:   Optional[Nodo] — el nodo que contiene el préstamo o None.
         Descripción:
             Busca y retorna el nodo que contiene un préstamo específico.
             Método auxiliar para operaciones internas del árbol.
@@ -67,7 +67,7 @@ class RBTree:
 
     # ========== ROTACIONES ==========
 
-    def rotar_izq(self, raiz_p: NodoRB) -> NodoRB:
+    def rotar_izq(self, nodo_p: NodoRB) -> NodoRB:
         """
         Parámetros: raiz_p (NodoRB) — nodo sobre el cual rotar.
         Devuelve:   NodoRB — la nueva raíz del subárbol después de la rotación.
@@ -101,9 +101,9 @@ class RBTree:
         
         return nuevo_raiz
 
-    def rotar_der(self, raiz_p: NodoRB) -> NodoRB:
+    def rotar_der(self, nodo_p: NodoRB) -> NodoRB:
         """
-        Parámetros: raiz_p (NodoRB) — nodo sobre el cual rotar.
+        Parámetros: nodo_p (NodoRB) — nodo sobre el cual rotar.
         Devuelve:   NodoRB — la nueva raíz del subárbol después de la rotación.
         Descripción:
             Realiza una rotación simple a la derecha. El hijo izquierdo de raiz_p
@@ -146,7 +146,7 @@ class RBTree:
             por código de préstamo. Si el código ya existe, no se inserta (sin duplicados).
             Luego realiza recoloración y rotaciones para mantener las propiedades RB.
         """
-        nuevo_nodo = NodoRB(prestamo_nuevo)
+        nuevo_nodo = Nodo(prestamo_nuevo)
         
         if self.raiz is None:
             self.raiz = nuevo_nodo
@@ -176,9 +176,9 @@ class RBTree:
         
         self._reparar_insercion(nuevo_nodo)
 
-    def _reparar_insercion(self, raiz_p: NodoRB) -> None:
+    def _reparar_insercion(self, nodo_p: NodoRB) -> None:
         """
-        Parámetros: raiz_p (NodoRB) — el nodo recién insertado (siempre rojo).
+        Parámetros: nodo_p (NodoRB) — el nodo recién insertado (siempre rojo).
         Devuelve:   None
         Descripción:
             Repara las propiedades del árbol Rojinegro después de una inserción.
@@ -232,10 +232,10 @@ class RBTree:
         # Asegurar que la raíz sea negra
         self.raiz.color = "Negro"
 
-    def _rotar_izq_interna(self, raiz: Optional[NodoRB], raiz_p: NodoRB) -> Optional[NodoRB]:
+    def _rotar_izq_interna(self, raiz: Optional[NodoRB], nodo_p: NodoRB) -> Optional[NodoRB]:
         """
         Parámetros: raiz (Optional[NodoRB]) — raíz actual del árbol.
-                    raiz_p (NodoRB) — nodo a rotar.
+                    nodo_p (NodoRB) — nodo a rotar.
         Devuelve:   Optional[NodoRB] — nueva raíz después de la rotación.
         Descripción:
             Método auxiliar interno que realiza una rotación a la izquierda
@@ -250,10 +250,10 @@ class RBTree:
                 raiz_p.padre.der = self.rotar_izq(raiz_p)
         return raiz
 
-    def _rotar_der_interna(self, raiz: Optional[NodoRB], raiz_p: NodoRB) -> Optional[NodoRB]:
+    def _rotar_der_interna(self, raiz: Optional[NodoRB], nodo_p: NodoRB) -> Optional[NodoRB]:
         """
         Parámetros: raiz (Optional[NodoRB]) — raíz actual del árbol.
-                    raiz_p (NodoRB) — nodo a rotar.
+                    nodo_p (NodoRB) — nodo a rotar.
         Devuelve:   Optional[NodoRB] — nueva raíz después de la rotación.
         Descripción:
             Método auxiliar interno que realiza una rotación a la derecha
@@ -287,16 +287,18 @@ class RBTree:
         self._eliminar_nodo_interno(nodo_a_eliminar)
         return True
 
-    def _eliminar_nodo_interno(self, raiz_p: NodoRB) -> None:
+    def _eliminar_nodo_interno(self, nodo_p: NodoRB) -> None:
         """
-        Parámetros: raiz_p (NodoRB) — el nodo a eliminar.
+        Parámetros: nodo_p (NodoRB) — el nodo a eliminar.
         Devuelve:   None
         Descripción:
             Método auxiliar que realiza la eliminación del nodo y repara
             el árbol Rojinegro después de la operación.
         """
-        nodo_reemplazo: Optional[NodoRB] = None
-        raiz_padre: Optional[NodoRB] = None
+        color_original = nodo_p.color
+        x: Optional[NodoRB] = None
+        x_padre: Optional[NodoRB] = None
+        es_izq_de_padre = False
         
         # Caso 1: Nodo sin hijo izquierdo
         if raiz_p.izq is None:
@@ -327,15 +329,34 @@ class RBTree:
             sucesor.color = raiz_p.color
         
         # Reparar el árbol si se eliminó un nodo negro
-        if raiz_p.color == "Negro":
-            if nodo_reemplazo is not None:
-                self._reparar_eliminacion(nodo_reemplazo)
-            elif raiz_padre is not None:
-                self._reparar_eliminacion(raiz_padre)
+        if color_original == "Negro":
+            if x is None:
+                # Nodo temporal para jugar el rol de NIL
+                temp = NodoRB(Prestamo(-1, -1, -1, ""))
+                temp.color = "Negro"
+                temp.padre = x_padre
+                if x_padre is None:
+                    self.raiz = temp
+                elif es_izq_de_padre:
+                    x_padre.izq = temp
+                else:
+                    x_padre.der = temp
+                
+                self._reparar_eliminacion(temp)
+                
+                # Quitar el nodo temporal
+                if temp.padre is None:
+                    self.raiz = None
+                elif temp == temp.padre.izq:
+                    temp.padre.izq = None
+                else:
+                    temp.padre.der = None
+            else:
+                self._reparar_eliminacion(x)
 
-    def _trasplantar(self, raiz_p: NodoRB, nodo_reemplazo: Optional[NodoRB]) -> None:
+    def _trasplantar(self, nodo_p: NodoRB, nodo_reemplazo: Optional[NodoRB]) -> None:
         """
-        Parámetros: raiz_p (NodoRB) — nodo a ser reemplazado.
+        Parámetros: nodo_p (NodoRB) — nodo a ser reemplazado.
                     nodo_reemplazo (Optional[NodoRB]) — nodo que lo reemplaza.
         Devuelve:   None
         Descripción:
@@ -351,9 +372,9 @@ class RBTree:
         if nodo_reemplazo is not None:
             nodo_reemplazo.padre = raiz_p.padre
 
-    def _obtener_minimo(self, raiz_p: NodoRB) -> NodoRB:
+    def _obtener_minimo(self, nodo_p: NodoRB) -> NodoRB:
         """
-        Parámetros: raiz_p (NodoRB) — nodo raíz desde el cual buscar.
+        Parámetros: nodo_p (NodoRB) — nodo raíz desde el cual buscar.
         Devuelve:   NodoRB — el nodo con el menor valor en el subárbol.
         Descripción:
             Encuentra y retorna el nodo más a la izquierda (con el menor código)
@@ -364,9 +385,9 @@ class RBTree:
             actual = actual.izq
         return actual
 
-    def _reparar_eliminacion(self, raiz_p: NodoRB) -> None:
+    def _reparar_eliminacion(self, nodo_p: NodoRB) -> None:
         """
-        Parámetros: raiz_p (NodoRB) — el nodo donde comenzar la reparación.
+        Parámetros: nodo_p (NodoRB) — el nodo donde comenzar la reparación.
         Devuelve:   None
         Descripción:
             Repara las propiedades del árbol Rojinegro después de eliminar un nodo negro.
@@ -448,9 +469,9 @@ class RBTree:
         
         actual.color = "Negro"
 
-    def _obtener_color(self, nodo: Optional[NodoRB]) -> str:
+    def _obtener_color(self, nodo: Optional[Nodo]) -> str:
         """
-        Parámetros: nodo (Optional[NodoRB]) — nodo del cual obtener el color.
+        Parámetros: nodo (Optional[Nodo]) — nodo del cual obtener el color.
         Devuelve:   str — el color del nodo ("Rojo" o "Negro"), "Negro" si es None.
         Descripción:
             Método auxiliar que retorna el color de un nodo. Considera las hojas NIL como negras.
@@ -461,9 +482,9 @@ class RBTree:
 
     # ========== RECORRIDOS ==========
 
-    def inOrden(self, raiz_p: Optional[NodoRB]) -> None:
+    def inOrden(self, raiz_p: Optional[Nodo]) -> None:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial para el recorrido.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para el recorrido.
         Devuelve:   None
         Descripción:
             Recorre el árbol Rojinegro en inorden (izquierda -> nodo -> derecha)
@@ -478,9 +499,9 @@ class RBTree:
             
             self.inOrden(raiz_p.der)
 
-    def preOrden(self, raiz_p: Optional[NodoRB]) -> None:
+    def preOrden(self, raiz_p: Optional[Nodo]) -> None:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial para el recorrido.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para el recorrido.
         Devuelve:   None
         Descripción:
             Recorre el árbol Rojinegro en preorden (nodo -> izquierda -> derecha),
@@ -494,9 +515,9 @@ class RBTree:
             self.preOrden(raiz_p.izq)
             self.preOrden(raiz_p.der)
 
-    def postOrden(self, raiz_p: Optional[NodoRB]) -> None:
+    def postOrden(self, raiz_p: Optional[Nodo]) -> None:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial para el recorrido.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para el recorrido.
         Devuelve:   None
         Descripción:
             Recorre el árbol Rojinegro en postorden (izquierda -> derecha -> nodo),
@@ -510,9 +531,9 @@ class RBTree:
             print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | "
                   f"Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
 
-    def obtener_prestamos_inorden(self, raiz_p: Optional[NodoRB]) -> List[Prestamo]:
+    def obtener_prestamos_inorden(self, raiz_p: Optional[Nodo]) -> List[Prestamo]:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo raíz del subárbol.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo raíz del subárbol.
         Devuelve:   List[Prestamo] — lista de préstamos ordenados por código.
         Descripción:
             Recorre el árbol en inorden y retorna una lista de objetos Prestamo.
@@ -559,9 +580,9 @@ class RBTree:
         
         return resultado
 
-    def _verificar_colores(self, nodo: Optional[NodoRB]) -> bool:
+    def _verificar_colores(self, nodo: Optional[Nodo]) -> bool:
         """
-        Parámetros: nodo (Optional[NodoRB]) — nodo a verificar.
+        Parámetros: nodo (Optional[Nodo]) — nodo a verificar.
         Devuelve:   bool — True si todos los nodos son rojo o negro.
         Descripción:
             Verifica la propiedad 1: Todo nodo es rojo o negro.
@@ -586,9 +607,9 @@ class RBTree:
             return True
         return self.raiz.color == "Negro"
 
-    def _verificar_rojo_padre_negro(self, nodo: Optional[NodoRB]) -> bool:
+    def _verificar_rojo_padre_negro(self, nodo: Optional[Nodo]) -> bool:
         """
-        Parámetros: nodo (Optional[NodoRB]) — nodo a verificar.
+        Parámetros: nodo (Optional[Nodo]) — nodo a verificar.
         Devuelve:   bool — True si se cumple la propiedad 4.
         Descripción:
             Verifica la propiedad 4: Si un nodo es rojo, sus hijos son negros.
@@ -605,9 +626,9 @@ class RBTree:
         return (self._verificar_rojo_padre_negro(nodo.izq) and 
                 self._verificar_rojo_padre_negro(nodo.der))
 
-    def _verificar_altura_negra(self, nodo: Optional[NodoRB]) -> int:
+    def _verificar_altura_negra(self, nodo: Optional[Nodo]) -> int:
         """
-        Parámetros: nodo (Optional[NodoRB]) — nodo desde el cual calcular.
+        Parámetros: nodo (Optional[Nodo]) — nodo desde el cual calcular.
         Devuelve:   int — altura negra del subárbol, o -1 si hay violación.
         Descripción:
             Verifica la propiedad 5: Todos los caminos desde un nodo a sus hojas NIL
@@ -633,9 +654,9 @@ class RBTree:
         else:
             return altura_izq
 
-    def mostrar(self, raiz_p: Optional[NodoRB]) -> None:
+    def mostrar(self, raiz_p: Optional[Nodo]) -> None:
         """
-        Parámetros: raiz_p (Optional[NodoRB]) — nodo inicial para mostrar.
+        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para mostrar.
         Devuelve:   None
         Descripción:
             Muestra el árbol en preorden para debug, mostrando códigos y colores.
