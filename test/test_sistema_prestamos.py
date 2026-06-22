@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: test_sistema_prestamos.py
+"""
+
 import os, sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 

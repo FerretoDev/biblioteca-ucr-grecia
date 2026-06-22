@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: lista.py
+"""
+
 from estructura_datos.tabla_hash.nodo import Nodo
 from typing import Optional, List
 class Lista:

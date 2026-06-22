@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: arbol_avl.py
+"""
+
 from typing import Optional
 
 from clases.libro import Libro

@@ -1,3 +1,10 @@
+"""
+Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
+Archivo: arbol_rojinegro.py
+"""
+
 from typing import List, Optional
 from clases.prestamo import Prestamo
 from estructura_datos.arbol_rojinegro.nodo import Nodo

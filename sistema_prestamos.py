@@ -1,8 +1,9 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto - Paulo Anchía Correás
 Archivo: sistema_prestamos.py
 Descripcion: Capa de reglas de negocio para gestionar prestamos.
-             Valida condiciones antes de tocar el arbol rojinegro o el XML.
 """
 
 from datetime import datetime, timedelta
