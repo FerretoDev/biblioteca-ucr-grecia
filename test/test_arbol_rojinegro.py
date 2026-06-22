@@ -98,7 +98,7 @@ def main() -> None:
     codigos_buscar = [5, 10, 15, 9999]
 
     for codigo in codigos_buscar:
-        prestamo_encontrado = arbol_rb.buscar_prestamo(arbol_rb.raiz, codigo)
+        prestamo_encontrado = arbol_rb.buscar_codigo(arbol_rb.raiz, codigo)
         if prestamo_encontrado:
             print(f"Préstamo {codigo} encontrado:")
             print(f"   {prestamo_encontrado}")
@@ -114,7 +114,7 @@ def main() -> None:
 
     for codigo in codigos_eliminar:
         print(f"\nEliminando préstamo {codigo}...")
-        resultado = arbol_rb.eliminar_nodo(codigo)
+        resultado = arbol_rb.eliminar_codigo(codigo)
 
         if resultado:
             print(f"Préstamo {codigo} eliminado exitosamente")
@@ -166,7 +166,7 @@ def main() -> None:
 
     print("\nIntentando insertar préstamo duplicado (código 0001)...")
     prestamo_duplicado = Prestamo(1, 999, 9999, "2024-07-01")
-    arbol_rb.insertar_arbol(prestamo_duplicado)
+    arbol_rb.insertar(prestamo_duplicado)
     print("Duplicado rechazado (código 0001 ya existe)")
 
     # Verificación ultima
