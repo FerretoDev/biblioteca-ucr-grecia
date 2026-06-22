@@ -230,60 +230,65 @@ class RBTree:
     def _reparar_eliminacion(self, actual: Nodo) -> None:
         while actual != self.raiz and (actual is None or actual.color == "Negro"):
             padre = actual.padre
-            if actual == padre.izq:
-                hermano = padre.der
-                if hermano is not None and hermano.color == "Rojo":
-                    hermano.color = "Negro"
-                    padre.color = "Rojo"
+            
+            # 1. Identificar hermano
+            es_hijo_izq = (actual == padre.izq)
+            hermano = padre.der if es_hijo_izq else padre.izq
+            
+            # 2. Caso 1: Hermano es rojo
+            if hermano is not None and hermano.color == "Rojo":
+                hermano.color = "Negro"
+                padre.color = "Rojo"
+                if es_hijo_izq:
                     self.rotacion_dd(padre)
                     hermano = padre.der
-                if (hermano is not None and 
-                    (hermano.izq is None or hermano.izq.color == "Negro") and 
-                    (hermano.der is None or hermano.der.color == "Negro")):
-                    if hermano is not None:
-                        hermano.color = "Rojo"
-                    actual = padre
                 else:
-                    if hermano is not None:
+                    self.rotacion_ii(padre)
+                    hermano = padre.izq
+                    
+            # 3. Caso 2: Hermano es negro y sus dos hijos son negros
+            # (Este caso es exactamente igual para ambos lados)
+            if (hermano is not None and 
+                (hermano.izq is None or hermano.izq.color == "Negro") and 
+                (hermano.der is None or hermano.der.color == "Negro")):
+                
+                hermano.color = "Rojo" # Redundancia "if hermano is not None" eliminada
+                actual = padre
+                
+            # 4. Casos 3 y 4: Hermano es negro y al menos un hijo es rojo
+            else:
+                if hermano is not None:
+                    if es_hijo_izq:
+                        # --- Casos 3 y 4 para hijo izquierdo ---
                         if (hermano.der is None or hermano.der.color == "Negro"):
                             if hermano.izq is not None:
                                 hermano.izq.color = "Negro"
                             hermano.color = "Rojo"
                             self.rotacion_ii(hermano)
                             hermano = padre.der
+                            
                         hermano.color = padre.color
                         padre.color = "Negro"
                         if hermano.der is not None:
                             hermano.der.color = "Negro"
                         self.rotacion_dd(padre)
                         actual = self.raiz
-            else:
-                hermano = padre.izq
-                if hermano is not None and hermano.color == "Rojo":
-                    hermano.color = "Negro"
-                    padre.color = "Rojo"
-                    self.rotacion_ii(padre)
-                    hermano = padre.izq
-                if (hermano is not None and 
-                    (hermano.izq is None or hermano.izq.color == "Negro") and 
-                    (hermano.der is None or hermano.der.color == "Negro")):
-                    if hermano is not None:
-                        hermano.color = "Rojo"
-                    actual = padre
-                else:
-                    if hermano is not None:
+                    else:
+                        # --- Casos 3 y 4 para hijo derecho ---
                         if (hermano.izq is None or hermano.izq.color == "Negro"):
                             if hermano.der is not None:
                                 hermano.der.color = "Negro"
                             hermano.color = "Rojo"
                             self.rotacion_dd(hermano)
                             hermano = padre.izq
+                            
                         hermano.color = padre.color
                         padre.color = "Negro"
                         if hermano.izq is not None:
                             hermano.izq.color = "Negro"
                         self.rotacion_ii(padre)
                         actual = self.raiz
+                        
         if actual is not None:
             actual.color = "Negro"
     def inorden(self, raiz_p: Optional[Nodo], lista: Optional[List[Prestamo]] = None) -> List[Prestamo]:
