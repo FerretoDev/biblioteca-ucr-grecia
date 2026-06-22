@@ -114,7 +114,16 @@ def main() -> None:
     print("\n" + "-" * 80)
     print("RECORRIDO INORDEN (Verificar orden ascendente)")
     print("-" * 80)
-    arbol_rb.inorden(arbol_rb.raiz)
+    
+    def imprimir_inorden_con_color(raiz_p):
+        if raiz_p is not None:
+            imprimir_inorden_con_color(raiz_p.izq)
+            prestamo = raiz_p.valor
+            print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
+            imprimir_inorden_con_color(raiz_p.der)
+    
+    imprimir_inorden_con_color(arbol_rb.raiz)
+
 
 
     # Verificar propiedades después de inserciones
@@ -180,14 +189,23 @@ def main() -> None:
     print("\n" + "-" * 80)
     print("INORDEN DESPUÉS DE ELIMINACIONES")
     print("-" * 80)
-    arbol_rb.inorden(arbol_rb.raiz)
+    
+    def imprimir_inorden_con_color(raiz_p):
+        if raiz_p is not None:
+            imprimir_inorden_con_color(raiz_p.izq)
+            prestamo = raiz_p.valor
+            print(f"Código: {prestamo.codigo_prestamo} | Color: {raiz_p.color} | Libro: {prestamo.codigo_libro} | Estudiante: {prestamo.carnet_estudiante}")
+            imprimir_inorden_con_color(raiz_p.der)
+    
+    imprimir_inorden_con_color(arbol_rb.raiz)
+
 
     # lista de préstamos (para GUI)
     print("\n" + "=" * 80)
     print("5. OBTENCIÓN DE LISTA DE PRÉSTAMOS (Para GUI)")
     print("=" * 80)
 
-    lista_prestamos = arbol_rb.obtener_prestamos_inorden(arbol_rb.raiz)
+    lista_prestamos = arbol_rb.inorden(arbol_rb.raiz)
     print(f"\nTotal de préstamos en el árbol: {len(lista_prestamos)}\n")
 
     for i, prestamo in enumerate(lista_prestamos, 1):
@@ -220,7 +238,7 @@ def main() -> None:
     print("=" * 80)
 
     propiedades_final = verificar_propiedades_rb(arbol_rb)
-    lista_final = arbol_rb.obtener_prestamos_inorden(arbol_rb.raiz)
+    lista_final = arbol_rb.inorden(arbol_rb.raiz)
 
     print(f"\n Préstamos en el árbol: {len(lista_final)}")
     print(
