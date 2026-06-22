@@ -67,71 +67,71 @@ class RBTree:
 
     # ========== ROTACIONES ==========
 
-    def rotar_izq(self, nodo_p: NodoRB) -> NodoRB:
+    def rotar_izq(self, raiz_p: NodoRB) -> NodoRB:
         """
-        Parámetros: nodo_p (NodoRB) — nodo sobre el cual rotar.
+        Parámetros: raiz_p (NodoRB) — nodo sobre el cual rotar.
         Devuelve:   NodoRB — la nueva raíz del subárbol después de la rotación.
         Descripción:
-            Realiza una rotación simple a la izquierda. El hijo derecho de nodo_p
-            sube para ocupar su lugar, y nodo_p desciende como hijo izquierdo.
+            Realiza una rotación simple a la izquierda. El hijo derecho de raiz_p
+            sube para ocupar su lugar, y raiz_p desciende como hijo izquierdo.
             Estructura: antes de rotación:    después de rotación:
-                           nodo_p                      derecho
+                           raiz_p                      derecho
                           /      \\                    /       \\
-                        izq    derecho     =>      nodo_p    der_der
+                        izq    derecho     =>      raiz_p    der_der
                               /     \\            /     \\
                           der_izq  der_der      izq   der_izq
         """
 
-        nuevo_raiz = nodo_p.der
+        nuevo_raiz = raiz_p.der
         
         if nuevo_raiz is None:
-            return nodo_p
+            return raiz_p
         
-        # conecta el subárbol izquierdo del hijo derecho como derecho de nodo_p
-        nodo_p.der = nuevo_raiz.izq
+        # conecta el subárbol izquierdo del hijo derecho como derecho de raiz_p
+        raiz_p.der = nuevo_raiz.izq
         if nuevo_raiz.izq is not None:
-            nuevo_raiz.izq.padre = nodo_p
+            nuevo_raiz.izq.padre = raiz_p
         
-        # conecta el padre de nodo_p con nuevo_raiz
-        nuevo_raiz.padre = nodo_p.padre
+        # conecta el padre de raiz_p con nuevo_raiz
+        nuevo_raiz.padre = raiz_p.padre
         
-        # conecta nodo_p como hijo izquierdo de nuevo_raiz
-        nuevo_raiz.izq = nodo_p
-        nodo_p.padre = nuevo_raiz
+        # conecta raiz_p como hijo izquierdo de nuevo_raiz
+        nuevo_raiz.izq = raiz_p
+        raiz_p.padre = nuevo_raiz
         
         return nuevo_raiz
 
-    def rotar_der(self, nodo_p: NodoRB) -> NodoRB:
+    def rotar_der(self, raiz_p: NodoRB) -> NodoRB:
         """
-        Parámetros: nodo_p (NodoRB) — nodo sobre el cual rotar.
+        Parámetros: raiz_p (NodoRB) — nodo sobre el cual rotar.
         Devuelve:   NodoRB — la nueva raíz del subárbol después de la rotación.
         Descripción:
-            Realiza una rotación simple a la derecha. El hijo izquierdo de nodo_p
-            sube para ocupar su lugar, y nodo_p desciende como hijo derecho.
+            Realiza una rotación simple a la derecha. El hijo izquierdo de raiz_p
+            sube para ocupar su lugar, y raiz_p desciende como hijo derecho.
             Estructura: antes de rotación:    después de rotación:
-                           nodo_p                      izquierdo
+                           raiz_p                      izquierdo
                           /      \\                    /       \\
-                      izquierdo   der     =>      izq_izq    nodo_p
+                      izquierdo   der     =>      izq_izq    raiz_p
                       /     \\                              /     \\
                   izq_izq  izq_der                    izq_der    der
         """
         # Obtener el hijo izquierdo
-        nuevo_raiz = nodo_p.izq
+        nuevo_raiz = raiz_p.izq
         
         if nuevo_raiz is None:
-            return nodo_p
+            return raiz_p
         
-        # conecta el subárbol derecho del hijo izquierdo como izquierdo de nodo_p
-        nodo_p.izq = nuevo_raiz.der
+        # conecta el subárbol derecho del hijo izquierdo como izquierdo de raiz_p
+        raiz_p.izq = nuevo_raiz.der
         if nuevo_raiz.der is not None:
-            nuevo_raiz.der.padre = nodo_p
+            nuevo_raiz.der.padre = raiz_p
         
-        # conecta el padre de nodo_p con nuevo_raiz
-        nuevo_raiz.padre = nodo_p.padre
+        # conecta el padre de raiz_p con nuevo_raiz
+        nuevo_raiz.padre = raiz_p.padre
         
-        # conecta nodo_p como hijo derecho de nuevo_raiz
-        nuevo_raiz.der = nodo_p
-        nodo_p.padre = nuevo_raiz
+        # conecta raiz_p como hijo derecho de nuevo_raiz
+        nuevo_raiz.der = raiz_p
+        raiz_p.padre = nuevo_raiz
         
         return nuevo_raiz
 
@@ -176,96 +176,96 @@ class RBTree:
         
         self._reparar_insercion(nuevo_nodo)
 
-    def _reparar_insercion(self, nodo_p: NodoRB) -> None:
+    def _reparar_insercion(self, raiz_p: NodoRB) -> None:
         """
-        Parámetros: nodo_p (NodoRB) — el nodo recién insertado (siempre rojo).
+        Parámetros: raiz_p (NodoRB) — el nodo recién insertado (siempre rojo).
         Devuelve:   None
         Descripción:
             Repara las propiedades del árbol Rojinegro después de una inserción.
             Resuelve violaciones de la propiedad 4: "si un nodo es rojo, sus hijos
             deben ser negros" mediante recoloración y rotaciones.
         """
-        while nodo_p != self.raiz and nodo_p.padre is not None and nodo_p.padre.color == "Rojo":
-            if nodo_p.padre == nodo_p.padre.padre.izq:
+        while raiz_p != self.raiz and raiz_p.padre is not None and raiz_p.padre.color == "Rojo":
+            if raiz_p.padre == raiz_p.padre.padre.izq:
                 # El padre es hijo izquierdo del abuelo
-                tio = nodo_p.padre.padre.der
+                tio = raiz_p.padre.padre.der
                 
                 if tio is not None and tio.color == "Rojo":
                     # Caso 1: Tío es rojo -> recolorar
-                    nodo_p.padre.color = "Negro"
+                    raiz_p.padre.color = "Negro"
                     tio.color = "Negro"
-                    nodo_p.padre.padre.color = "Rojo"
-                    nodo_p = nodo_p.padre.padre
+                    raiz_p.padre.padre.color = "Rojo"
+                    raiz_p = raiz_p.padre.padre
                 else:
                     # Caso 2 y 3: Tío es negro -> rotar
-                    if nodo_p == nodo_p.padre.der:
+                    if raiz_p == raiz_p.padre.der:
                         # Caso 2: nodo es hijo derecho -> rotar padre a izquierda
-                        nodo_p = nodo_p.padre
-                        self.raiz = self._rotar_izq_interna(self.raiz, nodo_p)
+                        raiz_p = raiz_p.padre
+                        self.raiz = self._rotar_izq_interna(self.raiz, raiz_p)
                     
                     # Caso 3: nodo es hijo izquierdo -> recolorar y rotar abuelo a derecha
-                    nodo_p.padre.color = "Negro"
-                    nodo_p.padre.padre.color = "Rojo"
-                    self.raiz = self._rotar_der_interna(self.raiz, nodo_p.padre.padre)
+                    raiz_p.padre.color = "Negro"
+                    raiz_p.padre.padre.color = "Rojo"
+                    self.raiz = self._rotar_der_interna(self.raiz, raiz_p.padre.padre)
             else:
                 # El padre es hijo derecho del abuelo (simétricamente opuesto)
-                tio = nodo_p.padre.padre.izq
+                tio = raiz_p.padre.padre.izq
                 
                 if tio is not None and tio.color == "Rojo":
                     # Caso 1: Tío es rojo -> recolorar
-                    nodo_p.padre.color = "Negro"
+                    raiz_p.padre.color = "Negro"
                     tio.color = "Negro"
-                    nodo_p.padre.padre.color = "Rojo"
-                    nodo_p = nodo_p.padre.padre
+                    raiz_p.padre.padre.color = "Rojo"
+                    raiz_p = raiz_p.padre.padre
                 else:
                     # Caso 2 y 3: Tío es negro -> rotar
-                    if nodo_p == nodo_p.padre.izq:
+                    if raiz_p == raiz_p.padre.izq:
                         # Caso 2: nodo es hijo izquierdo -> rotar padre a derecha
-                        nodo_p = nodo_p.padre
-                        self.raiz = self._rotar_der_interna(self.raiz, nodo_p)
+                        raiz_p = raiz_p.padre
+                        self.raiz = self._rotar_der_interna(self.raiz, raiz_p)
                     
                     # Caso 3: nodo es hijo derecho -> recolorar y rotar abuelo a izquierda
-                    nodo_p.padre.color = "Negro"
-                    nodo_p.padre.padre.color = "Rojo"
-                    self.raiz = self._rotar_izq_interna(self.raiz, nodo_p.padre.padre)
+                    raiz_p.padre.color = "Negro"
+                    raiz_p.padre.padre.color = "Rojo"
+                    self.raiz = self._rotar_izq_interna(self.raiz, raiz_p.padre.padre)
         
         # Asegurar que la raíz sea negra
         self.raiz.color = "Negro"
 
-    def _rotar_izq_interna(self, raiz: Optional[NodoRB], nodo_p: NodoRB) -> Optional[NodoRB]:
+    def _rotar_izq_interna(self, raiz: Optional[NodoRB], raiz_p: NodoRB) -> Optional[NodoRB]:
         """
         Parámetros: raiz (Optional[NodoRB]) — raíz actual del árbol.
-                    nodo_p (NodoRB) — nodo a rotar.
+                    raiz_p (NodoRB) — nodo a rotar.
         Devuelve:   Optional[NodoRB] — nueva raíz después de la rotación.
         Descripción:
             Método auxiliar interno que realiza una rotación a la izquierda
             manteniendo la referencia correcta a la raíz del árbol.
         """
-        if nodo_p.padre is None:
-            raiz = self.rotar_izq(nodo_p)
+        if raiz_p.padre is None:
+            raiz = self.rotar_izq(raiz_p)
         else:
-            if nodo_p == nodo_p.padre.izq:
-                nodo_p.padre.izq = self.rotar_izq(nodo_p)
+            if raiz_p == raiz_p.padre.izq:
+                raiz_p.padre.izq = self.rotar_izq(raiz_p)
             else:
-                nodo_p.padre.der = self.rotar_izq(nodo_p)
+                raiz_p.padre.der = self.rotar_izq(raiz_p)
         return raiz
 
-    def _rotar_der_interna(self, raiz: Optional[NodoRB], nodo_p: NodoRB) -> Optional[NodoRB]:
+    def _rotar_der_interna(self, raiz: Optional[NodoRB], raiz_p: NodoRB) -> Optional[NodoRB]:
         """
         Parámetros: raiz (Optional[NodoRB]) — raíz actual del árbol.
-                    nodo_p (NodoRB) — nodo a rotar.
+                    raiz_p (NodoRB) — nodo a rotar.
         Devuelve:   Optional[NodoRB] — nueva raíz después de la rotación.
         Descripción:
             Método auxiliar interno que realiza una rotación a la derecha
             manteniendo la referencia correcta a la raíz del árbol.
         """
-        if nodo_p.padre is None:
-            raiz = self.rotar_der(nodo_p)
+        if raiz_p.padre is None:
+            raiz = self.rotar_der(raiz_p)
         else:
-            if nodo_p == nodo_p.padre.izq:
-                nodo_p.padre.izq = self.rotar_der(nodo_p)
+            if raiz_p == raiz_p.padre.izq:
+                raiz_p.padre.izq = self.rotar_der(raiz_p)
             else:
-                nodo_p.padre.der = self.rotar_der(nodo_p)
+                raiz_p.padre.der = self.rotar_der(raiz_p)
         return raiz
 
     # ========== ELIMINACIÓN ==========
@@ -287,91 +287,91 @@ class RBTree:
         self._eliminar_nodo_interno(nodo_a_eliminar)
         return True
 
-    def _eliminar_nodo_interno(self, nodo_p: NodoRB) -> None:
+    def _eliminar_nodo_interno(self, raiz_p: NodoRB) -> None:
         """
-        Parámetros: nodo_p (NodoRB) — el nodo a eliminar.
+        Parámetros: raiz_p (NodoRB) — el nodo a eliminar.
         Devuelve:   None
         Descripción:
             Método auxiliar que realiza la eliminación del nodo y repara
             el árbol Rojinegro después de la operación.
         """
         nodo_reemplazo: Optional[NodoRB] = None
-        nodo_padre: Optional[NodoRB] = None
+        raiz_padre: Optional[NodoRB] = None
         
         # Caso 1: Nodo sin hijo izquierdo
-        if nodo_p.izq is None:
-            nodo_reemplazo = nodo_p.der
-            self._trasplantar(nodo_p, nodo_p.der)
+        if raiz_p.izq is None:
+            nodo_reemplazo = raiz_p.der
+            self._trasplantar(raiz_p, raiz_p.der)
         # Caso 2: Nodo sin hijo derecho
-        elif nodo_p.der is None:
-            nodo_reemplazo = nodo_p.izq
-            self._trasplantar(nodo_p, nodo_p.izq)
+        elif raiz_p.der is None:
+            nodo_reemplazo = raiz_p.izq
+            self._trasplantar(raiz_p, raiz_p.izq)
         # Caso 3: Nodo con dos hijos
         else:
             # Encontrar el sucesor (mínimo en el subárbol derecho)
-            sucesor = self._obtener_minimo(nodo_p.der)
-            nodo_padre = sucesor.padre
+            sucesor = self._obtener_minimo(raiz_p.der)
+            raiz_padre = sucesor.padre
             
-            if sucesor.padre == nodo_p:
+            if sucesor.padre == raiz_p:
                 nodo_reemplazo = sucesor.der
             else:
                 nodo_reemplazo = sucesor.der
                 self._trasplantar(sucesor, sucesor.der)
-                sucesor.der = nodo_p.der
+                sucesor.der = raiz_p.der
                 sucesor.der.padre = sucesor
             
-            self._trasplantar(nodo_p, sucesor)
-            sucesor.izq = nodo_p.izq
+            self._trasplantar(raiz_p, sucesor)
+            sucesor.izq = raiz_p.izq
             sucesor.izq.padre = sucesor
-            sucesor.color = nodo_p.color
+            sucesor.color = raiz_p.color
         
         # Reparar el árbol si se eliminó un nodo negro
-        if nodo_p.color == "Negro":
+        if raiz_p.color == "Negro":
             if nodo_reemplazo is not None:
                 self._reparar_eliminacion(nodo_reemplazo)
-            elif nodo_padre is not None:
-                self._reparar_eliminacion(nodo_padre)
+            elif raiz_padre is not None:
+                self._reparar_eliminacion(raiz_padre)
 
-    def _trasplantar(self, nodo_p: NodoRB, nodo_reemplazo: Optional[NodoRB]) -> None:
+    def _trasplantar(self, raiz_p: NodoRB, nodo_reemplazo: Optional[NodoRB]) -> None:
         """
-        Parámetros: nodo_p (NodoRB) — nodo a ser reemplazado.
+        Parámetros: raiz_p (NodoRB) — nodo a ser reemplazado.
                     nodo_reemplazo (Optional[NodoRB]) — nodo que lo reemplaza.
         Devuelve:   None
         Descripción:
             Reemplaza un nodo con otro en el árbol, actualizando referencias de padres.
         """
-        if nodo_p.padre is None:
+        if raiz_p.padre is None:
             self.raiz = nodo_reemplazo
-        elif nodo_p == nodo_p.padre.izq:
-            nodo_p.padre.izq = nodo_reemplazo
+        elif raiz_p == raiz_p.padre.izq:
+            raiz_p.padre.izq = nodo_reemplazo
         else:
-            nodo_p.padre.der = nodo_reemplazo
+            raiz_p.padre.der = nodo_reemplazo
         
         if nodo_reemplazo is not None:
-            nodo_reemplazo.padre = nodo_p.padre
+            nodo_reemplazo.padre = raiz_p.padre
 
-    def _obtener_minimo(self, nodo_p: NodoRB) -> NodoRB:
+    def _obtener_minimo(self, raiz_p: NodoRB) -> NodoRB:
         """
-        Parámetros: nodo_p (NodoRB) — nodo raíz desde el cual buscar.
+        Parámetros: raiz_p (NodoRB) — nodo raíz desde el cual buscar.
         Devuelve:   NodoRB — el nodo con el menor valor en el subárbol.
         Descripción:
             Encuentra y retorna el nodo más a la izquierda (con el menor código)
             en un subárbol dado.
         """
-        actual = nodo_p
+        actual = raiz_p
         while actual.izq is not None:
             actual = actual.izq
         return actual
 
-    def _reparar_eliminacion(self, nodo_p: NodoRB) -> None:
+    def _reparar_eliminacion(self, raiz_p: NodoRB) -> None:
         """
-        Parámetros: nodo_p (NodoRB) — el nodo donde comenzar la reparación.
+        Parámetros: raiz_p (NodoRB) — el nodo donde comenzar la reparación.
         Devuelve:   None
         Descripción:
             Repara las propiedades del árbol Rojinegro después de eliminar un nodo negro.
             Resuelve violaciones de altura negra mediante recoloración y rotaciones.
         """
-        actual = nodo_p
+        actual = raiz_p
         
         while actual != self.raiz and self._obtener_color(actual) == "Negro":
             if actual == actual.padre.izq:
