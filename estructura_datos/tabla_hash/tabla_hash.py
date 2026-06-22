@@ -1,6 +1,7 @@
 from typing import List, Optional
-from estructura_datos.tabla_hash.lista import Lista
+
 from clases.estudiante import Estudiante
+from estructura_datos.tabla_hash.lista import Lista
 
 
 class TablaHash:

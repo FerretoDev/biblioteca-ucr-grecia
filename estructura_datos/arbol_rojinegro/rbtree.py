@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List, Optional
 from clases.prestamo import Prestamo
 from estructura_datos.arbol_rojinegro.nodo import NodoRB
 
