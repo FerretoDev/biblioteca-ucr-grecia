@@ -4,22 +4,12 @@ from clases.prestamo import Prestamo
 
 
 class Nodo:
-    """
-    Descripción: Nodo del árbol Rojinegro. Almacena un Prestamo, referencias
-                 a hijos izquierdo y derecho, referencia al padre, y su color
-                 (rojo o negro). Necesario para mantener las propiedades RB.
-    """
+    """Nodo del árbol Rojinegro."""
 
     def __init__(self, prestamo: Prestamo) -> None:
-        """
-        Parámetros: prestamo (Prestamo) — el préstamo a almacenar en el nodo.
-        Devuelve:   None
-        Descripción:
-            Inicializa un nodo del árbol Rojinegro. Todo nuevo nodo se inserta
-            en color rojo por defecto. El padre se asigna externamente.
-        """
+        """Inicializa nodo. Padre se asigna externamente."""
         self.valor: Prestamo = prestamo
         self.izq: Optional[Nodo] = None
         self.der: Optional[Nodo] = None
         self.padre: Optional[Nodo] = None
-        self.color: str = "Rojo"  # Nuevo nodo siempre es rojo
+        self.color: str = "Rojo"
