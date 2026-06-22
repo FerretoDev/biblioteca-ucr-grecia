@@ -4,7 +4,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from clases.prestamo import Prestamo
-from estructura_datos.arbol_rojinegro.arbol_rojinegro import RBTree
+from estructura_datos.arbol_rojinegro.arbol_rojinegro import ArbolRojinegro as RBTree
 from estructura_datos.arbol_rojinegro.nodo import Nodo
 from typing import Optional
 
