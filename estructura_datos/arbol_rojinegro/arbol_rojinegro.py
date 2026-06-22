@@ -2,7 +2,7 @@ from typing import List, Optional
 from clases.prestamo import Prestamo
 from estructura_datos.arbol_rojinegro.nodo import Nodo
 
-class RBTree:
+class ArbolRojinegro:
     def __init__(self) -> None:
         self.raiz: Optional[Nodo] = None
 
@@ -161,7 +161,7 @@ class RBTree:
             self.eliminar_codigo(raiz_p.izq, codigo_prestamo)
         elif codigo_prestamo > raiz_p.valor.codigo_prestamo:
             self.eliminar_codigo(raiz_p.der, codigo_prestamo)
-            
+
         else:
             # Encontrado!
             if raiz_p.izq is not None and raiz_p.der is not None:
