@@ -299,11 +299,13 @@ class RBTree:
         if nodo is None:
             return "Negro"
         return nodo.color
-    def inorden(self, raiz_p: Optional[Nodo]) -> List[Prestamo]:
-        if raiz_p is None:
-            return []
-        prestamos = []
-        prestamos.extend(self.inorden(raiz_p.izq))
-        prestamos.append(raiz_p.valor)
-        prestamos.extend(self.inorden(raiz_p.der))
-        return prestamos
+    def inorden(self, raiz_p: Optional[Nodo], lista: Optional[List[Prestamo]] = None) -> List[Prestamo]:
+        if lista is None:
+            lista = []
+            
+        if raiz_p is not None:
+            self.inorden(raiz_p.izq, lista)
+            lista.append(raiz_p.valor)
+            self.inorden(raiz_p.der, lista)
+            
+        return lista
