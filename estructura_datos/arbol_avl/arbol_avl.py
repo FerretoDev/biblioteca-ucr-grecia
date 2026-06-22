@@ -212,27 +212,7 @@ class ArbolAVL:
 
         return libros
 
-    def inorden(self, raiz_p) -> None: # Funcion que se encarga de mostrar de manera inorden
-
-        """
-        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para el recorrido.
-        Devuelve:   None
-        Descripción:
-            Recorre el árbol AVL en inorden (izq -> nodo -> der) imprimiendo los códigos de los libros.
-        """
-        if raiz_p is not None:
-            self.inorden(raiz_p.izq)
-
-            libro: Libro = raiz_p.valor
-            print(f"Código {libro.codigo}")
-            # print(f"Autor {libro.autor}")
-            # print(f"Titulo {libro.titulo}")
-            # print(f"Año {libro.anio}")
-            # print(f"Editorial {libro.editorial}")
-            # print(f"Areas {libro.area}")
-
-            self.inorden(raiz_p.der)
-
+    # mostrar_inorden
     def obtener_libros_inorden(self, raiz_p: Optional[Nodo]) -> list[Libro]:
         """
         Parámetros: raiz_p (Optional[Nodo]) — nodo raíz del subárbol.
@@ -315,18 +295,3 @@ class ArbolAVL:
                 return self.rotacion_di(raiz_p)
 
         return raiz_p
-
-    def mostrar(self, raiz_p) -> None: # Este muestra el arbol en posorden y es para debug
-        """
-        Parámetros: raiz_p (Optional[Nodo]) — nodo inicial para mostrar.
-        Devuelve:   None
-        Descripción:
-            Muestra el contenido del árbol imprimiendo los códigos en recorrido preorden.
-        """
-        if raiz_p is not None:
-            libro: Libro = raiz_p.valor
-
-            print(f"Código {libro.codigo}")
-
-            self.mostrar(raiz_p.izq)
-            self.mostrar(raiz_p.der)
