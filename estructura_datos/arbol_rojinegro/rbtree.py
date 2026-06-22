@@ -237,7 +237,7 @@ class RBTree:
             actual = actual.izq
         return actual
     def _reparar_eliminacion(self, actual: Nodo) -> None:
-        while actual != self.raiz and self._obtener_color(actual) == "Negro":
+        while actual != self.raiz and (actual is None or actual.color == "Negro"):
             padre = actual.padre
             if actual == padre.izq:
                 hermano = padre.der
@@ -247,14 +247,14 @@ class RBTree:
                     self.rotacion_dd(padre)
                     hermano = padre.der
                 if (hermano is not None and 
-                    self._obtener_color(hermano.izq) == "Negro" and 
-                    self._obtener_color(hermano.der) == "Negro"):
+                    (hermano.izq is None or hermano.izq.color == "Negro") and 
+                    (hermano.der is None or hermano.der.color == "Negro")):
                     if hermano is not None:
                         hermano.color = "Rojo"
                     actual = padre
                 else:
                     if hermano is not None:
-                        if self._obtener_color(hermano.der) == "Negro":
+                        if (hermano.der is None or hermano.der.color == "Negro"):
                             if hermano.izq is not None:
                                 hermano.izq.color = "Negro"
                             hermano.color = "Rojo"
@@ -274,14 +274,14 @@ class RBTree:
                     self.rotacion_ii(padre)
                     hermano = padre.izq
                 if (hermano is not None and 
-                    self._obtener_color(hermano.izq) == "Negro" and 
-                    self._obtener_color(hermano.der) == "Negro"):
+                    (hermano.izq is None or hermano.izq.color == "Negro") and 
+                    (hermano.der is None or hermano.der.color == "Negro")):
                     if hermano is not None:
                         hermano.color = "Rojo"
                     actual = padre
                 else:
                     if hermano is not None:
-                        if self._obtener_color(hermano.izq) == "Negro":
+                        if (hermano.izq is None or hermano.izq.color == "Negro"):
                             if hermano.der is not None:
                                 hermano.der.color = "Negro"
                             hermano.color = "Rojo"
@@ -295,11 +295,8 @@ class RBTree:
                         actual = self.raiz
         if actual is not None:
             actual.color = "Negro"
-    def _obtener_color(self, nodo: Optional[Nodo]) -> str:
-        if nodo is None:
-            return "Negro"
-        return nodo.color
     def inorden(self, raiz_p: Optional[Nodo], lista: Optional[List[Prestamo]] = None) -> List[Prestamo]:
+        # listo
         if lista is None:
             lista = []
             
