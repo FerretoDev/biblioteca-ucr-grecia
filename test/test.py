@@ -60,7 +60,7 @@ def test_buscar_codigo():
     for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    mi_arbol_avl.inorden(mi_arbol_avl.raiz)
     print("Buscar por codigo: ", end="")
     codigo: int = 1
     libro = mi_arbol_avl.buscar_codigo(mi_arbol_avl.raiz, codigo)
@@ -81,7 +81,7 @@ def test_buscar_titulo():
     for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    mi_arbol_avl.inorden(mi_arbol_avl.raiz)
     print("Buscar por titulo: ", end="")
     titulo: str = "Estructuras de Datos"
     libro = mi_arbol_avl.buscar_titulo(mi_arbol_avl.raiz, titulo)
@@ -101,7 +101,7 @@ def test_buscar_autor():
     for libro in libros:
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    mi_arbol_avl.inorden(mi_arbol_avl.raiz)
     print("Buscar por autor: ", end="")
     autor: str = "Silvia Guardi"
     libros_autor = mi_arbol_avl.buscar_autor(mi_arbol_avl.raiz, autor)
@@ -122,13 +122,13 @@ def test_eliminar_codigo():
         mi_arbol_avl.raiz = mi_arbol_avl.insertar(mi_arbol_avl.raiz, libro)
 
     print("Arbol antes de eliminar:")
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    mi_arbol_avl.inorden(mi_arbol_avl.raiz)
 
     codigo: int = 2
     mi_arbol_avl.raiz = mi_arbol_avl.eliminar_codigo(mi_arbol_avl.raiz, codigo)
 
     print(f"Arbol despues de eliminar codigo {codigo}:")
-    mi_arbol_avl.mostrar(mi_arbol_avl.raiz)
+    mi_arbol_avl.inorden(mi_arbol_avl.raiz)
 
     xml_manager.guardar_libros(libros)
 
@@ -146,7 +146,7 @@ def test_rotacion_ii():
     for i in lista:
         avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
     print("Árbol final (debería tener 20 como raíz):")
-    avl.mostrar(avl.raiz)
+    avl.inorden(avl.raiz)
     assert avl.raiz is not None
     assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
     assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
@@ -168,7 +168,7 @@ def test_rotacion_dd():
     for i in lista:
         avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
     print("Árbol final (debería tener 20 como raíz):")
-    avl.mostrar(avl.raiz)
+    avl.inorden(avl.raiz)
     assert avl.raiz is not None
     assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
     assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
@@ -190,7 +190,7 @@ def test_rotacion_id():
     for i in lista:
         avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
     print("Árbol final (debería tener 20 como raíz):")
-    avl.mostrar(avl.raiz)
+    avl.inorden(avl.raiz)
     assert avl.raiz is not None
     assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
     assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
@@ -212,7 +212,7 @@ def test_rotacion_di():
     for i in lista:
         avl.raiz = avl.insertar(avl.raiz, Libro(codigo=i, autor="", titulo="", anio=0, editorial="", area=""))
     print("Árbol final (debería tener 20 como raíz):")
-    avl.mostrar(avl.raiz)
+    avl.inorden(avl.raiz)
     assert avl.raiz is not None
     assert avl.raiz.valor.codigo == 20, "Fallo: La raíz debería ser 20"
     assert avl.raiz.izq is not None and avl.raiz.izq.valor.codigo == 10, "Fallo: El hijo izquierdo debería ser 10"
