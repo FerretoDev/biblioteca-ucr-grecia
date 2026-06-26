@@ -1,21 +1,8 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
-Archivo:  gui/interfaz.py
-Descripcion:
-    Interfaz grafica principal del sistema de biblioteca.
-    Usa ttk.Notebook con tres pestanas (Libros, Estudiantes, Prestamos).
-    La GUI nunca implementa logica de negocio: solo llama a las capas ya
-    existentes (ArbolAVL, TablaHash, SistemaPrestamos, GestorEliminacion).
-
-Tkinter utilizado:
-    tk.Tk()           — ventana principal
-    ttk.Notebook      — contenedor de pestanas
-    ttk.Treeview      — tabla con scroll para resultados
-    ttk.Scrollbar     — scroll vertical para Treeview
-    tk.LabelFrame     — agrupacion de campos de formulario
-    tk.Entry          — cajas de texto
-    tk.Button         — botones de accion
-    messagebox        — dialogos de confirmacion y error
+Curso: Estructuras de Datos
+Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
+Archivo: interfaz.py
 """
 
 import tkinter as tk
@@ -61,6 +48,7 @@ class App(tk.Tk):
 
     def __init__(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -83,6 +71,7 @@ class App(tk.Tk):
 
     def _init_data(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -122,6 +111,7 @@ class App(tk.Tk):
 
     def _apply_styles(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -167,6 +157,7 @@ class App(tk.Tk):
 
     def _build_ui(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -223,6 +214,7 @@ class App(tk.Tk):
 
     def _build_libros_tab(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -365,6 +357,7 @@ class App(tk.Tk):
 
     def _build_estudiantes_tab(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -518,6 +511,7 @@ class App(tk.Tk):
 
     def _build_prestamos_tab(self) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: ninguno
         Devuelve:   None
         Descripcion:
@@ -644,6 +638,7 @@ class App(tk.Tk):
     @staticmethod
     def _btn(parent: tk.Widget, text: str, command, bg: str) -> tk.Button:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: parent, text, command, bg
         Devuelve:   tk.Button configurado con el estilo del proyecto.
         Descripcion:
@@ -673,6 +668,7 @@ class App(tk.Tk):
         widths: tuple,
     ) -> ttk.Treeview:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: parent (tk.Widget), columns (tuple), headings (tuple), widths (tuple)
         Devuelve:   ttk.Treeview con scrollbar vertical integrada.
         Descripcion:
@@ -706,6 +702,7 @@ class App(tk.Tk):
     @staticmethod
     def _clear_tree(tree: ttk.Treeview) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: tree (ttk.Treeview)
         Devuelve:   None
         Descripcion:
@@ -716,6 +713,7 @@ class App(tk.Tk):
 
     def _status(self, msg: str, ok: bool = True) -> None:
         """
+        Integrantes: Marcos Ferreto Estrada - Paulo Anchía Correás
         Parametros: msg (str), ok (bool) — True = exito, False = error.
         Devuelve:   None
         Descripcion:
