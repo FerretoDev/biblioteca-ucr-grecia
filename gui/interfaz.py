@@ -16,15 +16,15 @@ from clases.prestamo import Prestamo
 from estructura_datos.arbol_avl.arbol_avl import ArbolAVL
 from estructura_datos.arbol_rojinegro.arbol_rojinegro import ArbolRojinegro
 from estructura_datos.tabla_hash.tabla_hash import TablaHash
-from gestor_eliminacion import GestorEliminacion
-from sistema_prestamos import SistemaPrestamos
-from xml_manager import XMLManager
+from gui.gestor_eliminacion import GestorEliminacion
+from gui.sistema_prestamos import SistemaPrestamos
+from gui.xml_manager import XMLManager
 
 # ── Paleta ───────────────────────────────────────────────────
 BG_DARK    = "#1B2631"   # fondo ventana y treeview
 BG_PANEL   = "#263545"   # fondo de cada pestana y frames
 ACCENT     = "#2471A3"   # azul primario (botones, encabezados)
-ACCENT_SEL = "#3498DB"   # azul brillante para la seleccion en la tabla
+ACCENT_SEL = "#547A8F"   # gris azulado para la seleccion en la tabla
 BTN_DEL    = "#922B21"   # rojo para botones de eliminar
 BTN_OK     = "#1E8449"   # verde para dar prestamo
 BTN_VER    = "#27AE60"   # verde claro/teal para ver todos
@@ -38,6 +38,37 @@ FONT_BTN   = ("Segoe UI", 12, "bold")
 FONT_MONO  = ("Consolas", 11)
 
 DURACION_PRESTAMO_DIAS = 15
+
+
+class PlaceholderEntry(tk.Entry):
+    def __init__(self, master=None, placeholder="PLACEHOLDER", placeholder_color="#808B96", *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.placeholder = placeholder
+        self.placeholder_color = placeholder_color
+        self.default_fg_color = self.cget('fg')
+
+        self.bind("<FocusIn>", self.foc_in)
+        self.bind("<FocusOut>", self.foc_out)
+        self.put_placeholder()
+
+    def put_placeholder(self):
+        self.insert(0, self.placeholder)
+        self.config(fg=self.placeholder_color)
+
+    def foc_in(self, *args):
+        if self.cget('fg') == self.placeholder_color:
+            self.delete('0', 'end')
+            self.config(fg=self.default_fg_color)
+
+    def foc_out(self, *args):
+        if not super().get():
+            self.put_placeholder()
+
+    def get(self):
+        val = super().get()
+        if val == self.placeholder and self.cget('fg') == self.placeholder_color:
+            return ""
+        return val
 
 
 class App(tk.Tk):
@@ -143,9 +174,13 @@ class App(tk.Tk):
                         font=("Segoe UI", 11, "bold"),
                         background=ACCENT,
                         foreground=FG_LIGHT)
+        # Fix para el bug de Tkinter donde tag_configure oculta el color de selección
+        def fixed_map(option):
+            return [elm for elm in style.map("Treeview", query_opt=option) 
+                    if elm[:2] != ("!disabled", "!selected")]
         style.map("Treeview",
-                  background=[("selected", ACCENT_SEL)],
-                  foreground=[("selected", "#FFFFFF")])
+                  background=fixed_map("background") + [("selected", ACCENT_SEL)],
+                  foreground=fixed_map("foreground") + [("selected", "#FFFFFF")])
 
         style.configure("Vertical.TScrollbar",
                         troughcolor=BG_DARK,
@@ -189,6 +224,18 @@ class App(tk.Tk):
             bg=ACCENT, fg=FG_LIGHT, font=FONT_TITLE,
         ).pack(side=tk.LEFT, padx=16, pady=10)
 
+        # Barra de estado (packed BEFORE notebook so it stays at the bottom)
+        lib_count = len(self.avl.obtener_libros_inorden(self.avl.raiz))
+        self.status_var = tk.StringVar(value=f"  ¡Éxito! — {lib_count} libro(s) en el sistema (inorden AVL)")
+        self._status_bar = tk.Label(
+            self,
+            textvariable=self.status_var,
+            bg=BG_PANEL, fg=FG_STATUS_OK,
+            font=("Segoe UI", 11, "bold"),
+            anchor=tk.W, padx=6,
+        )
+        self._status_bar.pack(fill=tk.X, side=tk.BOTTOM, ipady=8)
+
         # Notebook
         self.notebook = ttk.Notebook(self)
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=(8, 4))
@@ -196,18 +243,6 @@ class App(tk.Tk):
         self._build_libros_tab()
         self._build_estudiantes_tab()
         self._build_prestamos_tab()
-
-        # Barra de estado
-        lib_count = len(self.avl.obtener_libros_inorden(self.avl.raiz))
-        self.status_var = tk.StringVar(value=f"  ¡Éxito! — {lib_count} libro(s) en el sistema (inorden AVL)")
-        self._status_bar = tk.Label(
-            self,
-            textvariable=self.status_var,
-            bg=BG_PANEL, fg=FG_STATUS_OK,
-            font=("Segoe UI", 10),
-            anchor=tk.W, padx=6,
-        )
-        self._status_bar.pack(fill=tk.X, side=tk.BOTTOM, ipady=5)
 
     # ===========================================================
     # PESTANA LIBROS
@@ -233,26 +268,26 @@ class App(tk.Tk):
         # Fila 0: codigo y titulo
         tk.Label(form, text="Código:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
-        self.lib_codigo = tk.Entry(form, width=10, font=FONT_MONO,
-                                   bg="#1B2631", fg=FG_LIGHT,
-                                   insertbackground=FG_LIGHT)
+        self.lib_codigo = PlaceholderEntry(form, placeholder="Ej: 101", width=10, font=FONT_MONO,
+                                           bg="#1B2631", fg=FG_LIGHT,
+                                           insertbackground=FG_LIGHT)
         self.lib_codigo.grid(row=0, column=1, padx=10, pady=8, sticky="w")
         self.lib_codigo.bind("<Return>", lambda e: self._lib_buscar_codigo())
 
         tk.Label(form, text="Título:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
-        self.lib_titulo = tk.Entry(form, width=28, font=FONT_MONO,
-                                   bg="#1B2631", fg=FG_LIGHT,
-                                   insertbackground=FG_LIGHT)
+        self.lib_titulo = PlaceholderEntry(form, placeholder="Ej: Don Quijote", width=28, font=FONT_MONO,
+                                           bg="#1B2631", fg=FG_LIGHT,
+                                           insertbackground=FG_LIGHT)
         self.lib_titulo.grid(row=0, column=3, padx=10, pady=8, sticky="w")
         self.lib_titulo.bind("<Return>", lambda e: self._lib_buscar_titulo())
 
         # Fila 1: autor
         tk.Label(form, text="Autor:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=1, column=0, padx=8, pady=6, sticky="e")
-        self.lib_autor = tk.Entry(form, width=28, font=FONT_MONO,
-                                  bg="#1B2631", fg=FG_LIGHT,
-                                  insertbackground=FG_LIGHT)
+        self.lib_autor = PlaceholderEntry(form, placeholder="Ej: Cervantes", width=28, font=FONT_MONO,
+                                          bg="#1B2631", fg=FG_LIGHT,
+                                          insertbackground=FG_LIGHT)
         self.lib_autor.grid(row=1, column=1, columnspan=3, padx=10, pady=8, sticky="w")
         self.lib_autor.bind("<Return>", lambda e: self._lib_buscar_autor())
 
@@ -268,7 +303,8 @@ class App(tk.Tk):
             ("Ver todos",      BTN_VER,  self._lib_ver_todos),
         ]
         for col, (txt, bg, cmd) in enumerate(botones_lib):
-            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
+            pad_x = (20, 4) if txt == "Eliminar" else 4
+            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=pad_x, pady=2)
 
         # -- Treeview --
         self.lib_tree = self._make_treeview(
@@ -376,26 +412,26 @@ class App(tk.Tk):
         # Fila 0: carnet y nombre
         tk.Label(form, text="Carnet:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
-        self.est_carnet = tk.Entry(form, width=12, font=FONT_MONO,
-                                   bg="#1B2631", fg=FG_LIGHT,
-                                   insertbackground=FG_LIGHT)
+        self.est_carnet = PlaceholderEntry(form, placeholder="Ej: 2023001", width=12, font=FONT_MONO,
+                                           bg="#1B2631", fg=FG_LIGHT,
+                                           insertbackground=FG_LIGHT)
         self.est_carnet.grid(row=0, column=1, padx=10, pady=8, sticky="w")
         self.est_carnet.bind("<Return>", lambda e: self._est_buscar_carnet())
 
         tk.Label(form, text="Nombre:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
-        self.est_nombre = tk.Entry(form, width=28, font=FONT_MONO,
-                                   bg="#1B2631", fg=FG_LIGHT,
-                                   insertbackground=FG_LIGHT)
+        self.est_nombre = PlaceholderEntry(form, placeholder="Ej: Juan Perez", width=28, font=FONT_MONO,
+                                           bg="#1B2631", fg=FG_LIGHT,
+                                           insertbackground=FG_LIGHT)
         self.est_nombre.grid(row=0, column=3, padx=10, pady=8, sticky="w")
         self.est_nombre.bind("<Return>", lambda e: self._est_buscar_nombre())
 
         # Fila 1: carrera
         tk.Label(form, text="Carrera:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=1, column=0, padx=8, pady=6, sticky="e")
-        self.est_carrera = tk.Entry(form, width=28, font=FONT_MONO,
-                                    bg="#1B2631", fg=FG_LIGHT,
-                                    insertbackground=FG_LIGHT)
+        self.est_carrera = PlaceholderEntry(form, placeholder="Ej: Informatica", width=28, font=FONT_MONO,
+                                            bg="#1B2631", fg=FG_LIGHT,
+                                            insertbackground=FG_LIGHT)
         self.est_carrera.grid(row=1, column=1, columnspan=3, padx=10, pady=8, sticky="w")
         self.est_carrera.bind("<Return>", lambda e: self._est_buscar_carrera())
 
@@ -411,7 +447,8 @@ class App(tk.Tk):
             ("Ver todos",      BTN_VER, self._est_ver_todos),
         ]
         for col, (txt, bg, cmd) in enumerate(botones_est):
-            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
+            pad_x = (20, 4) if txt == "Eliminar" else 4
+            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=pad_x, pady=2)
 
         # -- Treeview --
         self.est_tree = self._make_treeview(
@@ -529,17 +566,17 @@ class App(tk.Tk):
 
         tk.Label(form_dar, text="Cod. libro:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
-        self.pres_cod_libro = tk.Entry(form_dar, width=10, font=FONT_MONO,
-                                       bg="#1B2631", fg=FG_LIGHT,
-                                       insertbackground=FG_LIGHT)
+        self.pres_cod_libro = PlaceholderEntry(form_dar, placeholder="Ej: 101", width=10, font=FONT_MONO,
+                                               bg="#1B2631", fg=FG_LIGHT,
+                                               insertbackground=FG_LIGHT)
         self.pres_cod_libro.grid(row=0, column=1, padx=10, pady=8, sticky="w")
         self.pres_cod_libro.bind("<Return>", lambda e: self.pres_carnet.focus_set())
 
         tk.Label(form_dar, text="Carnet:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
-        self.pres_carnet = tk.Entry(form_dar, width=12, font=FONT_MONO,
-                                    bg="#1B2631", fg=FG_LIGHT,
-                                    insertbackground=FG_LIGHT)
+        self.pres_carnet = PlaceholderEntry(form_dar, placeholder="Ej: 2023001", width=12, font=FONT_MONO,
+                                            bg="#1B2631", fg=FG_LIGHT,
+                                            insertbackground=FG_LIGHT)
         self.pres_carnet.grid(row=0, column=3, padx=10, pady=8, sticky="w")
         self.pres_carnet.bind("<Return>", lambda e: self._pres_dar())
 
@@ -553,9 +590,9 @@ class App(tk.Tk):
 
         tk.Label(form_dev, text="Cod. préstamo:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
-        self.pres_cod_prestamo = tk.Entry(form_dev, width=10, font=FONT_MONO,
-                                          bg="#1B2631", fg=FG_LIGHT,
-                                          insertbackground=FG_LIGHT)
+        self.pres_cod_prestamo = PlaceholderEntry(form_dev, placeholder="Ej: 5", width=10, font=FONT_MONO,
+                                                  bg="#1B2631", fg=FG_LIGHT,
+                                                  insertbackground=FG_LIGHT)
         self.pres_cod_prestamo.grid(row=0, column=1, padx=10, pady=8, sticky="w")
         self.pres_cod_prestamo.bind("<Return>", lambda e: self._pres_devolver())
 

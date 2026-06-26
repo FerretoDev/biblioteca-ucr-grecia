@@ -9,8 +9,8 @@ from typing import Tuple
 
 from estructura_datos.arbol_avl.arbol_avl import ArbolAVL
 from estructura_datos.tabla_hash.tabla_hash import TablaHash
-from sistema_prestamos import SistemaPrestamos
-from xml_manager import XMLManager
+from gui.sistema_prestamos import SistemaPrestamos
+from gui.xml_manager import XMLManager
 
 
 class GestorEliminacion:

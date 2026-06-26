@@ -12,7 +12,7 @@ from clases.prestamo import Prestamo
 from estructura_datos.arbol_avl.arbol_avl import ArbolAVL
 from estructura_datos.arbol_rojinegro.arbol_rojinegro import ArbolRojinegro
 from estructura_datos.tabla_hash.tabla_hash import TablaHash
-from xml_manager import XMLManager
+from gui.xml_manager import XMLManager
 
 DURACION_PRESTAMO_DIAS = 15
 
@@ -238,7 +238,7 @@ class SistemaPrestamos:
         Parámetros: ninguno
         Devuelve:   None
         Descripción:
-            Es un método de uso interno que recopila todos los préstamos actuales y le pide al XMLManager que los grabe.
+            Es un método de uso interno que recopila todos los préstamos actuales y le pide al XMLManager que los guarde.
         """
         # Obtenemos la lista ordenada de todos los préstamos activos actualmente en el árbol
         prestamos = self.arbol_prestamos.inorden(self.arbol_prestamos.raiz)
