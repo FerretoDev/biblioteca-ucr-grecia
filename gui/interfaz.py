@@ -40,6 +40,7 @@ ACCENT     = "#2471A3"   # azul primario (botones, encabezados)
 ACCENT_SEL = "#1A5276"   # azul seleccionado
 BTN_DEL    = "#922B21"   # rojo para botones de eliminar
 BTN_OK     = "#1E8449"   # verde para dar prestamo
+BTN_VER    = "#27AE60"   # verde claro/teal para ver todos
 FG_LIGHT   = "#FFFFFF"
 FG_STATUS_OK  = "#A9DFBF"
 FG_STATUS_ERR = "#F1948A"
@@ -173,11 +174,27 @@ class App(tk.Tk):
             y barra de estado inferior.
         """
         # Encabezado
-        header = tk.Frame(self, bg=ACCENT, height=46)
+        header = tk.Frame(self, bg=ACCENT, height=56)
         header.pack(fill=tk.X)
+        
+        # Intentar cargar y mostrar el logo
+        try:
+            # Usar firma blanca por el fondo azul (ACCENT)
+            self.logo_img = tk.PhotoImage(file="gui/iconos/firma-promocional-con-texto-blanco.png")
+            
+            # Ajustar tamaño si es muy grande (Photoimage.subsample usa factores enteros)
+            if self.logo_img.width() > 250:
+                factor = self.logo_img.width() // 200
+                if factor > 0:
+                    self.logo_img = self.logo_img.subsample(factor, factor)
+                    
+            tk.Label(header, image=self.logo_img, bg=ACCENT, borderwidth=0).pack(side=tk.RIGHT, padx=16, pady=5)
+        except Exception as e:
+            print(f"No se pudo cargar el logo: {e}")
+
         tk.Label(
             header,
-            text="\U0001F4DA  Biblioteca UCR \u2013 Recinto de Grecia",
+            text="Biblioteca UCR \u2013 Recinto de Grecia",
             bg=ACCENT, fg=FG_LIGHT, font=FONT_TITLE,
         ).pack(side=tk.LEFT, padx=16, pady=10)
 
@@ -213,7 +230,7 @@ class App(tk.Tk):
             botones de accion y Treeview de resultados.
         """
         tab = tk.Frame(self.notebook, bg=BG_PANEL)
-        self.notebook.add(tab, text="\U0001F4D6  Libros")
+        self.notebook.add(tab, text="Libros")
 
         # -- Formulario --
         form = tk.LabelFrame(tab, text=" Buscar / Eliminar ",
@@ -221,19 +238,21 @@ class App(tk.Tk):
         form.pack(fill=tk.X, padx=12, pady=(10, 4))
 
         # Fila 0: codigo y titulo
-        tk.Label(form, text="Codigo:", bg=BG_PANEL, fg=FG_LIGHT,
+        tk.Label(form, text="Código:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
         self.lib_codigo = tk.Entry(form, width=10, font=FONT_MONO,
                                    bg="#1B2631", fg=FG_LIGHT,
                                    insertbackground=FG_LIGHT)
-        self.lib_codigo.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+        self.lib_codigo.grid(row=0, column=1, padx=10, pady=8, sticky="w")
+        self.lib_codigo.bind("<Return>", lambda e: self._lib_buscar_codigo())
 
-        tk.Label(form, text="Titulo:", bg=BG_PANEL, fg=FG_LIGHT,
+        tk.Label(form, text="Título:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
         self.lib_titulo = tk.Entry(form, width=28, font=FONT_MONO,
                                    bg="#1B2631", fg=FG_LIGHT,
                                    insertbackground=FG_LIGHT)
-        self.lib_titulo.grid(row=0, column=3, padx=4, pady=6, sticky="w")
+        self.lib_titulo.grid(row=0, column=3, padx=10, pady=8, sticky="w")
+        self.lib_titulo.bind("<Return>", lambda e: self._lib_buscar_titulo())
 
         # Fila 1: autor
         tk.Label(form, text="Autor:", bg=BG_PANEL, fg=FG_LIGHT,
@@ -241,18 +260,19 @@ class App(tk.Tk):
         self.lib_autor = tk.Entry(form, width=28, font=FONT_MONO,
                                   bg="#1B2631", fg=FG_LIGHT,
                                   insertbackground=FG_LIGHT)
-        self.lib_autor.grid(row=1, column=1, columnspan=3, padx=4, pady=6, sticky="w")
+        self.lib_autor.grid(row=1, column=1, columnspan=3, padx=10, pady=8, sticky="w")
+        self.lib_autor.bind("<Return>", lambda e: self._lib_buscar_autor())
 
         # -- Botones --
         btn_frame = tk.Frame(tab, bg=BG_PANEL)
         btn_frame.pack(fill=tk.X, padx=12, pady=4)
 
         botones_lib = [
-            ("Buscar codigo",  ACCENT,   self._lib_buscar_codigo),
-            ("Buscar titulo",  ACCENT,   self._lib_buscar_titulo),
+            ("Buscar código",  ACCENT,   self._lib_buscar_codigo),
+            ("Buscar título",  ACCENT,   self._lib_buscar_titulo),
             ("Buscar autor",   ACCENT,   self._lib_buscar_autor),
             ("Eliminar",       BTN_DEL,  self._lib_eliminar),
-            ("Ver todos",      ACCENT,   self._lib_ver_todos),
+            ("Ver todos",      BTN_VER,  self._lib_ver_todos),
         ]
         for col, (txt, bg, cmd) in enumerate(botones_lib):
             self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
@@ -261,7 +281,7 @@ class App(tk.Tk):
         self.lib_tree = self._make_treeview(
             tab,
             columns=("codigo", "titulo", "autor", "anio", "editorial", "area"),
-            headings=("Codigo", "Titulo", "Autor", "Anio", "Editorial", "Area"),
+            headings=("Código", "Título", "Autor", "Año", "Editorial", "Área"),
             widths=(70, 210, 160, 55, 130, 110),
         )
 
@@ -270,15 +290,16 @@ class App(tk.Tk):
     def _lib_buscar_codigo(self) -> None:
         raw = self.lib_codigo.get().strip()
         if not raw:
-            return self._status("Ingrese un codigo.", ok=False)
+            return self._status("Ingrese un código.", ok=False)
         try:
             codigo = int(raw)
         except ValueError:
-            return self._status("El codigo debe ser un numero entero.", ok=False)
+            return self._status("El código debe ser un número entero.", ok=False)
 
         libro = self.avl.buscar_codigo(self.avl.raiz, codigo)
         if libro is None:
             self._clear_tree(self.lib_tree)
+            self.lib_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"Libro {codigo} no encontrado.", ok=False)
         self._poblar_libros([libro])
         self._status(f"Libro {codigo} encontrado.")
@@ -286,10 +307,11 @@ class App(tk.Tk):
     def _lib_buscar_titulo(self) -> None:
         titulo = self.lib_titulo.get().strip()
         if not titulo:
-            return self._status("Ingrese un titulo.", ok=False)
+            return self._status("Ingrese un título.", ok=False)
         libro = self.avl.buscar_titulo(self.avl.raiz, titulo)
         if libro is None:
             self._clear_tree(self.lib_tree)
+            self.lib_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"No se encontro '{titulo}'.", ok=False)
         self._poblar_libros([libro])
         self._status(f"Libro '{titulo}' encontrado.")
@@ -301,6 +323,7 @@ class App(tk.Tk):
         libros = self.avl.buscar_autor(self.avl.raiz, autor)
         if not libros:
             self._clear_tree(self.lib_tree)
+            self.lib_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"No hay libros de '{autor}'.", ok=False)
         self._poblar_libros(libros)
         self._status(f"{len(libros)} libro(s) de '{autor}'.")
@@ -308,11 +331,11 @@ class App(tk.Tk):
     def _lib_eliminar(self) -> None:
         raw = self.lib_codigo.get().strip()
         if not raw:
-            return self._status("Ingrese el codigo del libro a eliminar.", ok=False)
+            return self._status("Ingrese el código del libro a eliminar.", ok=False)
         try:
             codigo = int(raw)
         except ValueError:
-            return self._status("El codigo debe ser un numero entero.", ok=False)
+            return self._status("El código debe ser un número entero.", ok=False)
         if not messagebox.askyesno("Confirmar", f"Eliminar libro {codigo}?"):
             return
         ok, msg = self.gestor_eliminacion.eliminar_libro(codigo)
@@ -327,11 +350,13 @@ class App(tk.Tk):
 
     def _poblar_libros(self, libros: List[Libro]) -> None:
         self._clear_tree(self.lib_tree)
-        for libro in libros:
+        for i, libro in enumerate(libros):
+            tag = "par" if i % 2 == 0 else "impar"
             self.lib_tree.insert(
                 "", tk.END,
                 values=(libro.codigo, libro.titulo, libro.autor,
                         libro.anio, libro.editorial, libro.area),
+                tags=(tag,)
             )
 
     # ===========================================================
@@ -347,7 +372,7 @@ class App(tk.Tk):
             botones de accion y Treeview de resultados.
         """
         tab = tk.Frame(self.notebook, bg=BG_PANEL)
-        self.notebook.add(tab, text="\U0001F393  Estudiantes")
+        self.notebook.add(tab, text="Estudiantes")
 
         # -- Formulario --
         form = tk.LabelFrame(tab, text=" Buscar / Eliminar ",
@@ -360,14 +385,16 @@ class App(tk.Tk):
         self.est_carnet = tk.Entry(form, width=12, font=FONT_MONO,
                                    bg="#1B2631", fg=FG_LIGHT,
                                    insertbackground=FG_LIGHT)
-        self.est_carnet.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+        self.est_carnet.grid(row=0, column=1, padx=10, pady=8, sticky="w")
+        self.est_carnet.bind("<Return>", lambda e: self._est_buscar_carnet())
 
         tk.Label(form, text="Nombre:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
         self.est_nombre = tk.Entry(form, width=28, font=FONT_MONO,
                                    bg="#1B2631", fg=FG_LIGHT,
                                    insertbackground=FG_LIGHT)
-        self.est_nombre.grid(row=0, column=3, padx=4, pady=6, sticky="w")
+        self.est_nombre.grid(row=0, column=3, padx=10, pady=8, sticky="w")
+        self.est_nombre.bind("<Return>", lambda e: self._est_buscar_nombre())
 
         # Fila 1: carrera
         tk.Label(form, text="Carrera:", bg=BG_PANEL, fg=FG_LIGHT,
@@ -375,7 +402,8 @@ class App(tk.Tk):
         self.est_carrera = tk.Entry(form, width=28, font=FONT_MONO,
                                     bg="#1B2631", fg=FG_LIGHT,
                                     insertbackground=FG_LIGHT)
-        self.est_carrera.grid(row=1, column=1, columnspan=3, padx=4, pady=6, sticky="w")
+        self.est_carrera.grid(row=1, column=1, columnspan=3, padx=10, pady=8, sticky="w")
+        self.est_carrera.bind("<Return>", lambda e: self._est_buscar_carrera())
 
         # -- Botones --
         btn_frame = tk.Frame(tab, bg=BG_PANEL)
@@ -386,7 +414,7 @@ class App(tk.Tk):
             ("Buscar nombre",   ACCENT,  self._est_buscar_nombre),
             ("Buscar carrera",  ACCENT,  self._est_buscar_carrera),
             ("Eliminar",        BTN_DEL, self._est_eliminar),
-            ("Ver todos",       ACCENT,  self._est_ver_todos),
+            ("Ver todos",       BTN_VER, self._est_ver_todos),
         ]
         for col, (txt, bg, cmd) in enumerate(botones_est):
             self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
@@ -395,7 +423,7 @@ class App(tk.Tk):
         self.est_tree = self._make_treeview(
             tab,
             columns=("carnet", "nombre", "carrera", "telefono", "correo", "direccion"),
-            headings=("Carnet", "Nombre", "Carrera", "Telefono", "Correo", "Direccion"),
+            headings=("Carnet", "Nombre", "Carrera", "Teléfono", "Correo", "Dirección"),
             widths=(80, 170, 130, 90, 170, 140),
         )
 
@@ -408,10 +436,11 @@ class App(tk.Tk):
         try:
             carnet = int(raw)
         except ValueError:
-            return self._status("El carnet debe ser un numero entero.", ok=False)
+            return self._status("El carnet debe ser un número entero.", ok=False)
         est = self.tabla_hash.buscar_por_carnet(carnet)
         if est is None:
             self._clear_tree(self.est_tree)
+            self.est_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"Estudiante {carnet} no encontrado.", ok=False)
         self._poblar_estudiantes([est])
         self._status(f"Estudiante {carnet} encontrado.")
@@ -423,6 +452,7 @@ class App(tk.Tk):
         est = self.tabla_hash.buscar_por_nombre(nombre)
         if est is None:
             self._clear_tree(self.est_tree)
+            self.est_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"Estudiante '{nombre}' no encontrado.", ok=False)
         self._poblar_estudiantes([est])
         self._status(f"Estudiante '{nombre}' encontrado.")
@@ -441,6 +471,7 @@ class App(tk.Tk):
                 nodo = nodo.sig
         if not resultados:
             self._clear_tree(self.est_tree)
+            self.est_tree.insert("", tk.END, values=("Sin resultados", "", "", "", "", ""))
             return self._status(f"No hay estudiantes en '{carrera}'.", ok=False)
         self._poblar_estudiantes(resultados)
         self._status(f"{len(resultados)} estudiante(s) en '{carrera}'.")
@@ -452,7 +483,7 @@ class App(tk.Tk):
         try:
             carnet = int(raw)
         except ValueError:
-            return self._status("El carnet debe ser un numero entero.", ok=False)
+            return self._status("El carnet debe ser un número entero.", ok=False)
         if not messagebox.askyesno("Confirmar", f"Eliminar estudiante {carnet}?"):
             return
         ok, msg = self.gestor_eliminacion.eliminar_estudiante(carnet)
@@ -472,11 +503,13 @@ class App(tk.Tk):
 
     def _poblar_estudiantes(self, estudiantes: List[Estudiante]) -> None:
         self._clear_tree(self.est_tree)
-        for e in estudiantes:
+        for i, e in enumerate(estudiantes):
+            tag = "par" if i % 2 == 0 else "impar"
             self.est_tree.insert(
                 "", tk.END,
                 values=(e.carnet, e.nombre, e.carrera,
                         e.telefono, e.correo, e.direccion),
+                tags=(tag,)
             )
 
     # ===========================================================
@@ -492,10 +525,10 @@ class App(tk.Tk):
             boton de listado y Treeview con fecha de vencimiento calculada.
         """
         tab = tk.Frame(self.notebook, bg=BG_PANEL)
-        self.notebook.add(tab, text="\U0001F4CB  Prestamos")
+        self.notebook.add(tab, text="Préstamos")
 
         # -- Dar prestamo --
-        form_dar = tk.LabelFrame(tab, text=" Dar Prestamo ",
+        form_dar = tk.LabelFrame(tab, text=" Dar Préstamo ",
                                  bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
         form_dar.pack(fill=tk.X, padx=12, pady=(10, 2))
 
@@ -504,16 +537,18 @@ class App(tk.Tk):
         self.pres_cod_libro = tk.Entry(form_dar, width=10, font=FONT_MONO,
                                        bg="#1B2631", fg=FG_LIGHT,
                                        insertbackground=FG_LIGHT)
-        self.pres_cod_libro.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+        self.pres_cod_libro.grid(row=0, column=1, padx=10, pady=8, sticky="w")
+        self.pres_cod_libro.bind("<Return>", lambda e: self.pres_carnet.focus_set())
 
         tk.Label(form_dar, text="Carnet:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
         self.pres_carnet = tk.Entry(form_dar, width=12, font=FONT_MONO,
                                     bg="#1B2631", fg=FG_LIGHT,
                                     insertbackground=FG_LIGHT)
-        self.pres_carnet.grid(row=0, column=3, padx=4, pady=6, sticky="w")
+        self.pres_carnet.grid(row=0, column=3, padx=10, pady=8, sticky="w")
+        self.pres_carnet.bind("<Return>", lambda e: self._pres_dar())
 
-        self._btn(form_dar, "Dar Prestamo", self._pres_dar, BTN_OK).grid(
+        self._btn(form_dar, "Dar Préstamo", self._pres_dar, BTN_OK).grid(
             row=0, column=4, padx=12, pady=6)
 
         # -- Devolver libro --
@@ -521,12 +556,13 @@ class App(tk.Tk):
                                  bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
         form_dev.pack(fill=tk.X, padx=12, pady=2)
 
-        tk.Label(form_dev, text="Cod. prestamo:", bg=BG_PANEL, fg=FG_LIGHT,
+        tk.Label(form_dev, text="Cod. préstamo:", bg=BG_PANEL, fg=FG_LIGHT,
                  font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
         self.pres_cod_prestamo = tk.Entry(form_dev, width=10, font=FONT_MONO,
                                           bg="#1B2631", fg=FG_LIGHT,
                                           insertbackground=FG_LIGHT)
-        self.pres_cod_prestamo.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+        self.pres_cod_prestamo.grid(row=0, column=1, padx=10, pady=8, sticky="w")
+        self.pres_cod_prestamo.bind("<Return>", lambda e: self._pres_devolver())
 
         self._btn(form_dev, "Devolver", self._pres_devolver, ACCENT).grid(
             row=0, column=2, padx=12, pady=6)
@@ -534,14 +570,14 @@ class App(tk.Tk):
         # -- Boton Ver todos --
         btn_frame = tk.Frame(tab, bg=BG_PANEL)
         btn_frame.pack(fill=tk.X, padx=12, pady=4)
-        self._btn(btn_frame, "Ver todos (inorden RB)", self._pres_ver_todos, ACCENT).pack(
+        self._btn(btn_frame, "Ver todos (inorden RB)", self._pres_ver_todos, BTN_VER).pack(
             side=tk.LEFT)
 
         # -- Treeview --
         self.pres_tree = self._make_treeview(
             tab,
             columns=("codigo", "libro", "carnet", "fecha", "vence"),
-            headings=("Cod. Prestamo", "Cod. Libro", "Carnet", "Fecha", "Vence"),
+            headings=("Cod. Préstamo", "Cod. Libro", "Carnet", "Fecha", "Vence"),
             widths=(120, 100, 100, 110, 110),
         )
 
@@ -556,7 +592,7 @@ class App(tk.Tk):
             cod_libro = int(raw_libro)
             carnet    = int(raw_carnet)
         except ValueError:
-            return self._status("Codigo y carnet deben ser numeros enteros.", ok=False)
+            return self._status("Código y carnet deben ser números enteros.", ok=False)
         ok, msg = self.sistema_prestamos.dar_prestamo(cod_libro, carnet)
         self._status(msg, ok=ok)
         if ok:
@@ -565,12 +601,12 @@ class App(tk.Tk):
     def _pres_devolver(self) -> None:
         raw = self.pres_cod_prestamo.get().strip()
         if not raw:
-            return self._status("Ingrese el codigo del prestamo.", ok=False)
+            return self._status("Ingrese el código del préstamo.", ok=False)
         try:
             cod = int(raw)
         except ValueError:
-            return self._status("El codigo debe ser un numero entero.", ok=False)
-        if not messagebox.askyesno("Confirmar", f"Registrar devolucion del prestamo {cod}?"):
+            return self._status("El código debe ser un número entero.", ok=False)
+        if not messagebox.askyesno("Confirmar", f"Registrar devolución del préstamo {cod}?"):
             return
         ok, msg = self.sistema_prestamos.devolver_libro(cod)
         self._status(msg, ok=ok)
@@ -584,7 +620,7 @@ class App(tk.Tk):
 
     def _poblar_prestamos(self, prestamos: List[Prestamo]) -> None:
         self._clear_tree(self.pres_tree)
-        for p in prestamos:
+        for i, p in enumerate(prestamos):
             try:
                 vence = (
                     datetime.strptime(p.fecha_prestamo, "%Y-%m-%d")
@@ -592,10 +628,13 @@ class App(tk.Tk):
                 ).strftime("%Y-%m-%d")
             except (ValueError, TypeError):
                 vence = "—"
+            
+            tag = "par" if i % 2 == 0 else "impar"
             self.pres_tree.insert(
                 "", tk.END,
                 values=(p.codigo_prestamo, p.codigo_libro,
                         p.carnet_estudiante, p.fecha_prestamo, vence),
+                tags=(tag,)
             )
 
     # ===========================================================
@@ -618,6 +657,7 @@ class App(tk.Tk):
             fg=FG_LIGHT,
             font=FONT_BTN,
             relief=tk.FLAT,
+            width=14,  # Ancho fijo para uniformidad
             padx=10,
             pady=5,
             cursor="hand2",
@@ -657,6 +697,9 @@ class App(tk.Tk):
         for col, heading, width in zip(columns, headings, widths):
             tree.heading(col, text=heading)
             tree.column(col, width=width, minwidth=50, anchor=tk.CENTER)
+            
+        tree.tag_configure("par", background="#1e2a3a")
+        tree.tag_configure("impar", background="#16202e")
 
         return tree
 
