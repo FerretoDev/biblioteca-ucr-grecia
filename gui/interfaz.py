@@ -89,7 +89,7 @@ class App(tk.Tk):
         """
         super().__init__()
         self.title("Biblioteca UCR \u2013 Recinto de Grecia")
-        self.geometry("960x660")
+        self.geometry("1160x660")
         self.minsize(800, 580)
         self.configure(bg=BG_DARK)
         self._init_data()
@@ -763,7 +763,7 @@ class App(tk.Tk):
             Actualiza la barra de estado inferior con el mensaje y el
             color correspondiente (verde para exito, rojo para error).
         """
-        prefijo = "¡Éxito! —" if ok else "¡Error! —"
+        prefijo = "Éxito —" if ok else "Error —"
         
         contexto = ""
         try:
