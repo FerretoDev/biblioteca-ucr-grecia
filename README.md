@@ -66,17 +66,18 @@ biblioteca-ucr-grecia/
 │   ├── arbol_avl/arbol_avl.py       ← Maneja la inserción/búsqueda de Libros
 │   ├── arbol_rojinegro/arbol_rojinegro.py ← Maneja préstamos por código
 │   └── tabla_hash/                  
-│       ├── tabla_hash.py            ← Arreglo de cubetas
+│       ├── tabla_hash.py            ← Tablas hash - Implemetada como una un arreglo de arreglos, 
 │       └── lista.py                 ← Lista enlazada para colisiones
 ├── clases/
 │   ├── libro.py                     ← Modelo Entidad Libro
 │   ├── estudiante.py                ← Modelo Entidad Estudiante
 │   └── prestamo.py                  ← Modelo Entidad Prestamo
 ├── gui/
-│   └── interfaz.py                  ← Capa visual (Tkinter y ttk)
-├── xml_manager.py                   ← Serializador/Deserializador (Persistencia)
-├── sistema_prestamos.py             ← Reglas de negocio (Préstamos a 15 días)
-└── gestor_eliminacion.py            ← Validaciones de borrado (Dependencias)
+│   ├── interfaz.py                  ← Capa visual (Tkinter y ttk)
+│   ├── xml_manager.py               ← Serializador/Deserializador (Persistencia)
+│   ├── sistema_prestamos.py         ← Reglas de negocio (Préstamos a 15 días)
+│   └── gestor_eliminacion.py        ← Validaciones de borrado (Dependencias)
+└── ...                              ← Otras carpetas
 ```
 
 ---
