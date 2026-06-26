@@ -1,53 +1,113 @@
 """
 Proyecto: Biblioteca UCR - Recinto de Grecia
-Curso: Estructuras de Datos
-Integrantes: Marcos Ferreto - Paulo Anchía Correás
-Archivo: interfaz.py
+Archivo:  gui/interfaz.py
+Descripcion:
+    Interfaz grafica principal del sistema de biblioteca.
+    Usa ttk.Notebook con tres pestanas (Libros, Estudiantes, Prestamos).
+    La GUI nunca implementa logica de negocio: solo llama a las capas ya
+    existentes (ArbolAVL, TablaHash, SistemaPrestamos, GestorEliminacion).
+
+Tkinter utilizado:
+    tk.Tk()           — ventana principal
+    ttk.Notebook      — contenedor de pestanas
+    ttk.Treeview      — tabla con scroll para resultados
+    ttk.Scrollbar     — scroll vertical para Treeview
+    tk.LabelFrame     — agrupacion de campos de formulario
+    tk.Entry          — cajas de texto
+    tk.Button         — botones de accion
+    messagebox        — dialogos de confirmacion y error
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox
-from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
+from tkinter import messagebox, ttk
+from typing import List
 
-from clases.libro import Libro
 from clases.estudiante import Estudiante
+from clases.libro import Libro
 from clases.prestamo import Prestamo
-
 from estructura_datos.arbol_avl.arbol_avl import ArbolAVL
-from estructura_datos.tabla_hash.tabla_hash import TablaHash
 from estructura_datos.arbol_rojinegro.arbol_rojinegro import ArbolRojinegro
-
+from estructura_datos.tabla_hash.tabla_hash import TablaHash
 from gestor_eliminacion import GestorEliminacion
 from sistema_prestamos import SistemaPrestamos
 from xml_manager import XMLManager
 
-class App(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Biblioteca UCR - Recinto de Grecia")
-        self.geometry("900x600")
+# ── Paleta ───────────────────────────────────────────────────
+BG_DARK    = "#1B2631"   # fondo ventana y treeview
+BG_PANEL   = "#263545"   # fondo de cada pestana y frames
+ACCENT     = "#2471A3"   # azul primario (botones, encabezados)
+ACCENT_SEL = "#1A5276"   # azul seleccionado
+BTN_DEL    = "#922B21"   # rojo para botones de eliminar
+BTN_OK     = "#1E8449"   # verde para dar prestamo
+FG_LIGHT   = "#FFFFFF"
+FG_STATUS_OK  = "#A9DFBF"
+FG_STATUS_ERR = "#F1948A"
 
-        # Cargar los datos desde los archivos XML
+FONT_TITLE = ("Segoe UI", 13, "bold")
+FONT_LABEL = ("Segoe UI", 10)
+FONT_BTN   = ("Segoe UI", 10, "bold")
+FONT_MONO  = ("Consolas", 10)
+
+DURACION_PRESTAMO_DIAS = 15
+
+
+class App(tk.Tk):
+    """
+    Ventana principal del sistema Biblioteca UCR.
+    Carga los datos del XML al iniciar y construye la GUI con tres pestanas.
+    """
+
+    def __init__(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Inicializa la ventana, carga los datos desde XML, construye
+            las estructuras de datos en memoria e instancia las capas
+            de negocio antes de mostrar la interfaz.
+        """
+        super().__init__()
+        self.title("Biblioteca UCR \u2013 Recinto de Grecia")
+        self.geometry("960x660")
+        self.minsize(800, 580)
+        self.configure(bg=BG_DARK)
+        self._init_data()
+        self._apply_styles()
+        self._build_ui()
+
+    # ----------------------------------------------------------
+    # INICIALIZACION DE DATOS
+    # ----------------------------------------------------------
+
+    def _init_data(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Crea XMLManager, carga los tres archivos de datos y puebla
+            AVL de libros, TablaHash de estudiantes y ArbolRojinegro de
+            prestamos. Instancia SistemaPrestamos y GestorEliminacion.
+        """
         self.xml_manager = XMLManager()
         libros, estudiantes, prestamos = self.xml_manager.cargar_todo()
 
-        # Llenar AVL de libros
-        self.avl = ArbolAVL()
+        # AVL de libros
+        self.avl: ArbolAVL = ArbolAVL()
         for libro in libros:
             self.avl.raiz = self.avl.insertar(self.avl.raiz, libro)
 
-        # Llenar Tabla Hash de estudiantes
-        self.tabla_hash = TablaHash(100)
+        # Tabla Hash de estudiantes
+        self.tabla_hash: TablaHash = TablaHash(100)
         for estudiante in estudiantes:
             self.tabla_hash.insertar(estudiante)
 
-        # Llenar Arbol Rojinegro de prestamos
-        self.arbol_prestamos = ArbolRojinegro()
+        # Arbol Rojinegro de prestamos
+        self.arbol_prestamos: ArbolRojinegro = ArbolRojinegro()
         for prestamo in prestamos:
             self.arbol_prestamos.insertar(self.arbol_prestamos.raiz, prestamo)
 
-        # Iniciar gestores de negocio
+        # Capas de negocio
         self.sistema_prestamos = SistemaPrestamos(
             self.avl, self.tabla_hash, self.arbol_prestamos, self.xml_manager
         )
@@ -55,320 +115,575 @@ class App(tk.Tk):
             self.avl, self.tabla_hash, self.sistema_prestamos, self.xml_manager
         )
 
-        # Crear Notebook (Pestañas)
+    # ----------------------------------------------------------
+    # ESTILOS ttk
+    # ----------------------------------------------------------
+
+    def _apply_styles(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Configura el tema y los estilos de ttk para toda la aplicacion.
+        """
+        style = ttk.Style(self)
+        style.theme_use("clam")
+
+        style.configure("TNotebook",
+                        background=BG_DARK,
+                        borderwidth=0,
+                        tabmargins=[4, 4, 0, 0])
+        style.configure("TNotebook.Tab",
+                        background=BG_PANEL,
+                        foreground=FG_LIGHT,
+                        font=FONT_BTN,
+                        padding=[14, 7])
+        style.map("TNotebook.Tab",
+                  background=[("selected", ACCENT)],
+                  foreground=[("selected", FG_LIGHT)])
+
+        style.configure("Treeview",
+                        font=FONT_MONO,
+                        rowheight=26,
+                        background=BG_DARK,
+                        foreground=FG_LIGHT,
+                        fieldbackground=BG_DARK)
+        style.configure("Treeview.Heading",
+                        font=("Segoe UI", 10, "bold"),
+                        background=ACCENT,
+                        foreground=FG_LIGHT)
+        style.map("Treeview",
+                  background=[("selected", ACCENT_SEL)],
+                  foreground=[("selected", FG_LIGHT)])
+
+        style.configure("Vertical.TScrollbar",
+                        troughcolor=BG_DARK,
+                        background=ACCENT)
+
+    # ----------------------------------------------------------
+    # CONSTRUCCION DE LA UI
+    # ----------------------------------------------------------
+
+    def _build_ui(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Construye encabezado, ttk.Notebook con tres pestanas
+            y barra de estado inferior.
+        """
+        # Encabezado
+        header = tk.Frame(self, bg=ACCENT, height=46)
+        header.pack(fill=tk.X)
+        tk.Label(
+            header,
+            text="\U0001F4DA  Biblioteca UCR \u2013 Recinto de Grecia",
+            bg=ACCENT, fg=FG_LIGHT, font=FONT_TITLE,
+        ).pack(side=tk.LEFT, padx=16, pady=10)
+
+        # Notebook
         self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=(8, 4))
 
-        # Crear los frames para cada pestaña
-        self.tab_libros = tk.Frame(self.notebook)
-        self.tab_estudiantes = tk.Frame(self.notebook)
-        self.tab_prestamos = tk.Frame(self.notebook)
+        self._build_libros_tab()
+        self._build_estudiantes_tab()
+        self._build_prestamos_tab()
 
-        # Agregar los frames al notebook
-        self.notebook.add(self.tab_libros, text="Gestión de Libros")
-        self.notebook.add(self.tab_estudiantes, text="Gestión de Estudiantes")
-        self.notebook.add(self.tab_prestamos, text="Gestión de Préstamos")
+        # Barra de estado
+        self.status_var = tk.StringVar(value="  Sistema listo.")
+        self._status_bar = tk.Label(
+            self,
+            textvariable=self.status_var,
+            bg=BG_PANEL, fg=FG_STATUS_OK,
+            font=("Segoe UI", 9),
+            anchor=tk.W, padx=6,
+        )
+        self._status_bar.pack(fill=tk.X, side=tk.BOTTOM, ipady=5)
 
-        # Construir el contenido de cada pestaña
-        self.construir_tab_libros()
-        self.construir_tab_estudiantes()
-        self.construir_tab_prestamos()
+    # ===========================================================
+    # PESTANA LIBROS
+    # ===========================================================
 
-        # Barra de estado inferior
-        self.estado_label = tk.Label(self, text="Sistema iniciado correctamente", relief=tk.SUNKEN, anchor="w")
-        self.estado_label.pack(side=tk.BOTTOM, fill=tk.X)
+    def _build_libros_tab(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Crea la pestana de gestion de libros con formulario de busqueda,
+            botones de accion y Treeview de resultados.
+        """
+        tab = tk.Frame(self.notebook, bg=BG_PANEL)
+        self.notebook.add(tab, text="\U0001F4D6  Libros")
 
-    def status(self, msj):
-        """Muestra un mensaje en la barra inferior."""
-        self.estado_label.config(text=msj)
+        # -- Formulario --
+        form = tk.LabelFrame(tab, text=" Buscar / Eliminar ",
+                             bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
+        form.pack(fill=tk.X, padx=12, pady=(10, 4))
 
-    # ---------------------------------------------------------
-    # PESTAÑA LIBROS
-    # ---------------------------------------------------------
-    def construir_tab_libros(self):
-        # Formularios y entradas
-        frame_top = tk.Frame(self.tab_libros)
-        frame_top.pack(pady=10)
+        # Fila 0: codigo y titulo
+        tk.Label(form, text="Codigo:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
+        self.lib_codigo = tk.Entry(form, width=10, font=FONT_MONO,
+                                   bg="#1B2631", fg=FG_LIGHT,
+                                   insertbackground=FG_LIGHT)
+        self.lib_codigo.grid(row=0, column=1, padx=4, pady=6, sticky="w")
 
-        tk.Label(frame_top, text="Código del libro:").grid(row=0, column=0, padx=5, pady=5)
-        self.entry_codigo_libro = tk.Entry(frame_top)
-        self.entry_codigo_libro.grid(row=0, column=1, padx=5, pady=5)
+        tk.Label(form, text="Titulo:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
+        self.lib_titulo = tk.Entry(form, width=28, font=FONT_MONO,
+                                   bg="#1B2631", fg=FG_LIGHT,
+                                   insertbackground=FG_LIGHT)
+        self.lib_titulo.grid(row=0, column=3, padx=4, pady=6, sticky="w")
 
-        tk.Label(frame_top, text="Nombre del libro:").grid(row=1, column=0, padx=5, pady=5)
-        self.entry_nombre_libro = tk.Entry(frame_top)
-        self.entry_nombre_libro.grid(row=1, column=1, padx=5, pady=5)
+        # Fila 1: autor
+        tk.Label(form, text="Autor:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=1, column=0, padx=8, pady=6, sticky="e")
+        self.lib_autor = tk.Entry(form, width=28, font=FONT_MONO,
+                                  bg="#1B2631", fg=FG_LIGHT,
+                                  insertbackground=FG_LIGHT)
+        self.lib_autor.grid(row=1, column=1, columnspan=3, padx=4, pady=6, sticky="w")
 
-        tk.Label(frame_top, text="Autor:").grid(row=2, column=0, padx=5, pady=5)
-        self.entry_autor_libro = tk.Entry(frame_top)
-        self.entry_autor_libro.grid(row=2, column=1, padx=5, pady=5)
+        # -- Botones --
+        btn_frame = tk.Frame(tab, bg=BG_PANEL)
+        btn_frame.pack(fill=tk.X, padx=12, pady=4)
 
-        # Botones
-        frame_botones = tk.Frame(self.tab_libros)
-        frame_botones.pack(pady=5)
+        botones_lib = [
+            ("Buscar codigo",  ACCENT,   self._lib_buscar_codigo),
+            ("Buscar titulo",  ACCENT,   self._lib_buscar_titulo),
+            ("Buscar autor",   ACCENT,   self._lib_buscar_autor),
+            ("Eliminar",       BTN_DEL,  self._lib_eliminar),
+            ("Ver todos",      ACCENT,   self._lib_ver_todos),
+        ]
+        for col, (txt, bg, cmd) in enumerate(botones_lib):
+            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
 
-        tk.Button(frame_botones, text="Buscar por Código", command=self.buscar_libro_codigo).grid(row=0, column=0, padx=5)
-        tk.Button(frame_botones, text="Buscar por Nombre", command=self.buscar_libro_nombre).grid(row=0, column=1, padx=5)
-        tk.Button(frame_botones, text="Buscar por Autor", command=self.buscar_libro_autor).grid(row=0, column=2, padx=5)
-        tk.Button(frame_botones, text="Eliminar Libro", command=self.eliminar_libro).grid(row=0, column=3, padx=5)
-        tk.Button(frame_botones, text="Ver Inorden AVL", command=self.ver_libros_inorden).grid(row=0, column=4, padx=5)
+        # -- Treeview --
+        self.lib_tree = self._make_treeview(
+            tab,
+            columns=("codigo", "titulo", "autor", "anio", "editorial", "area"),
+            headings=("Codigo", "Titulo", "Autor", "Anio", "Editorial", "Area"),
+            widths=(70, 210, 160, 55, 130, 110),
+        )
 
-        # Tabla (Treeview)
-        self.tree_libros = ttk.Treeview(self.tab_libros, columns=("codigo", "autor", "titulo", "anio", "editorial", "area"), show="headings")
-        self.tree_libros.heading("codigo", text="Código")
-        self.tree_libros.heading("autor", text="Autor")
-        self.tree_libros.heading("titulo", text="Título")
-        self.tree_libros.heading("anio", text="Año")
-        self.tree_libros.heading("editorial", text="Editorial")
-        self.tree_libros.heading("area", text="Área")
+    # Callbacks libros ----------------------------------------
 
-        self.tree_libros.column("codigo", width=80)
-        self.tree_libros.column("autor", width=150)
-        self.tree_libros.column("titulo", width=200)
-        self.tree_libros.column("anio", width=60)
-        self.tree_libros.column("editorial", width=120)
-        self.tree_libros.column("area", width=120)
-
-        self.tree_libros.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-    def buscar_libro_codigo(self):
+    def _lib_buscar_codigo(self) -> None:
+        raw = self.lib_codigo.get().strip()
+        if not raw:
+            return self._status("Ingrese un codigo.", ok=False)
         try:
-            codigo = int(self.entry_codigo_libro.get())
+            codigo = int(raw)
         except ValueError:
-            messagebox.showerror("Error", "El código debe ser un número entero.")
-            return
-        
+            return self._status("El codigo debe ser un numero entero.", ok=False)
+
         libro = self.avl.buscar_codigo(self.avl.raiz, codigo)
-        self.tree_libros.delete(*self.tree_libros.get_children())
-        if libro:
-            self.tree_libros.insert("", tk.END, values=(libro.codigo, libro.autor, libro.titulo, libro.anio, libro.editorial, libro.area))
-            self.status("Libro encontrado.")
-        else:
-            self.status("Libro no encontrado en el sistema.")
+        if libro is None:
+            self._clear_tree(self.lib_tree)
+            return self._status(f"Libro {codigo} no encontrado.", ok=False)
+        self._poblar_libros([libro])
+        self._status(f"Libro {codigo} encontrado.")
 
-    def buscar_libro_nombre(self):
-        nombre = self.entry_nombre_libro.get()
-        if not nombre:
-            messagebox.showerror("Error", "Debe ingresar un nombre.")
-            return
-        
-        libros = self.avl.buscar_nombre(self.avl.raiz, nombre)
-        self.tree_libros.delete(*self.tree_libros.get_children())
-        for libro in libros:
-            self.tree_libros.insert("", tk.END, values=(libro.codigo, libro.autor, libro.titulo, libro.anio, libro.editorial, libro.area))
-        
-        if libros:
-            self.status(f"Se encontraron {len(libros)} libros con ese nombre.")
-        else:
-            self.status("No se encontraron libros.")
+    def _lib_buscar_titulo(self) -> None:
+        titulo = self.lib_titulo.get().strip()
+        if not titulo:
+            return self._status("Ingrese un titulo.", ok=False)
+        libro = self.avl.buscar_titulo(self.avl.raiz, titulo)
+        if libro is None:
+            self._clear_tree(self.lib_tree)
+            return self._status(f"No se encontro '{titulo}'.", ok=False)
+        self._poblar_libros([libro])
+        self._status(f"Libro '{titulo}' encontrado.")
 
-    def buscar_libro_autor(self):
-        autor = self.entry_autor_libro.get()
+    def _lib_buscar_autor(self) -> None:
+        autor = self.lib_autor.get().strip()
         if not autor:
-            messagebox.showerror("Error", "Debe ingresar un autor.")
-            return
-        
+            return self._status("Ingrese un autor.", ok=False)
         libros = self.avl.buscar_autor(self.avl.raiz, autor)
-        self.tree_libros.delete(*self.tree_libros.get_children())
-        for libro in libros:
-            self.tree_libros.insert("", tk.END, values=(libro.codigo, libro.autor, libro.titulo, libro.anio, libro.editorial, libro.area))
-        
-        if libros:
-            self.status(f"Se encontraron {len(libros)} libros de ese autor.")
-        else:
-            self.status("No se encontraron libros.")
+        if not libros:
+            self._clear_tree(self.lib_tree)
+            return self._status(f"No hay libros de '{autor}'.", ok=False)
+        self._poblar_libros(libros)
+        self._status(f"{len(libros)} libro(s) de '{autor}'.")
 
-    def eliminar_libro(self):
+    def _lib_eliminar(self) -> None:
+        raw = self.lib_codigo.get().strip()
+        if not raw:
+            return self._status("Ingrese el codigo del libro a eliminar.", ok=False)
         try:
-            codigo = int(self.entry_codigo_libro.get())
+            codigo = int(raw)
         except ValueError:
-            messagebox.showerror("Error", "Ingrese el código del libro a eliminar en la caja de texto correspondiente.")
+            return self._status("El codigo debe ser un numero entero.", ok=False)
+        if not messagebox.askyesno("Confirmar", f"Eliminar libro {codigo}?"):
             return
+        ok, msg = self.gestor_eliminacion.eliminar_libro(codigo)
+        self._status(msg, ok=ok)
+        if ok:
+            self._lib_ver_todos()
 
-        respuesta = messagebox.askyesno("Confirmar", f"¿Está seguro que desea eliminar el libro con código {codigo}?")
-        if respuesta:
-            exito, msj = self.gestor_eliminacion.eliminar_libro(codigo)
-            if exito:
-                messagebox.showinfo("Éxito", msj)
-                self.ver_libros_inorden()
-            else:
-                messagebox.showerror("No se pudo eliminar", msj)
-            self.status(msj)
-
-    def ver_libros_inorden(self):
+    def _lib_ver_todos(self) -> None:
         libros = self.avl.obtener_libros_inorden(self.avl.raiz)
-        self.tree_libros.delete(*self.tree_libros.get_children())
+        self._poblar_libros(libros)
+        self._status(f"{len(libros)} libro(s) en el sistema (inorden AVL).")
+
+    def _poblar_libros(self, libros: List[Libro]) -> None:
+        self._clear_tree(self.lib_tree)
         for libro in libros:
-            self.tree_libros.insert("", tk.END, values=(libro.codigo, libro.autor, libro.titulo, libro.anio, libro.editorial, libro.area))
-        self.status("Mostrando todos los libros ordenados (in-orden).")
+            self.lib_tree.insert(
+                "", tk.END,
+                values=(libro.codigo, libro.titulo, libro.autor,
+                        libro.anio, libro.editorial, libro.area),
+            )
 
-    # ---------------------------------------------------------
-    # PESTAÑA ESTUDIANTES
-    # ---------------------------------------------------------
-    def construir_tab_estudiantes(self):
-        frame_top = tk.Frame(self.tab_estudiantes)
-        frame_top.pack(pady=10)
+    # ===========================================================
+    # PESTANA ESTUDIANTES
+    # ===========================================================
 
-        tk.Label(frame_top, text="Carnet:").grid(row=0, column=0, padx=5, pady=5)
-        self.entry_carnet_est = tk.Entry(frame_top)
-        self.entry_carnet_est.grid(row=0, column=1, padx=5, pady=5)
+    def _build_estudiantes_tab(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Crea la pestana de gestion de estudiantes con formulario,
+            botones de accion y Treeview de resultados.
+        """
+        tab = tk.Frame(self.notebook, bg=BG_PANEL)
+        self.notebook.add(tab, text="\U0001F393  Estudiantes")
 
-        tk.Label(frame_top, text="Nombre:").grid(row=1, column=0, padx=5, pady=5)
-        self.entry_nombre_est = tk.Entry(frame_top)
-        self.entry_nombre_est.grid(row=1, column=1, padx=5, pady=5)
+        # -- Formulario --
+        form = tk.LabelFrame(tab, text=" Buscar / Eliminar ",
+                             bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
+        form.pack(fill=tk.X, padx=12, pady=(10, 4))
 
-        tk.Label(frame_top, text="Carrera:").grid(row=2, column=0, padx=5, pady=5)
-        self.entry_carrera_est = tk.Entry(frame_top)
-        self.entry_carrera_est.grid(row=2, column=1, padx=5, pady=5)
+        # Fila 0: carnet y nombre
+        tk.Label(form, text="Carnet:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
+        self.est_carnet = tk.Entry(form, width=12, font=FONT_MONO,
+                                   bg="#1B2631", fg=FG_LIGHT,
+                                   insertbackground=FG_LIGHT)
+        self.est_carnet.grid(row=0, column=1, padx=4, pady=6, sticky="w")
 
-        frame_botones = tk.Frame(self.tab_estudiantes)
-        frame_botones.pack(pady=5)
+        tk.Label(form, text="Nombre:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
+        self.est_nombre = tk.Entry(form, width=28, font=FONT_MONO,
+                                   bg="#1B2631", fg=FG_LIGHT,
+                                   insertbackground=FG_LIGHT)
+        self.est_nombre.grid(row=0, column=3, padx=4, pady=6, sticky="w")
 
-        tk.Button(frame_botones, text="Buscar por Carnet", command=self.buscar_est_carnet).grid(row=0, column=0, padx=5)
-        tk.Button(frame_botones, text="Buscar por Nombre", command=self.buscar_est_nombre).grid(row=0, column=1, padx=5)
-        tk.Button(frame_botones, text="Buscar por Carrera", command=self.buscar_est_carrera).grid(row=0, column=2, padx=5)
-        tk.Button(frame_botones, text="Eliminar Estudiante", command=self.eliminar_estudiante).grid(row=0, column=3, padx=5)
-        tk.Button(frame_botones, text="Ver Todos", command=self.ver_todos_estudiantes).grid(row=0, column=4, padx=5)
+        # Fila 1: carrera
+        tk.Label(form, text="Carrera:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=1, column=0, padx=8, pady=6, sticky="e")
+        self.est_carrera = tk.Entry(form, width=28, font=FONT_MONO,
+                                    bg="#1B2631", fg=FG_LIGHT,
+                                    insertbackground=FG_LIGHT)
+        self.est_carrera.grid(row=1, column=1, columnspan=3, padx=4, pady=6, sticky="w")
 
-        self.tree_estudiantes = ttk.Treeview(self.tab_estudiantes, columns=("carnet", "nombre", "carrera", "telefono", "correo", "direccion"), show="headings")
-        self.tree_estudiantes.heading("carnet", text="Carnet")
-        self.tree_estudiantes.heading("nombre", text="Nombre")
-        self.tree_estudiantes.heading("carrera", text="Carrera")
-        self.tree_estudiantes.heading("telefono", text="Teléfono")
-        self.tree_estudiantes.heading("correo", text="Correo")
-        self.tree_estudiantes.heading("direccion", text="Dirección")
+        # -- Botones --
+        btn_frame = tk.Frame(tab, bg=BG_PANEL)
+        btn_frame.pack(fill=tk.X, padx=12, pady=4)
 
-        self.tree_estudiantes.column("carnet", width=80)
-        self.tree_estudiantes.column("nombre", width=150)
-        self.tree_estudiantes.column("carrera", width=120)
-        self.tree_estudiantes.column("telefono", width=100)
-        self.tree_estudiantes.column("correo", width=150)
-        self.tree_estudiantes.column("direccion", width=150)
+        botones_est = [
+            ("Buscar carnet",   ACCENT,  self._est_buscar_carnet),
+            ("Buscar nombre",   ACCENT,  self._est_buscar_nombre),
+            ("Buscar carrera",  ACCENT,  self._est_buscar_carrera),
+            ("Eliminar",        BTN_DEL, self._est_eliminar),
+            ("Ver todos",       ACCENT,  self._est_ver_todos),
+        ]
+        for col, (txt, bg, cmd) in enumerate(botones_est):
+            self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
 
-        self.tree_estudiantes.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # -- Treeview --
+        self.est_tree = self._make_treeview(
+            tab,
+            columns=("carnet", "nombre", "carrera", "telefono", "correo", "direccion"),
+            headings=("Carnet", "Nombre", "Carrera", "Telefono", "Correo", "Direccion"),
+            widths=(80, 170, 130, 90, 170, 140),
+        )
 
-    def buscar_est_carnet(self):
+    # Callbacks estudiantes -----------------------------------
+
+    def _est_buscar_carnet(self) -> None:
+        raw = self.est_carnet.get().strip()
+        if not raw:
+            return self._status("Ingrese un carnet.", ok=False)
         try:
-            carnet = int(self.entry_carnet_est.get())
+            carnet = int(raw)
         except ValueError:
-            messagebox.showerror("Error", "El carnet debe ser un número entero.")
-            return
-        
+            return self._status("El carnet debe ser un numero entero.", ok=False)
         est = self.tabla_hash.buscar_por_carnet(carnet)
-        self.tree_estudiantes.delete(*self.tree_estudiantes.get_children())
-        if est:
-            self.tree_estudiantes.insert("", tk.END, values=(est.carnet, est.nombre, est.carrera, est.telefono, est.correo, est.direccion))
-            self.status("Estudiante encontrado.")
-        else:
-            self.status("Estudiante no encontrado.")
+        if est is None:
+            self._clear_tree(self.est_tree)
+            return self._status(f"Estudiante {carnet} no encontrado.", ok=False)
+        self._poblar_estudiantes([est])
+        self._status(f"Estudiante {carnet} encontrado.")
 
-    def buscar_est_nombre(self):
-        nombre = self.entry_nombre_est.get()
+    def _est_buscar_nombre(self) -> None:
+        nombre = self.est_nombre.get().strip()
         if not nombre:
-            messagebox.showerror("Error", "Debe ingresar el nombre del estudiante.")
-            return
-        
-        lista = self.tabla_hash.buscar_por_nombre(nombre)
-        self.tree_estudiantes.delete(*self.tree_estudiantes.get_children())
-        for est in lista:
-            self.tree_estudiantes.insert("", tk.END, values=(est.carnet, est.nombre, est.carrera, est.telefono, est.correo, est.direccion))
-        
-        self.status(f"Se encontraron {len(lista)} estudiantes.")
+            return self._status("Ingrese un nombre.", ok=False)
+        est = self.tabla_hash.buscar_por_nombre(nombre)
+        if est is None:
+            self._clear_tree(self.est_tree)
+            return self._status(f"Estudiante '{nombre}' no encontrado.", ok=False)
+        self._poblar_estudiantes([est])
+        self._status(f"Estudiante '{nombre}' encontrado.")
 
-    def buscar_est_carrera(self):
-        carrera = self.entry_carrera_est.get()
+    def _est_buscar_carrera(self) -> None:
+        carrera = self.est_carrera.get().strip()
         if not carrera:
-            messagebox.showerror("Error", "Debe ingresar una carrera.")
-            return
-        
-        lista = self.tabla_hash.buscar_por_carrera(carrera)
-        self.tree_estudiantes.delete(*self.tree_estudiantes.get_children())
-        for est in lista:
-            self.tree_estudiantes.insert("", tk.END, values=(est.carnet, est.nombre, est.carrera, est.telefono, est.correo, est.direccion))
-        
-        self.status(f"Se encontraron {len(lista)} estudiantes en esa carrera.")
-
-    def eliminar_estudiante(self):
-        try:
-            carnet = int(self.entry_carnet_est.get())
-        except ValueError:
-            messagebox.showerror("Error", "Ingrese el carnet del estudiante a eliminar en la caja de texto.")
-            return
-
-        respuesta = messagebox.askyesno("Confirmar", f"¿Desea eliminar el estudiante {carnet}?")
-        if respuesta:
-            exito, msj = self.gestor_eliminacion.eliminar_estudiante(carnet)
-            if exito:
-                messagebox.showinfo("Éxito", msj)
-                self.ver_todos_estudiantes()
-            else:
-                messagebox.showerror("No se pudo eliminar", msj)
-            self.status(msj)
-
-    def ver_todos_estudiantes(self):
-        self.tree_estudiantes.delete(*self.tree_estudiantes.get_children())
-        count = 0
+            return self._status("Ingrese una carrera.", ok=False)
+        # buscar_por_carrera devuelve solo nombres; recorremos para objetos completos
+        resultados: List[Estudiante] = []
         for lista in self.tabla_hash.tabla_hash:
-            actual = lista.primero
-            while actual is not None:
-                est = actual.valor
-                self.tree_estudiantes.insert("", tk.END, values=(est.carnet, est.nombre, est.carrera, est.telefono, est.correo, est.direccion))
-                actual = actual.sig
-                count += 1
-        self.status(f"Mostrando todos los {count} estudiantes almacenados.")
+            nodo = lista.primero
+            while nodo is not None:
+                if nodo.valor.carrera.lower() == carrera.lower():
+                    resultados.append(nodo.valor)
+                nodo = nodo.sig
+        if not resultados:
+            self._clear_tree(self.est_tree)
+            return self._status(f"No hay estudiantes en '{carrera}'.", ok=False)
+        self._poblar_estudiantes(resultados)
+        self._status(f"{len(resultados)} estudiante(s) en '{carrera}'.")
 
-    # ---------------------------------------------------------
-    # PESTAÑA PRESTAMOS
-    # ---------------------------------------------------------
-    def construir_tab_prestamos(self):
-        frame_top = tk.Frame(self.tab_prestamos)
-        frame_top.pack(pady=10)
-
-        tk.Label(frame_top, text="Código Libro:").grid(row=0, column=0, padx=5, pady=5)
-        self.entry_prestamo_libro = tk.Entry(frame_top)
-        self.entry_prestamo_libro.grid(row=0, column=1, padx=5, pady=5)
-
-        tk.Label(frame_top, text="Carnet Estudiante:").grid(row=1, column=0, padx=5, pady=5)
-        self.entry_prestamo_est = tk.Entry(frame_top)
-        self.entry_prestamo_est.grid(row=1, column=1, padx=5, pady=5)
-
-        frame_botones = tk.Frame(self.tab_prestamos)
-        frame_botones.pack(pady=5)
-
-        tk.Button(frame_botones, text="Dar Préstamo", command=self.dar_prestamo).grid(row=0, column=0, padx=5)
-        tk.Button(frame_botones, text="Ver Préstamos (Inorden)", command=self.ver_prestamos_inorden).grid(row=0, column=1, padx=5)
-
-        self.tree_prestamos = ttk.Treeview(self.tab_prestamos, columns=("codigo_prestamo", "codigo_libro", "carnet", "fecha"), show="headings")
-        self.tree_prestamos.heading("codigo_prestamo", text="Código Préstamo")
-        self.tree_prestamos.heading("codigo_libro", text="Código Libro")
-        self.tree_prestamos.heading("carnet", text="Carnet Estudiante")
-        self.tree_prestamos.heading("fecha", text="Fecha de Préstamo")
-
-        self.tree_prestamos.column("codigo_prestamo", width=120)
-        self.tree_prestamos.column("codigo_libro", width=120)
-        self.tree_prestamos.column("carnet", width=120)
-        self.tree_prestamos.column("fecha", width=150)
-
-        self.tree_prestamos.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-    def dar_prestamo(self):
+    def _est_eliminar(self) -> None:
+        raw = self.est_carnet.get().strip()
+        if not raw:
+            return self._status("Ingrese el carnet del estudiante a eliminar.", ok=False)
         try:
-            cod_libro = int(self.entry_prestamo_libro.get())
-            carnet = int(self.entry_prestamo_est.get())
+            carnet = int(raw)
         except ValueError:
-            messagebox.showerror("Error", "El código de libro y el carnet deben ser números.")
+            return self._status("El carnet debe ser un numero entero.", ok=False)
+        if not messagebox.askyesno("Confirmar", f"Eliminar estudiante {carnet}?"):
             return
+        ok, msg = self.gestor_eliminacion.eliminar_estudiante(carnet)
+        self._status(msg, ok=ok)
+        if ok:
+            self._est_ver_todos()
 
-        exito, msj = self.sistema_prestamos.dar_prestamo(cod_libro, carnet)
-        if exito:
-            messagebox.showinfo("Éxito", msj)
-            self.ver_prestamos_inorden()
-        else:
-            messagebox.showerror("Error", msj)
-        self.status(msj)
+    def _est_ver_todos(self) -> None:
+        todos: List[Estudiante] = []
+        for lista in self.tabla_hash.tabla_hash:
+            nodo = lista.primero
+            while nodo is not None:
+                todos.append(nodo.valor)
+                nodo = nodo.sig
+        self._poblar_estudiantes(todos)
+        self._status(f"{len(todos)} estudiante(s) en el sistema.")
 
-    def ver_prestamos_inorden(self):
-        prestamos = self.arbol_prestamos.inorden(self.arbol_prestamos.raiz)
-        self.tree_prestamos.delete(*self.tree_prestamos.get_children())
+    def _poblar_estudiantes(self, estudiantes: List[Estudiante]) -> None:
+        self._clear_tree(self.est_tree)
+        for e in estudiantes:
+            self.est_tree.insert(
+                "", tk.END,
+                values=(e.carnet, e.nombre, e.carrera,
+                        e.telefono, e.correo, e.direccion),
+            )
+
+    # ===========================================================
+    # PESTANA PRESTAMOS
+    # ===========================================================
+
+    def _build_prestamos_tab(self) -> None:
+        """
+        Parametros: ninguno
+        Devuelve:   None
+        Descripcion:
+            Crea la pestana de prestamos: formularios para dar y devolver,
+            boton de listado y Treeview con fecha de vencimiento calculada.
+        """
+        tab = tk.Frame(self.notebook, bg=BG_PANEL)
+        self.notebook.add(tab, text="\U0001F4CB  Prestamos")
+
+        # -- Dar prestamo --
+        form_dar = tk.LabelFrame(tab, text=" Dar Prestamo ",
+                                 bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
+        form_dar.pack(fill=tk.X, padx=12, pady=(10, 2))
+
+        tk.Label(form_dar, text="Cod. libro:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
+        self.pres_cod_libro = tk.Entry(form_dar, width=10, font=FONT_MONO,
+                                       bg="#1B2631", fg=FG_LIGHT,
+                                       insertbackground=FG_LIGHT)
+        self.pres_cod_libro.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+
+        tk.Label(form_dar, text="Carnet:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=2, padx=8, pady=6, sticky="e")
+        self.pres_carnet = tk.Entry(form_dar, width=12, font=FONT_MONO,
+                                    bg="#1B2631", fg=FG_LIGHT,
+                                    insertbackground=FG_LIGHT)
+        self.pres_carnet.grid(row=0, column=3, padx=4, pady=6, sticky="w")
+
+        self._btn(form_dar, "Dar Prestamo", self._pres_dar, BTN_OK).grid(
+            row=0, column=4, padx=12, pady=6)
+
+        # -- Devolver libro --
+        form_dev = tk.LabelFrame(tab, text=" Devolver Libro ",
+                                 bg=BG_PANEL, fg=FG_LIGHT, font=FONT_LABEL)
+        form_dev.pack(fill=tk.X, padx=12, pady=2)
+
+        tk.Label(form_dev, text="Cod. prestamo:", bg=BG_PANEL, fg=FG_LIGHT,
+                 font=FONT_LABEL).grid(row=0, column=0, padx=8, pady=6, sticky="e")
+        self.pres_cod_prestamo = tk.Entry(form_dev, width=10, font=FONT_MONO,
+                                          bg="#1B2631", fg=FG_LIGHT,
+                                          insertbackground=FG_LIGHT)
+        self.pres_cod_prestamo.grid(row=0, column=1, padx=4, pady=6, sticky="w")
+
+        self._btn(form_dev, "Devolver", self._pres_devolver, ACCENT).grid(
+            row=0, column=2, padx=12, pady=6)
+
+        # -- Boton Ver todos --
+        btn_frame = tk.Frame(tab, bg=BG_PANEL)
+        btn_frame.pack(fill=tk.X, padx=12, pady=4)
+        self._btn(btn_frame, "Ver todos (inorden RB)", self._pres_ver_todos, ACCENT).pack(
+            side=tk.LEFT)
+
+        # -- Treeview --
+        self.pres_tree = self._make_treeview(
+            tab,
+            columns=("codigo", "libro", "carnet", "fecha", "vence"),
+            headings=("Cod. Prestamo", "Cod. Libro", "Carnet", "Fecha", "Vence"),
+            widths=(120, 100, 100, 110, 110),
+        )
+
+    # Callbacks prestamos -------------------------------------
+
+    def _pres_dar(self) -> None:
+        raw_libro  = self.pres_cod_libro.get().strip()
+        raw_carnet = self.pres_carnet.get().strip()
+        if not raw_libro or not raw_carnet:
+            return self._status("Ingrese codigo de libro y carnet.", ok=False)
+        try:
+            cod_libro = int(raw_libro)
+            carnet    = int(raw_carnet)
+        except ValueError:
+            return self._status("Codigo y carnet deben ser numeros enteros.", ok=False)
+        ok, msg = self.sistema_prestamos.dar_prestamo(cod_libro, carnet)
+        self._status(msg, ok=ok)
+        if ok:
+            self._pres_ver_todos()
+
+    def _pres_devolver(self) -> None:
+        raw = self.pres_cod_prestamo.get().strip()
+        if not raw:
+            return self._status("Ingrese el codigo del prestamo.", ok=False)
+        try:
+            cod = int(raw)
+        except ValueError:
+            return self._status("El codigo debe ser un numero entero.", ok=False)
+        if not messagebox.askyesno("Confirmar", f"Registrar devolucion del prestamo {cod}?"):
+            return
+        ok, msg = self.sistema_prestamos.devolver_libro(cod)
+        self._status(msg, ok=ok)
+        if ok:
+            self._pres_ver_todos()
+
+    def _pres_ver_todos(self) -> None:
+        prestamos = self.sistema_prestamos.listar_prestamos()
+        self._poblar_prestamos(prestamos)
+        self._status(f"{len(prestamos)} prestamo(s) activo(s) (inorden Rojinegro).")
+
+    def _poblar_prestamos(self, prestamos: List[Prestamo]) -> None:
+        self._clear_tree(self.pres_tree)
         for p in prestamos:
-            self.tree_prestamos.insert("", tk.END, values=(p.codigo_prestamo, p.codigo_libro, p.carnet_estudiante, p.fecha_prestamo))
-        self.status("Mostrando préstamos en el árbol rojinegro (in-orden).")
+            try:
+                vence = (
+                    datetime.strptime(p.fecha_prestamo, "%Y-%m-%d")
+                    + timedelta(days=DURACION_PRESTAMO_DIAS)
+                ).strftime("%Y-%m-%d")
+            except (ValueError, TypeError):
+                vence = "—"
+            self.pres_tree.insert(
+                "", tk.END,
+                values=(p.codigo_prestamo, p.codigo_libro,
+                        p.carnet_estudiante, p.fecha_prestamo, vence),
+            )
+
+    # ===========================================================
+    # HELPERS COMPARTIDOS
+    # ===========================================================
+
+    @staticmethod
+    def _btn(parent: tk.Widget, text: str, command, bg: str) -> tk.Button:
+        """
+        Parametros: parent, text, command, bg
+        Devuelve:   tk.Button configurado con el estilo del proyecto.
+        Descripcion:
+            Factoria de botones para evitar repeticion de configuracion.
+        """
+        return tk.Button(
+            parent,
+            text=text,
+            command=command,
+            bg=bg,
+            fg=FG_LIGHT,
+            font=FONT_BTN,
+            relief=tk.FLAT,
+            padx=10,
+            pady=5,
+            cursor="hand2",
+            activebackground=ACCENT_SEL,
+            activeforeground=FG_LIGHT,
+        )
+
+    @staticmethod
+    def _make_treeview(
+        parent: tk.Widget,
+        columns: tuple,
+        headings: tuple,
+        widths: tuple,
+    ) -> ttk.Treeview:
+        """
+        Parametros: parent (tk.Widget), columns (tuple), headings (tuple), widths (tuple)
+        Devuelve:   ttk.Treeview con scrollbar vertical integrada.
+        Descripcion:
+            Factoria de Treeview para evitar repeticion en cada pestana.
+            Empaqueta el Treeview y su scrollbar en un Frame interno.
+        """
+        container = tk.Frame(parent, bg=BG_PANEL)
+        container.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 8))
+
+        scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        tree = ttk.Treeview(
+            container,
+            columns=columns,
+            show="headings",
+            yscrollcommand=scrollbar.set,
+        )
+        scrollbar.config(command=tree.yview)
+        tree.pack(fill=tk.BOTH, expand=True)
+
+        for col, heading, width in zip(columns, headings, widths):
+            tree.heading(col, text=heading)
+            tree.column(col, width=width, minwidth=50, anchor=tk.CENTER)
+
+        return tree
+
+    @staticmethod
+    def _clear_tree(tree: ttk.Treeview) -> None:
+        """
+        Parametros: tree (ttk.Treeview)
+        Devuelve:   None
+        Descripcion:
+            Elimina todas las filas del Treeview antes de repoblarlo.
+        """
+        for item in tree.get_children():
+            tree.delete(item)
+
+    def _status(self, msg: str, ok: bool = True) -> None:
+        """
+        Parametros: msg (str), ok (bool) — True = exito, False = error.
+        Devuelve:   None
+        Descripcion:
+            Actualiza la barra de estado inferior con el mensaje y el
+            color correspondiente (verde para exito, rojo para error).
+        """
+        simbolo = "\u2713" if ok else "\u2717"
+        self.status_var.set(f"  {simbolo}  {msg}")
+        self._status_bar.config(fg=FG_STATUS_OK if ok else FG_STATUS_ERR)
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
