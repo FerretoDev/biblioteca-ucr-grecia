@@ -14,7 +14,7 @@
 
 \renewcommand{\tablename}{Tabla}
 \renewcommand{\contentsname}{Índice}
-\renewcommand{\refname}{Bibliografía}
+\renewcommand{\refname}{Referencias}
 \renewcommand{\figurename}{Figura}
 
 % Paragraphs
@@ -57,9 +57,9 @@ Este documento describe casi todo el desarrollo del proyecto programado para adm
 
 \section{Descripción del problema}
 
-El problema consiste en diseñar e implementar una aplicación que gestione información de libros, estudiantes y préstamos de una biblioteca utilizando estructuras de datos. El sistema permite buscar, insertar, eliminar y registrar préstamos, haciendo una solución integral a las necesidades de la biblioteca.
+El problema central consiste en diseñar e implementar una aplicación eficiente que gestione información de libros, estudiantes y préstamos de una biblioteca universitaria utilizando estructuras de datos dinámicas. A diferencia de un sistema trivial basado en arreglos, el volumen de datos de una biblioteca requiere algoritmos capaces de garantizar inserciones, búsquedas y eliminaciones veloces, evitando cuellos de botella cuando el catálogo de libros o el padrón de estudiantes crece de forma considerable.
 
-Todos los datos se quedan en archivos de texto plano delimitados (con extensión \texttt{.xml}) y, al ejecutar el programa se cargan en las estructuras de datos correspondientes en memoria principal. El sistema maneja libros identificados por un código único, estudiantes por su carné y préstamos con un código autogenerado. Además de que el programa incluye validaciones de negocio estrictas, impidiendo operaciones inválidas como prestar un libro que ya se encuentra prestado, o eliminar a un estudiante que mantenga devoluciones pendientes. Todo esto con la ayuda de una Interfaz Gráfica de Usuario (GUI) hecha con \texttt{tkinter} para facilitar la interacción visual y el uso del programa final.
+El sistema debe operar de forma autónoma almacenando todos los datos en archivos de texto plano delimitados (con extensión \texttt{.xml}). Al ejecutar el programa, estos datos se cargan en las estructuras en memoria principal: un Árbol AVL para los libros (identificados por un código único), una Tabla Hash para los estudiantes (identificados por su carné), y un Árbol Rojinegro para los préstamos (con códigos autogenerados). La solución exige, además, validaciones de negocio estrictas que mantengan la integridad referencial; por ejemplo, el sistema debe impedir de forma proactiva que se preste un libro que ya se encuentra prestado, o que se elimine el registro de un estudiante que mantenga devoluciones pendientes. Finalmente, todo este procesamiento interno se expone al usuario mediante una Interfaz Gráfica (GUI) construida con \texttt{tkinter}, facilitando la interacción diaria del personal bibliotecario.
 
 \section{Análisis del problema}
 
@@ -81,9 +81,9 @@ Los libros se almacenan en un árbol AVL ordenado por su código numérico únic
 
 \subsubsection{Tabla hash para estudiantes}
 
-Los estudiantes se gestionan a través de una tabla hash. La función lo calcula a partir del número de carné de cada estudiante utilizando el módulo sobre el tamaño de la tabla o método de división.
+Los estudiantes se gestionan a través de una tabla hash. La función de dispersión (hash) calcula el índice a partir del número de carné del estudiante utilizando el método de división sobre el tamaño de la tabla, el cual está definido de manera estática en 100 posiciones. Por ejemplo, si se inserta un estudiante con el carné \texttt{1001}, la función calculará $1001 \pmod{100} = 1$, ubicándolo directamente en el índice 1 del arreglo principal.
 
-Las colisiones se resuelven utilizando el encadenamiento a través de listas simples enlazadas. Esta estructura reduce el tiempo de acceso para ubicar el perfil de un estudiante.
+Las colisiones (es decir, cuando múltiples carnés producen el mismo índice) se resuelven utilizando el método de encadenamiento a través de listas simples enlazadas. Esta estructura reduce el tiempo de acceso para ubicar el perfil de un estudiante a $O(1)$ en promedio, siendo muy superior a una búsqueda lineal estándar.
 
 \textbf{Datos almacenados por estudiante:}
 \begin{itemize}[noitemsep]
@@ -112,82 +112,86 @@ Los registros de préstamos de libros se indexan en un Árbol Rojinegro. Al trat
 
 El programa cuenta con un módulo \texttt{XMLManager} especializado en la lectura de los archivos de texto \texttt{libros.xml}, \texttt{estudiantes.xml} y \texttt{prestamos.xml}, que pese a su nombre, almacenan atributos delimitados por el carácter de porcentaje (\%). Al iniciar la aplicación, se abren estos archivos y cada línea se separa para instanciar directamente los objetos \texttt{Libro}, \texttt{Estudiante} y \texttt{Prestamo}. Posteriormente, al momento de registrar un nuevo préstamo o al ejecutar una eliminación de un estudiante o libro válido, el programa recorre la estructura de datos correspondiente (haciendo uso del recorrido inorden o listando el hash) y sobrescribe los archivos, asegurando la persistencia de los cambios.
 
-\subsection{Resolución de subproblemas}
+\section{Resolución de subproblemas}
 
-El desarrollo del sistema se abordó de forma incremental, dividiendo el problema general en distintas etapas de desarrollo. Cada subproblema fue resuelto mediante una estructura de datos específica y validaciones de negocio acordes con los requisitos del sistema, siguiendo una implementación lógica y progresiva.
+El desarrollo del sistema se abordó de forma incremental, dividiendo el problema general en distintos subproblemas lógicos. Cada subproblema fue resuelto mediante una estructura de datos específica y validaciones de negocio acordes con los requisitos del sistema, siguiendo una implementación lógica y progresiva.
 
-En la siguiente tabla se detalla cómo se abordó la implementación de cada requerimiento por etapas.
+En la siguiente tabla se detalla cómo se abordó la implementación de cada requerimiento.
 
-\begin{longtable}{p{0.15\textwidth} p{0.25\textwidth} p{0.50\textwidth}}
+\begin{longtable}{p{0.30\textwidth} p{0.65\textwidth}}
 \toprule
-\textbf{Etapa} & \textbf{Subproblema} & \textbf{Solución implementada} \\
+\textbf{Subproblema} & \textbf{Solución implementada} \\
 \midrule
 
-Etapa 1 
-& Estructura base & Se configuró el proyecto inicial, creando los directorios principales y estableciendo las bases para los distintos módulos. \\
+Estructura base & Se configuró el proyecto inicial, creando los directorios principales del proyecto y estableciendo las bases para los distintos módulos de código. \\
 \midrule
-
-Etapa 2 
-& Modelos de datos & Se programaron las clases \texttt{Libro}, \texttt{Estudiante} y \texttt{Prestamo} con sus respectivos atributos para representar la información de manera estructurada en el sistema. \\
+Modelos de datos & Se programaron las clases \texttt{Libro}, \texttt{Estudiante} y \texttt{Prestamo} con sus respectivos atributos para representar la información de manera estructurada en el sistema. \\
 \midrule
-
-Etapa 3 
-& Persistencia XML & Se implementó un módulo para leer y escribir en archivos de texto, permitiendo cargar los datos al iniciar y guardar los cambios al finalizar una operación. \\
+Persistencia XML & Se implementó un módulo para leer y escribir en archivos de texto, permitiendo cargar los datos al iniciar y guardar los cambios al finalizar una operación. \\
 \midrule
-
-Etapa 4
-& Buscar libros por autor & Se realiza un recorrido inorden sobre el árbol AVL, evaluando si el autor del nodo actual coincide o contiene la subcadena ingresada. Cuando existe coincidencia, el libro se agrega a una lista de resultados. \\
-\cmidrule{2-3}
-& Buscar libro por título & Se aplica un procedimiento similar al de búsqueda por autor, recorriendo el AVL y comparando el título de cada nodo sin distinguir mayúsculas ni minúsculas. \\
-\cmidrule{2-3}
-& Buscar libro por código & Se aprovecha la propiedad de ordenamiento del AVL. La búsqueda compara recursivamente el código consultado con el código del nodo actual, reduciendo el tiempo de acceso a $O(\log n)$. \\
-\cmidrule{2-3}
-& Mostrar árboles en inorden & Se implementaron recorridos recursivos que visitan el hijo izquierdo, procesan la raíz y luego el hijo derecho, permitiendo mostrar los elementos en orden ascendente por código. \\
+Buscar libros por autor & Se realiza un recorrido inorden sobre el árbol AVL, evaluando si el autor del nodo actual coincide o contiene la subcadena ingresada. Cuando existe coincidencia, el libro se agrega a una lista de resultados. \\
 \midrule
-
-Etapa 5
-& Buscar estudiante por carné & Se calcula la función hash del carné para obtener el índice correspondiente en la tabla. Luego, se recorre la lista enlazada almacenada en esa posición hasta encontrar el registro exacto. \\
-\cmidrule{2-3}
-& Buscar estudiante por nombre & Se recorren todas las listas enlazadas de la tabla hash para encontrar coincidencias totales o parciales con el nombre ingresado. \\
-\cmidrule{2-3}
-& Buscar estudiantes por carrera & Se sigue un procedimiento similar al de búsqueda por nombre, recorriendo toda la tabla y acumulando los registros que coinciden con la carrera consultada. \\
+Buscar libro por título & Se aplica un procedimiento similar al de búsqueda por autor, recorriendo el AVL y comparando el título de cada nodo sin distinguir mayúsculas ni minúsculas. \\
 \midrule
-
-Etapa 6
-& Estructura Rojinegra & Se implementó el árbol rojinegro con sus respectivas rotaciones e inserciones balanceadas para almacenar de manera eficiente los préstamos registrados. \\
+Buscar libro por código & Se aprovecha la propiedad de ordenamiento del AVL. La búsqueda compara recursivamente el código consultado con el código del nodo actual, reduciendo el tiempo de acceso a $O(\log n)$. \\
 \midrule
-
-Etapa 7
-& Sistema de préstamos & Primero se verifica la existencia del libro y del estudiante. Luego se comprueba que el libro no esté prestado. Si todo es correcto, se crea el préstamo con duración de 15 días, se inserta en el árbol rojinegro y se actualiza el archivo. \\
+Mostrar árboles en inorden & Se implementaron recorridos recursivos que visitan el hijo izquierdo, procesan la raíz y luego el hijo derecho, permitiendo mostrar los elementos en orden ascendente por código. \\
 \midrule
-
-Etapa 8
-& Eliminar libro por código & Antes de eliminar, se valida en el árbol rojinegro que el libro no esté asociado a un préstamo activo. Si el libro está prestado, la eliminación se rechaza. En caso contrario, se elimina del AVL y se rebalancea el árbol. \\
-\cmidrule{2-3}
-& Eliminar estudiante por carné & Antes de eliminar, el sistema verifica que el estudiante no tenga préstamos activos en el árbol rojinegro. Si existe al menos uno, la eliminación se bloquea. Si no, se elimina el nodo correspondiente de la tabla hash. \\
+Buscar estudiante por carné & Se calcula la función hash del carné para obtener el índice correspondiente en la tabla. Luego, se recorre la lista enlazada almacenada en esa posición hasta encontrar el registro exacto. \\
 \midrule
-
-Etapa 9
-& Interfaz gráfica & Se desarrolló con \texttt{tkinter}, organizando la aplicación en pestañas mediante \texttt{Notebook} para separar libros, estudiantes y préstamos. Además, se incorporaron formularios de entrada, botones de acción y un \texttt{Treeview} tabular para mostrar resultados. \\
+Buscar estudiante por nombre & Se recorren todas las listas enlazadas de la tabla hash para encontrar coincidencias totales o parciales con el nombre ingresado. \\
 \midrule
-
-Etapa 10
-& Documentación interna & Se agregaron \textit{docstrings} y comentarios descriptivos en el código, detallando los parámetros, retornos y el funcionamiento algorítmico de cada función. \\
+Buscar estudiantes por carrera & Se sigue un procedimiento similar al de búsqueda por nombre, recorriendo toda la tabla y acumulando los registros que coinciden con la carrera consultada. \\
+\midrule
+Estructura Rojinegra & Se implementó el árbol rojinegro con sus respectivas rotaciones e inserciones balanceadas para almacenar de manera eficiente los préstamos registrados. \\
+\midrule
+Sistema de préstamos & Primero se verifica la existencia del libro y del estudiante. Luego se comprueba que el libro no esté prestado. Si todo es correcto, se crea el préstamo con duración de 15 días, se inserta en el árbol rojinegro y se actualiza el archivo. \\
+\midrule
+Eliminar libro por código & Antes de eliminar, se valida en el árbol rojinegro que el libro no esté asociado a un préstamo activo. Si el libro está prestado, la eliminación se rechaza. En caso contrario, se elimina del AVL y se rebalancea el árbol. \\
+\midrule
+Eliminar estudiante por carné & Antes de eliminar, el sistema verifica que el estudiante no tenga préstamos activos en el árbol rojinegro. Si existe al menos uno, la eliminación se bloquea. Si no, se elimina el nodo correspondiente de la tabla hash. \\
+\midrule
+Interfaz gráfica & Se desarrolló con \texttt{tkinter}, organizando la aplicación en pestañas mediante \texttt{Notebook} para separar libros, estudiantes y préstamos. Además, se incorporaron formularios de entrada, botones de acción y un \texttt{Treeview} tabular para mostrar resultados. \\
+\midrule
+Documentación interna & Se agregaron \textit{docstrings} y comentarios descriptivos en el código, detallando los parámetros, retornos y el funcionamiento algorítmico de cada función. \\
 \bottomrule
 \end{longtable}
 
 \subsection{Funciones o métodos principales}
 
-A continuación, se listan los métodos de integración y gestión más importantes, correspondientes a los controladores del proyecto (\texttt{SistemaPrestamos}, \texttt{GestorEliminacion} y \texttt{XMLManager}).
+Las funciones y métodos principales del sistema se diseñaron para cubrir las operaciones esenciales de carga, búsqueda, eliminación, préstamo y guardado de información. Cada uno cumple una función específica dentro del flujo general del programa y permite separar la lógica de negocio de la interfaz gráfica.
 
-\begin{longtable}{p{0.25\textwidth} p{0.24\textwidth} p{0.18\textwidth} p{0.23\textwidth}}
+\begin{longtable}{p{0.35\textwidth} p{0.60\textwidth}}
 \toprule
-\textbf{Función o método} & \textbf{Parámetros} & \textbf{Retorna} & \textbf{Descripción} \\
+\textbf{Función o método} & \textbf{Descripción} \\
 \midrule
-\texttt{cargar\_todo} & Ninguno (lee de los atributos de clase) & Tupla de 3 listas de objetos & Lee las líneas de los archivos \texttt{.xml}, instancia cada clase y retorna los conjuntos en crudo para popular la GUI. \\
-\texttt{dar\_prestamo} & \texttt{codigo\_libro}, \texttt{carnet} & \texttt{(bool, str)} & Valida y registra un préstamo si el libro está disponible. Retorna una tupla con un valor booleano de éxito y un mensaje de estado. \\
-\texttt{eliminar\_libro} & \texttt{codigo} & \texttt{(bool, str)} & Realiza las verificaciones de préstamos activos y elimina el libro del AVL si todo es correcto, luego sincroniza en disco. \\
-\texttt{eliminar\_estudiante}& \texttt{carnet} & \texttt{(bool, str)} & Ejecuta validaciones análogas pero dirigidas a la tabla hash del estudiante, también sincronizando al disco en caso exitoso. \\
+\texttt{cargar\_todo()} & \textbf{Parámetros:} Ninguno. \textbf{Retorno:} \texttt{tuple} con listas de objetos. \textbf{Hace:} Método central de \texttt{XMLManager} que lee los tres archivos .xml y devuelve los registros instanciados en memoria. \\
+\midrule
+\texttt{cargar\_[entidad]()} & \textbf{Parámetros:} Ninguno. \textbf{Retorno:} \texttt{List}. \textbf{Hace:} Métodos específicos de \texttt{XMLManager} que parsean y retornan los objetos individuales según el formato de cada archivo. \\
+\midrule
+\texttt{guardar\_[entidad]()} / \texttt{\_guardar\_[entidad]\_xml()} & \textbf{Parámetros:} \texttt{List} de objetos (en la variante pública). \textbf{Retorno:} Ninguno. \textbf{Hace:} Operan en dos capas: los métodos privados \texttt{\_guardar\_*\_xml()} de \texttt{GestorEliminacion} y \texttt{SistemaPrestamos} recolectan los datos de las estructuras en memoria, y luego delegan la escritura a los métodos públicos \texttt{guardar\_*()} de \texttt{XMLManager}, que sobrescriben el archivo en disco. \\
+\midrule
+\texttt{insertar()} & \textbf{Parámetros:} El objeto a insertar (Libro, Estudiante, etc.). \textbf{Retorno:} Nuevo nodo raíz. \textbf{Hace:} Agrega un nuevo registro y rebalancea el árbol si es necesario. \\
+\midrule
+\texttt{buscar\_codigo()} & \textbf{Parámetros:} \texttt{codigo: int}. \textbf{Retorno:} Objeto encontrado o \texttt{None}. \textbf{Hace:} Localiza rápidamente un libro o préstamo aprovechando el orden del AVL/Rojinegro. \\
+\midrule
+\texttt{buscar\_autor()} & \textbf{Parámetros:} \texttt{autor: str}. \textbf{Retorno:} \texttt{list[Libro]}. \textbf{Hace:} Recorre inorden el AVL y acumula todos los libros cuyo autor coincida con la cadena recibida. \\
+\midrule
+\texttt{buscar\_titulo()} & \textbf{Parámetros:} \texttt{titulo: str}. \textbf{Retorno:} \texttt{Optional[Libro]}. \textbf{Hace:} Recorre inorden el AVL y devuelve el primer libro cuyo título coincida exactamente. \\
+\midrule
+\texttt{buscar\_por\_carnet()} & \textbf{Parámetros:} \texttt{carnet: int}. \textbf{Retorno:} \texttt{Estudiante} o \texttt{None}. \textbf{Hace:} Accede a la tabla hash mediante el módulo y extrae el estudiante exacto. \\
+\midrule
+\texttt{buscar\_por\_nombre()} & \textbf{Parámetros:} \texttt{nombre: str}. \textbf{Retorno:} Lista de coincidencias. \textbf{Hace:} Recorre las listas enlazadas del hash buscando coincidencias de atributos. \\
+\midrule
+\texttt{libro\_esta\_prestado()} & \textbf{Parámetros:} \texttt{codigo: int}. \textbf{Retorno:} \texttt{bool}. \textbf{Hace:} Verifica en el árbol rojinegro si existe un préstamo activo para evitar redundancias o borrados. \\
+\midrule
+\texttt{estudiante\_tiene\_prestamos()} & \textbf{Parámetros:} \texttt{carnet: int}. \textbf{Retorno:} \texttt{bool}. \textbf{Hace:} Valida que el estudiante no tenga devoluciones pendientes antes de proceder a una eliminación. \\
+\midrule
+\texttt{dar\_prestamo()} & \textbf{Parámetros:} \texttt{cod\_libro}, \texttt{carnet}. \textbf{Retorno:} \texttt{Tuple[bool, str]}. \textbf{Hace:} Comprueba existencia y disponibilidad, e inserta el nuevo registro en el Rojinegro. \\
+\midrule
+\texttt{eliminar\_libro()} / \texttt{eliminar\_estudiante()} & \textbf{Parámetros:} \texttt{codigo/carnet: int}. \textbf{Retorno:} \texttt{Tuple[bool, str]}. \textbf{Hace:} Controladores en \texttt{GestorEliminacion} que ejecutan un borrado seguro de la estructura si las validaciones pasan con éxito. \\
+\midrule
+\texttt{obtener\_libros\_inorden()} / \texttt{inorden()} & \textbf{Parámetros:} Nodo raíz. \textbf{Retorno:} \texttt{List}. \textbf{Hace:} Recorrido inorden (izquierdo → raíz → derecho) que devuelve los elementos ordenados por código. \texttt{ArbolAVL} expone esta operación como \texttt{obtener\_libros\_inorden()}; \texttt{ArbolRojinegro} como \texttt{inorden()}. Mismo patrón, distinto nombre por clase. \\
 \bottomrule
 \end{longtable}
 
@@ -195,20 +199,29 @@ A continuación, se listan los métodos de integración y gestión más importan
 
 La siguiente tabla resume el grado de completitud técnica de las diferentes etapas y requerimientos del sistema en el momento de la entrega del código final.
 
-\begin{longtable}{p{0.38\textwidth} p{0.24\textwidth} p{0.28\textwidth}}
+\begin{longtable}{p{0.15\textwidth} p{0.32\textwidth} p{0.18\textwidth} p{0.30\textwidth}}
 \toprule
-\textbf{Parte del proyecto} & \textbf{Estado} & \textbf{Observaciones} \\
+\textbf{Etapa} & \textbf{Requerimiento} & \textbf{Estado} & \textbf{Observaciones} \\
 \midrule
-Archivos XML & Terminado con éxito & Uso correcto de la persistencia directa mediante porcentaje (\%). \\
-Árbol AVL & Terminado con éxito & Funcional con rebalanceo automático, inserción, búsqueda y eliminación. \\
-Tabla hash & Terminado con éxito & Funcional con resolución de colisiones y extracción de datos. \\
-Árbol rojinegro & Terminado con éxito & Funcional en balanceo por colores para administrar los registros. \\
-Búsquedas & Terminado con éxito & Algoritmos de búsqueda acoplados correctamente a la GUI. \\
-Carga de archivos & Terminado con éxito & Funciona eficientemente para poblar los árboles al iniciar. \\
-Eliminación de datos & Terminado con éxito & Validaciones integradas que impiden corromper los préstamos. \\
-Préstamos & Terminado con éxito & Validación lógica estricta y control de fechas. \\
-Interfaz gráfica de usuario & Terminado con éxito & Pantallas organizadas por pestañas, componentes limpios. \\
-Documentación interna & Terminado con éxito & Funciones documentadas e informe elaborado. \\
+Etapa 1 & Estructura base & Terminado con éxito & Directorios y módulos iniciales configurados. \\
+\midrule
+Etapa 2 & Modelos de datos & Terminado con éxito & Clases implementadas con sus atributos. \\
+\midrule
+Etapa 3 & Persistencia XML & Terminado con éxito & Uso correcto de la persistencia directa (\%). \\
+\midrule
+Etapa 4 & Árbol AVL y Búsquedas & Terminado con éxito & Funcional con rebalanceo, inserción y búsqueda. \\
+\midrule
+Etapa 5 & Tabla Hash & Terminado con éxito & Funcional con resolución de colisiones por listas. \\
+\midrule
+Etapa 6 & Árbol Rojinegro & Terminado con éxito & Funcional en balanceo por colores para préstamos. \\
+\midrule
+Etapa 7 & Sistema de préstamos & Terminado con éxito & Validación lógica estricta y control de fechas. \\
+\midrule
+Etapa 8 & Eliminaciones seguras & Terminado con éxito & Validaciones integradas que impiden corromper. \\
+\midrule
+Etapa 9 & Interfaz gráfica (GUI) & Terminado con éxito & Pantallas organizadas por pestañas, vistas limpias. \\
+\midrule
+Etapa 10 & Documentación interna & Terminado con éxito & Funciones documentadas e informe elaborado. \\
 \bottomrule
 \end{longtable}
 
@@ -235,14 +248,25 @@ Documentación interna & Terminado con éxito & Funciones documentadas e informe
 
     \item \textbf{Conclusión:} El manejo de notificaciones se implementó de forma muy robusta mediante una barra de estado en el pie de página (footer) de la interfaz. Esto asegura que se muestre un error explícito si faltó algún dato, o un mensaje de éxito confirmando exactamente qué registro se insertó, buscó o eliminó al interactuar con el sistema.\\
     \textbf{Recomendación:} Conservar y escalar este patrón de diseño en futuros módulos de la aplicación, ya que ofrece una excelente retroalimentación en tiempo real al usuario sin interrumpir su flujo de trabajo con ventanas invasivas.
+
+    \item \textbf{Conclusión:} El abordaje del desarrollo mediante una división incremental por etapas facilitó la detección temprana de errores y permitió probar la integración de cada estructura de forma aislada antes del acoplamiento final en la GUI.\\
+    \textbf{Recomendación:} Adoptar metodologías ágiles o herramientas de control de tareas en futuros proyectos grupales o de mayor escala, con el fin de mejorar la trazabilidad de los requerimientos y mantener un código ordenado.
 \end{enumerate}
 
-\section{Bibliografía}
+\section{Referencias}
 
-\begin{itemize}
-    \item Python Software Foundation. (2026). \textit{tkinter — Interfaz gráfica de usuario}. Documentación oficial de Python. Recuperado de \url{https://docs.python.org/es/3/library/tkinter.html}
+\begin{list}{}{\setlength{\leftmargin}{1.27cm}\setlength{\itemindent}{-1.27cm}\setlength{\itemsep}{6pt}}
+
     \item Cormen, T. H., Leiserson, C. E., Rivest, R. L., \& Stein, C. (2009). \textit{Introduction to Algorithms} (3rd ed.). MIT Press.
-    \item Material didáctico y diapositivas de la cátedra del curso "Estructuras de Datos", Universidad de Costa Rica, Recinto de Grecia.
-\end{itemize}
+
+    \item GeeksforGeeks. (2024). \textit{Red-Black Tree Data Structure}. https://www.geeksforgeeks.org/red-black-tree-set-1-introduction-2/
+
+    \item Python Software Foundation. (2024). \textit{tkinter --- Python interface to Tcl/Tk}. https://docs.python.org/es/3/library/tkinter.html
+
+    \item Rodríguez Ramírez, I. (2026). \textit{Estructuras de datos} [Diapositivas de curso]. Universidad de Costa Rica, Recinto de Grecia.
+
+    \item Shipman, J. W. (2013). \textit{Tkinter 8.5 reference: A GUI for Python}. New Mexico Tech Computer Center. https://www.nmt.edu/tcc/help/pubs/tkinter/web/index.html
+
+\end{list}
 
 \end{document}
