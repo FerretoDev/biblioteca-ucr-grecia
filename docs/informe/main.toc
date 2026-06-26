@@ -10,4 +10,4 @@
 \contentsline {subsection}{\numberline {3.4}Funciones o métodos principales}{5}{subsection.3.4}%
 \contentsline {section}{\numberline {4}Análisis de resultados}{6}{section.4}%
 \contentsline {section}{\numberline {5}Conclusiones y recomendaciones}{7}{section.5}%
-\contentsline {section}{\numberline {6}Bibliografía}{7}{section.6}%
+\contentsline {section}{\numberline {6}Bibliografía}{8}{section.6}%
