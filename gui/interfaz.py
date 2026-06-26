@@ -24,7 +24,7 @@ from xml_manager import XMLManager
 BG_DARK    = "#1B2631"   # fondo ventana y treeview
 BG_PANEL   = "#263545"   # fondo de cada pestana y frames
 ACCENT     = "#2471A3"   # azul primario (botones, encabezados)
-ACCENT_SEL = "#1A5276"   # azul seleccionado
+ACCENT_SEL = "#3498DB"   # azul brillante para la seleccion en la tabla
 BTN_DEL    = "#922B21"   # rojo para botones de eliminar
 BTN_OK     = "#1E8449"   # verde para dar prestamo
 BTN_VER    = "#27AE60"   # verde claro/teal para ver todos
@@ -33,9 +33,9 @@ FG_STATUS_OK  = "#A9DFBF"
 FG_STATUS_ERR = "#F1948A"
 
 FONT_TITLE = ("Segoe UI", 13, "bold")
-FONT_LABEL = ("Segoe UI", 10)
-FONT_BTN   = ("Segoe UI", 10, "bold")
-FONT_MONO  = ("Consolas", 10)
+FONT_LABEL = ("Segoe UI", 11)
+FONT_BTN   = ("Segoe UI", 12, "bold")
+FONT_MONO  = ("Consolas", 11)
 
 DURACION_PRESTAMO_DIAS = 15
 
@@ -135,17 +135,17 @@ class App(tk.Tk):
 
         style.configure("Treeview",
                         font=FONT_MONO,
-                        rowheight=26,
+                        rowheight=28,
                         background=BG_DARK,
                         foreground=FG_LIGHT,
                         fieldbackground=BG_DARK)
         style.configure("Treeview.Heading",
-                        font=("Segoe UI", 10, "bold"),
+                        font=("Segoe UI", 11, "bold"),
                         background=ACCENT,
                         foreground=FG_LIGHT)
         style.map("Treeview",
                   background=[("selected", ACCENT_SEL)],
-                  foreground=[("selected", FG_LIGHT)])
+                  foreground=[("selected", "#FFFFFF")])
 
         style.configure("Vertical.TScrollbar",
                         troughcolor=BG_DARK,
@@ -198,12 +198,13 @@ class App(tk.Tk):
         self._build_prestamos_tab()
 
         # Barra de estado
-        self.status_var = tk.StringVar(value="  Sistema listo.")
+        lib_count = len(self.avl.obtener_libros_inorden(self.avl.raiz))
+        self.status_var = tk.StringVar(value=f"  ¡Éxito! — {lib_count} libro(s) en el sistema (inorden AVL)")
         self._status_bar = tk.Label(
             self,
             textvariable=self.status_var,
             bg=BG_PANEL, fg=FG_STATUS_OK,
-            font=("Segoe UI", 9),
+            font=("Segoe UI", 10),
             anchor=tk.W, padx=6,
         )
         self._status_bar.pack(fill=tk.X, side=tk.BOTTOM, ipady=5)
@@ -274,7 +275,7 @@ class App(tk.Tk):
             tab,
             columns=("codigo", "titulo", "autor", "anio", "editorial", "area"),
             headings=("Código", "Título", "Autor", "Año", "Editorial", "Área"),
-            widths=(70, 210, 160, 55, 130, 110),
+            widths=(60, 240, 190, 50, 130, 100),
         )
 
     # Callbacks libros ----------------------------------------
@@ -403,11 +404,11 @@ class App(tk.Tk):
         btn_frame.pack(fill=tk.X, padx=12, pady=4)
 
         botones_est = [
-            ("Buscar carnet",   ACCENT,  self._est_buscar_carnet),
-            ("Buscar nombre",   ACCENT,  self._est_buscar_nombre),
-            ("Buscar carrera",  ACCENT,  self._est_buscar_carrera),
-            ("Eliminar",        BTN_DEL, self._est_eliminar),
-            ("Ver todos",       BTN_VER, self._est_ver_todos),
+            ("Buscar carnet",  ACCENT,  self._est_buscar_carnet),
+            ("Buscar nombre",  ACCENT,  self._est_buscar_nombre),
+            ("Buscar carrera", ACCENT,  self._est_buscar_carrera),
+            ("Eliminar",       BTN_DEL, self._est_eliminar),
+            ("Ver todos",      BTN_VER, self._est_ver_todos),
         ]
         for col, (txt, bg, cmd) in enumerate(botones_est):
             self._btn(btn_frame, txt, cmd, bg).grid(row=0, column=col, padx=4, pady=2)
@@ -417,7 +418,7 @@ class App(tk.Tk):
             tab,
             columns=("carnet", "nombre", "carrera", "telefono", "correo", "direccion"),
             headings=("Carnet", "Nombre", "Carrera", "Teléfono", "Correo", "Dirección"),
-            widths=(80, 170, 130, 90, 170, 140),
+            widths=(70, 190, 140, 90, 170, 140),
         )
 
     # Callbacks estudiantes -----------------------------------
@@ -564,7 +565,7 @@ class App(tk.Tk):
         # -- Boton Ver todos --
         btn_frame = tk.Frame(tab, bg=BG_PANEL)
         btn_frame.pack(fill=tk.X, padx=12, pady=4)
-        self._btn(btn_frame, "Ver todos (inorden RB)", self._pres_ver_todos, BTN_VER).pack(
+        self._btn(btn_frame, "Ver todos", self._pres_ver_todos, BTN_VER).pack(
             side=tk.LEFT)
 
         # -- Treeview --
@@ -652,9 +653,9 @@ class App(tk.Tk):
             fg=FG_LIGHT,
             font=FONT_BTN,
             relief=tk.FLAT,
-            width=14,  # Ancho fijo para uniformidad
+            width=16,  # Ancho uniforme para botones
             padx=10,
-            pady=5,
+            pady=6,
             cursor="hand2",
             activebackground=ACCENT_SEL,
             activeforeground=FG_LIGHT,
@@ -676,7 +677,7 @@ class App(tk.Tk):
             Empaqueta el Treeview y su scrollbar en un Frame interno.
         """
         container = tk.Frame(parent, bg=BG_PANEL)
-        container.pack(fill=tk.BOTH, expand=True, padx=12, pady=(2, 8))
+        container.pack(fill=tk.BOTH, expand=True, padx=12, pady=(16, 12))
 
         scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -692,7 +693,12 @@ class App(tk.Tk):
 
         for col, heading, width in zip(columns, headings, widths):
             tree.heading(col, text=heading)
-            tree.column(col, width=width, minwidth=50, anchor=tk.CENTER)
+            # Alinear al centro o a la izquierda según el tipo de dato
+            if col in ("titulo", "autor", "editorial", "area", "nombre", "carrera", "correo", "direccion"):
+                anch = tk.W
+            else:
+                anch = tk.CENTER
+            tree.column(col, width=width, minwidth=50, anchor=anch)
             
         tree.tag_configure("par", background="#1e2a3a")
         tree.tag_configure("impar", background="#16202e")
@@ -720,8 +726,21 @@ class App(tk.Tk):
             Actualiza la barra de estado inferior con el mensaje y el
             color correspondiente (verde para exito, rojo para error).
         """
-        simbolo = "\u2713" if ok else "\u2717"
-        self.status_var.set(f"  {simbolo}  {msg}")
+        prefijo = "¡Éxito! —" if ok else "¡Error! —"
+        
+        contexto = ""
+        try:
+            tab_id = self.notebook.index(self.notebook.select())
+            if tab_id == 0 and "AVL" not in msg:
+                contexto = " (AVL)"
+            elif tab_id == 1 and "Hash" not in msg:
+                contexto = " (Hash)"
+            elif tab_id == 2 and "Rojinegro" not in msg and "RB" not in msg:
+                contexto = " (Rojinegro)"
+        except Exception:
+            pass
+
+        self.status_var.set(f"  {prefijo} {msg}{contexto}")
         self._status_bar.config(fg=FG_STATUS_OK if ok else FG_STATUS_ERR)
 
 
